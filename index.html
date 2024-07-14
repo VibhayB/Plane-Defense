@@ -322,6 +322,10 @@
     </style>
 </head>
 <body>   
+    <audio id="backgroundMusic" autoplay loop> 
+        <source src="main-menu-plane-defense.mp3" type="audio/mp3"> 
+    </audio> 
+
     <div style="position: relative;">
         <canvas id="gameCanvas"></canvas>
         <button id="pauseButton" onclick="togglePause()" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);">
@@ -390,11 +394,12 @@
 <img id="coinImage" src="https://clipart-library.com/images_k/coins-transparent/coins-transparent-25.png" style="display: none;">
     <img id="immunityPillImage" src="https://cdn.pixabay.com/photo/2013/07/13/11/44/capsule-158568_1280.png" style="display: none;">
 
-<script>
-let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
-totalCoins += 5000;
-const missileImage = new Image();
-missileImage.src = 'https://d2t1xqejof9utc.cloudfront.net/screenshots/pics/97dcc011fd1bc375dbc1663c0c9f6f92/large.png';
+    <script>
+        
+    let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+    totalCoins += 5000;
+    const missileImage = new Image();
+    missileImage.src = 'https://d2t1xqejof9utc.cloudfront.net/screenshots/pics/97dcc011fd1bc375dbc1663c0c9f6f92/large.png';
 
 // Function to resize and replace the image
 const planes = [
@@ -1529,6 +1534,7 @@ asteroids.forEach(asteroidd =>{
             
         }
         function playGame(){
+            backgroundMusic.play();
             missileTime = 0;
             missiles = [];
             if(equippedPlane != 'zxiFighter'){
@@ -1555,6 +1561,7 @@ asteroids.forEach(asteroidd =>{
         }
 
         function restartGame() {
+            backgroundMusic.play();
             missileTime = 0;
             if(equippedPlane != 'zxiFighter'){
                 missileButton.style.display = 'none';
@@ -1585,6 +1592,7 @@ asteroids.forEach(asteroidd =>{
             lastTime = Date.now();
         }
         function returnToMenu() {
+            backgroundMusic.pause();
             missiles = [];
             plane.x = canvas.width / 2;
             plane.y = canvas.height - 100;
