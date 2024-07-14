@@ -322,8 +322,8 @@
     </style>
 </head>
 <body>   
-    <audio id="backgroundMusic" autoplay loop> 
-        <source src="main-menu-plane-defense.mp3" type="audio/mp3"> 
+    <audio id="survivormusic" autoplay loop> 
+        <source src="towards mars.mp3" type="audio/mp3"> 
     </audio> 
 
     <div style="position: relative;">
@@ -1534,7 +1534,7 @@ asteroids.forEach(asteroidd =>{
             
         }
         function playGame(){
-            backgroundMusic.play();
+            survivormusic.play();
             missileTime = 0;
             missiles = [];
             if(equippedPlane != 'zxiFighter'){
@@ -1561,7 +1561,7 @@ asteroids.forEach(asteroidd =>{
         }
 
         function restartGame() {
-            backgroundMusic.play();
+            survivormusic.play();
             missileTime = 0;
             if(equippedPlane != 'zxiFighter'){
                 missileButton.style.display = 'none';
@@ -1592,7 +1592,7 @@ asteroids.forEach(asteroidd =>{
             lastTime = Date.now();
         }
         function returnToMenu() {
-            backgroundMusic.pause();
+            survivormusic.pause();
             missiles = [];
             plane.x = canvas.width / 2;
             plane.y = canvas.height - 100;
