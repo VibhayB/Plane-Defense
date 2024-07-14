@@ -323,7 +323,7 @@
 </head>
 <body>   
     <audio id="survivormusic" autoplay loop> 
-        <source src="towards mars.mp3" type="audio/mp3"> 
+        <source src="survivor.mp3" type="audio/mp3"> 
     </audio> 
 
     <div style="position: relative;">
@@ -1534,7 +1534,9 @@ asteroids.forEach(asteroidd =>{
             
         }
         function playGame(){
-            survivormusic.play();
+            if(level == 0){   
+                survivormusic.play();
+            }
             missileTime = 0;
             missiles = [];
             if(equippedPlane != 'zxiFighter'){
@@ -1561,7 +1563,9 @@ asteroids.forEach(asteroidd =>{
         }
 
         function restartGame() {
-            survivormusic.play();
+            if(level == 0){   
+                survivormusic.play();
+            }
             missileTime = 0;
             if(equippedPlane != 'zxiFighter'){
                 missileButton.style.display = 'none';
@@ -1592,7 +1596,10 @@ asteroids.forEach(asteroidd =>{
             lastTime = Date.now();
         }
         function returnToMenu() {
-            survivormusic.pause();
+            if(level == 0){   
+                survivormusic.pause();
+                survivormusic.currentTime = 0;
+            }
             missiles = [];
             plane.x = canvas.width / 2;
             plane.y = canvas.height - 100;
