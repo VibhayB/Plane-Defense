@@ -28,7 +28,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     cursor: pointer;
-    background-image: url('https://cdn-icons-png.flaticon.com/512/2590/2590496.png');
+    background-image: url('missilebutton.png');
 }
         #fireButton {
     position: absolute;
@@ -39,7 +39,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     cursor: pointer;
-    background-image: url('https://png.pngtree.com/png-vector/20240531/ourmid/pngtree-fire-button-terror-sign-fire-png-image_12563812.png');
+    background-image: url('firebutton.png');
 } 
 
         #score, #highScore, #time {
@@ -102,7 +102,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://img.freepik.com/premium-photo/modern-illustration-space-landscape-with-neon-yellow-crates-rocky-stones-stars-glowing-asteroids-flying-night-sky-illustration-game-ui_76964-68702.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1720656000&semt=ais_user');
+            background-image: url('theme.jpg');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -315,21 +315,57 @@
     height: 30px;
     background-size: contain;
     background-repeat: no-repeat;
-    background-image: url('https://icon-library.com/images/close-button-icon-png/close-button-icon-png-24.jpg');
+    background-color: transparent;
+    border: none; /* Remove border */
+    box-shadow: none; /* Remove any box shadow */
+    outline: none; /* Remove the outline on focus */
+    background-image: url('closebutton.png');
 }
 
 
     </style>
 </head>
 <body>   
-    <audio id="survivormusic" autoplay loop> 
+    <audio id="bgmusic" loop> 
+        <source src="main-menu-plane-defense.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="survivormusic" loop> 
         <source src="survivor.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardsmars" loop> 
+        <source src="towards mars.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardsjupiter" loop> 
+        <source src="towards jupyter.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardssaturn" loop> 
+        <source src="towards saturn.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardsuranus" loop> 
+        <source src="towards uranus.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardsneptune" loop> 
+        <source src="towards neptune.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardspluto" loop> 
+        <source src="towards pluto.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardsalpha" loop> 
+        <source src="towards alpha centauri.mp3" type="audio/mp3"> 
     </audio> 
 
     <div style="position: relative;">
         <canvas id="gameCanvas"></canvas>
         <button id="pauseButton" onclick="togglePause()" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);">
-            <img src="https://cdn-icons-png.flaticon.com/512/7021/7021845.png" alt="Pause" width="30" height="30">
+            <img src="pausebutton.png" alt="Pause" width="30" height="30">
         </button>        
     </div>
     <div id="missileButton" onclick="missile()"></div>
@@ -344,7 +380,7 @@
 
     <div id="menuScreen">
         <div id="totalCoins">
-            <img src="https://clipart-library.com/images_k/coins-transparent/coins-transparent-25.png" alt="Coins" id="coinIcon">
+            <img src="coin.png" alt="Coins" id="coinIcon">
             <span id="coinCount">0</span>
         </div>
         <h1> Plane Defense </h1>
@@ -381,7 +417,7 @@
             </p>            
             <p id="planeCost">
                 <span id="costValue"></span>
-                <img id="coinIcon" src="https://clipart-library.com/images_k/coins-transparent/coins-transparent-25.png" alt="Coin Icon" class="icon">
+                <img id="coinIcon" src="coin.png" alt="Coin Icon" class="icon">
             </p>
             <button id="buyButton" class="buy-button button" onclick="buyCurrentPlane()">Buy</button>
             <button id="equipButton" class="equip-button button" onclick="equipCurrentPlane()">Equip</button>
@@ -391,12 +427,13 @@
      
     
 
-<img id="coinImage" src="https://clipart-library.com/images_k/coins-transparent/coins-transparent-25.png" style="display: none;">
+<img id="coinImage" src="coin.png" style="display: none;">
     <img id="immunityPillImage" src="https://cdn.pixabay.com/photo/2013/07/13/11/44/capsule-158568_1280.png" style="display: none;">
 
     <script>
         
     let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+
     totalCoins += 5000;
     const missileImage = new Image();
     missileImage.src = 'https://d2t1xqejof9utc.cloudfront.net/screenshots/pics/97dcc011fd1bc375dbc1663c0c9f6f92/large.png';
@@ -1515,8 +1552,9 @@ asteroids.forEach(asteroidd =>{
             }
 
             // Create new stones and alien planes
-            
+            let diffindex;
             if(level == 0){
+                diffindex = timePassed/30;
                 if (Math.random() < 0.01) {
                     createStone();
                 } 
@@ -1525,18 +1563,43 @@ asteroids.forEach(asteroidd =>{
                 } if(Math.random() < 0.001 && timePassed >= 80){
                     createAsteroid();
                 }
-                if (Math.random() < 0.004 && timePassed >= 10 && alienPlanes.length < 12) {
+                if (Math.random() < 0.004 && timePassed >= 10 && alienPlanes.length < 12 || (Math.random() < 0.004 + diffindex && timePassed >= 300)) {
                     createAlienPlane();
-                } if(Math.random() < 0.003 && timePassed >= 50 && advancedAliens.length < 8){
+                } if(Math.random() < 0.003 && timePassed >= 50 && advancedAliens.length < 8 || (Math.random() < 0.003 + diffindex && timePassed >= 500)){
                     createAdvancedAliens();
                 }
             }
             
         }
         function playGame(){
+            bgmusic.pause();
+            bgmusic.currentTime = 0;
             if(level == 0){   
+                survivormusic.currentTime = 0;
                 survivormusic.play();
+            } else if(level == 1){
+                towardsmars.currentTime = 0;
+                towardsmusic.play();
+            } else if(level == 2){
+                towardsjupiter.currentTime = 0;
+                towardsjupiter.play();
+            } else if(level == 3){
+                towardssaturn.currentTime = 0;
+                towardssaturn.play();
+            } else if(level == 4){
+                towardsuranus.currentTime = 0;
+                towardsuranus.play();
+            } else if(level == 5){
+                towardsneptune.currentTime = 0;
+                towardsneptune.play();
+            } else if(level == 6){
+                towardspluto.currentTime = 0;
+                towardspluto.play();
+            } else if(level == 7){
+                towardsalpha.currentTime = 0;
+                towardsalpha.play();
             }
+
             missileTime = 0;
             missiles = [];
             if(equippedPlane != 'zxiFighter'){
@@ -1564,7 +1627,29 @@ asteroids.forEach(asteroidd =>{
 
         function restartGame() {
             if(level == 0){   
+                survivormusic.currentTime = 0;
                 survivormusic.play();
+            } else if(level == 1){
+                towardsmars.currentTime = 0;
+                towardsmusic.play();
+            } else if(level == 2){
+                towardsjupiter.currentTime = 0;
+                towardsjupiter.play();
+            } else if(level == 3){
+                towardssaturn.currentTime = 0;
+                towardssaturn.play();
+            } else if(level == 4){
+                towardsuranus.currentTime = 0;
+                towardsuranus.play();
+            } else if(level == 5){
+                towardsneptune.currentTime = 0;
+                towardsneptune.play();
+            } else if(level == 6){
+                towardspluto.currentTime = 0;
+                towardspluto.play();
+            } else if(level == 7){
+                towardsalpha.currentTime = 0;
+                towardsalpha.play();
             }
             missileTime = 0;
             if(equippedPlane != 'zxiFighter'){
@@ -1596,9 +1681,31 @@ asteroids.forEach(asteroidd =>{
             lastTime = Date.now();
         }
         function returnToMenu() {
+            bgmusic.play();
             if(level == 0){   
                 survivormusic.pause();
                 survivormusic.currentTime = 0;
+            } else if(level == 1){                
+                towardsmusic.pause();
+                towardsmars.currentTime = 0;
+            } else if(level == 2){
+                towardsjupiter.pause();
+                towardsjupiter.currentTime = 0;
+            } else if(level == 3){
+                towardssaturn.pause();
+                towardssaturn.currentTime = 0;
+            } else if(level == 4){
+                towardsuranus.pause();
+                towardsuranus.currentTime = 0;
+            } else if(level == 5){
+                towardsneptune.pause();
+                towardsneptune.currentTime = 0;
+            } else if(level == 6){
+                towardspluto.pause();
+                towardspluto.currentTime = 0;
+            } else if(level == 7){
+                towardsalpha.pause();
+                towardsalpha.currentTime = 0;
             }
             missiles = [];
             plane.x = canvas.width / 2;
@@ -1644,9 +1751,7 @@ asteroids.forEach(asteroidd =>{
         gameLoop();
         function updateCoinDisplay() {
             document.getElementById('coinCount').textContent = totalCoins;
-        }
-
-        
+        }        
     </script>
 </body>
 </html>
