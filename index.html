@@ -1696,11 +1696,11 @@ asteroids.forEach(asteroidd =>{
                     createAdvancedAliens();
                 }
             } else if(level == 1){ //towards mars
-                if (Math.random() < 0.05) {
+                if (Math.random() < 0.03) {
                     createStone();
-                } if (Math.random() < 0.008 && rotators.length < 2 && timePassed >= 30){
+                } if (Math.random() < 0.008 && rotators.length < 2 && timePassed >= 50){
                     createRotator();
-                } if (Math.random() < 0.0008 && timePassed >= 60 && alienPlanes.length < 60) {
+                } if (Math.random() < 0.0008 && timePassed >= 60 && alienPlanes.length < 80) {
                     createAlienPlane();
                 }
             } else if(level == 2){ //towards jupiter
