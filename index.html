@@ -102,7 +102,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('theme.jpg');
+            background-image: url('maintheme.jpg');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -119,7 +119,36 @@
             border: none;
             cursor: pointer;
             margin-top: 20px;
-} #howToPlayButton {
+        } 
+        
+        #levelScreen {
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            display: flex;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid white;
+            flex-direction: column;
+            z-index: 1000;
+            color: white;
+            box-sizing: border-box;
+        } .levelbutton{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #4f4f4f;
+            border: 1px solid #fff;
+            color: white;
+            padding: 20px;
+            margin: 10px;
+            width: 300px;
+        } 
+        
+#howToPlayButton {
     background-color: yellow;
     color: black;
     padding: 5px 42px;
@@ -191,13 +220,13 @@
     color: white; /* Ensuring text is visible */
     font-size: 18px; /* Adjust font size as needed */
 } #resumepause {
-            padding: 5px 80px;
-            font-size: 22px;
-            background-color: #0400ff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
+    padding: 5px 80px;
+    font-size: 22px;
+    background-color: #0400ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
 } #restartpause {
     background-color: rgb(167, 76, 2);
     color: rgb(255, 255, 255);
@@ -319,9 +348,22 @@
     border: none; /* Remove border */
     box-shadow: none; /* Remove any box shadow */
     outline: none; /* Remove the outline on focus */
-    background-image: url('closebutton.png');
+    background-image: url('closeicon.png');
+} #closelevelButton {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: none; /* Remove border */
+    box-shadow: none; /* Remove any box shadow */
+    outline: none; /* Remove the outline on focus */
+    background-image: url('closeicon.png');
 }
-
 
     </style>
 </head>
@@ -362,6 +404,10 @@
         <source src="towards alpha centauri.mp3" type="audio/mp3"> 
     </audio> 
 
+    <audio id="nearalpha" loop> 
+        <source src="near end.mp3" type="audio/mp3"> 
+    </audio> 
+
     <div style="position: relative;">
         <canvas id="gameCanvas"></canvas>
         <button id="pauseButton" onclick="togglePause()" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);">
@@ -384,7 +430,7 @@
             <span id="coinCount">0</span>
         </div>
         <h1> Plane Defense </h1>
-        <button id="playButton" onclick="playGame()">Play</button>
+        <button id="playButton" onclick="showlevelscreen()">Play</button>
         <button id="howToPlayButton" onclick="showHowToPlay()">How to Play</button>
         <button id="StorePlanes" onclick="toggleStoreMenu()">Store</button>
     </div>    
@@ -430,11 +476,39 @@
 <img id="coinImage" src="coin.png" style="display: none;">
     <img id="immunityPillImage" src="https://cdn.pixabay.com/photo/2013/07/13/11/44/capsule-158568_1280.png" style="display: none;">
 
-    <script>
-        
-    let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+    <div id="levelScreen">
+        <button id="closelevelButton" onclick="closelevel()"></button>
+        <button class= "levelbutton" onclick="playGame(0)">Endless Mode</button>
+        <button class= "levelbutton" onclick="playGame(1)">Level 1: Mission Red</button>
+        <button class= "levelbutton" onclick="playGame(2)">Level 2: Mission Gas Giant</button>
+        <button class= "levelbutton" onclick="playGame(3)">Level 3: Mission Titan</button>
+        <button class= "levelbutton" onclick="playGame(4)">Level 4: Mission Blue</button>
+        <button class= "levelbutton" onclick="playGame(5)">Level 5: Mission Icy Planet</button>
+        <button class= "levelbutton" onclick="playGame(6)">Level 6: Mission Dwarf</button>
+        <button class= "levelbutton" onclick="playGame(7)">Level 7: Mission Haumea</button>
+    </div>
 
-    totalCoins += 5000;
+    <script>
+    winned = [1,0,0,0,0,0,0];
+    function closelevel(){
+        document.getElementById('levelScreen').style.display = 'none';
+    }
+
+    const initiallevelcolors = document.querySelectorAll('.levelbutton');
+
+    // Update button colors based on the level variable
+    initiallevelcolors.forEach((button, index) => {
+        if (index == 0) {
+            button.style.backgroundColor = 'green'; // give to blue
+        } if(index == 1){
+            button.style.backgroundColor = 'blue'; // give to green
+        }
+    }); 
+
+    let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+    totalCoins = 0;
+    let win = 0;
+
     const missileImage = new Image();
     missileImage.src = 'https://d2t1xqejof9utc.cloudfront.net/screenshots/pics/97dcc011fd1bc375dbc1663c0c9f6f92/large.png';
 
@@ -474,7 +548,6 @@ const planes = [
     }
 ];
 
-
 let currenthealth = 0;
 let equippeddamage = 1;
 let currentPlaneIndex = 0;
@@ -482,7 +555,7 @@ let equippedPlane = 'monoFighter';
 let equippedImage = 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05001234/plane_preview.png';
 let equippedhealth = 1;
 let level = 0;
-
+levelScreen.style.display = 'none';
 function updateStoreMenu() {
     const plane = planes[currentPlaneIndex];
     document.getElementById('planeImage').src = plane.imgSrc;
@@ -508,6 +581,10 @@ function updateStoreMenu() {
         buyButton.style.display = 'inline-block';
         equipButton.style.display = 'none';
     }
+}
+
+function showlevelscreen(){
+    levelScreen.style.display = 'flex';
 }
 
 function prevPlane() {
@@ -648,6 +725,7 @@ function createImmunityPill() {
         advancedAlienImage.src = 'https://i.pinimg.com/originals/8b/ef/50/8bef5062bcbd04329ab604fe41ad9f74.png';
         const asteroidImage = new Image();
         asteroidImage.src = 'https://freepngimg.com/thumb/categories/204.png';
+        let planetImage = new Image();
 
         let plane = {
             x: canvas.width / 2,
@@ -662,6 +740,7 @@ function createImmunityPill() {
         let stones = [];
         let rotators = [];
         let asteroids = [];
+        let planets = [];
         let explosions = [];
         let alienPlanes = [];
         let advancedAliens = [];
@@ -849,6 +928,15 @@ function isWithinPauseButton(x, y) {
                 type: 'asteroidd'
             };
             asteroids.push(asteroidd);
+        } function createPlanet(){
+            let planet = {
+                x: -190,
+                y: -40,
+                width: 2000,
+                height: 2000,
+                type: 'planet'
+            };
+            planets.push(planet);
         }
 
         function createAlienPlane() {
@@ -876,7 +964,7 @@ function isWithinPauseButton(x, y) {
         }
 
         function createExplosion(x, y) {
-    explosions.push({ x: x, y: y, frame: 0, rotation: +Math.PI / 2 }); // Rotate 90 degrees leftwards
+    explosions.push({ x: x, y: y, frame: 0});
 } 
 
 function MissileExplosion(x,y){
@@ -974,6 +1062,9 @@ createStars(); // Call this function to initialize stars
         }
     }); 
     
+    planets.forEach(planet => {
+                ctx.drawImage(planetImage, planet.x, planet.y - planet.height, planet.width, planet.height);
+            });
 
             coins.forEach(coin => {
         ctx.drawImage(coinImage, coin.x, coin.y, coin.width, coin.height);
@@ -996,6 +1087,8 @@ createStars(); // Call this function to initialize stars
                 ctx.drawImage(asteroidImage, asteroidd.x, asteroidd.y, asteroidd.width, asteroidd.height);
             });
 
+            
+
             if (immunityActive) {
         ctx.strokeStyle = 'yellow';
         ctx.lineWidth = 3;
@@ -1004,7 +1097,7 @@ createStars(); // Call this function to initialize stars
 
             // Draw explosions
             explosions.forEach(explosion => {
-                ctx.drawImage(explosionImage, explosion.x, explosion.y, 40, 40);
+                ctx.drawImage(explosionImage, explosion.x, explosion.y, 60, 40);
                 explosion.frame++;
                 if (explosion.frame > 20) { // Remove explosion after 1 second
                     explosions.splice(explosions.indexOf(explosion), 1);
@@ -1081,12 +1174,21 @@ createStars(); // Call this function to initialize stars
             // Draw time passed
             ctx.fillText('Time: ' + timePassed.toFixed(2), canvas.width - 100, 30);
 
-
             // Check for game over
             if (!gameRunning) {
                 gameOverScreen.style.display = 'flex';
+                if(win == 0){
+                    gameOverText.textContent = 'Game Over!';
+                    playAgainButton.textContent = 'Play Again';
+                } else{
+                    gameOverText.textContent = 'You Won!';
+                    totalCoins += 70;
+                    if(level != 7){
+                        playAgainButton.textContent = 'Next Level';
+                    } 
+                }
                 return;
-            }
+            } 
 
             update();
         }
@@ -1198,6 +1300,13 @@ localStorage.setItem('totalCoins', totalCoins);
                 asteroidd.x += 2;
                 if (asteroidd.y > canvas.height) {
                     asteroids.splice(asteroids.indexOf(asteroidd), 1); // Remove asteroids that are out of canvas
+                }
+            });
+
+            planets.forEach(planet =>{
+                planet.y += 2; // Asteroid falling speed
+                if (planet.y > 2*canvas.height) {
+                    planets.splice(planets.indexOf(planet), 1); // Remove asteroids that are out of canvas
                 }
             });
 
@@ -1456,7 +1565,25 @@ rotators.forEach(rotator => {
             gameRunning = false;
         }
     }
-}); 
+}); if(timePassed > 160){
+    win = 1;
+    if(level != 7){
+        winned[level] = 1;
+    }
+    const levelButtons = document.querySelectorAll('.levelbutton');
+
+    // Update button colors based on the level variable
+    levelButtons.forEach((button, index) => {
+        if (index < level + 1) {
+            button.style.backgroundColor = 'green'; // give to blue
+        } if(index == level + 1){
+            button.style.backgroundColor = 'blue'; // give to green
+        }
+    }); 
+
+    createExplosion(2*canvas.width, 2*canvas.height);
+    gameRunning = false;
+}
 
 asteroids.forEach(asteroidd =>{
     // Calculate smaller bounding box for collision detection
@@ -1553,51 +1680,161 @@ asteroids.forEach(asteroidd =>{
 
             // Create new stones and alien planes
             let diffindex;
-            if(level == 0){
-                diffindex = timePassed/30;
+            if(level == 0){ //endless
+                diffindex = timePassed/300000;
                 if (Math.random() < 0.01) {
                     createStone();
                 } 
-                if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 100){
+                if (Math.random() < 0.0007 && (rotators.length < 1 || (rotators.length < 2 && rotators[0].y > 0.75*canvas.height)) && timePassed >= 170){
                     createRotator();
-                } if(Math.random() < 0.001 && timePassed >= 80){
+                } if(Math.random() < 0.001 && timePassed >= 140){
                     createAsteroid();
                 }
-                if (Math.random() < 0.004 && timePassed >= 10 && alienPlanes.length < 12 || (Math.random() < 0.004 + diffindex && timePassed >= 300)) {
+                if (Math.random() < 0.004 && timePassed >= 40 && alienPlanes.length < 12 || (Math.random() < 0.004 + diffindex && timePassed >= 300)) {
                     createAlienPlane();
-                } if(Math.random() < 0.003 && timePassed >= 50 && advancedAliens.length < 8 || (Math.random() < 0.003 + diffindex && timePassed >= 500)){
+                } if(Math.random() < 0.003 && timePassed >= 90 && advancedAliens.length < 8 || (Math.random() < 0.003 + diffindex && timePassed >= 500)){
                     createAdvancedAliens();
                 }
-            }
+            } else if(level == 1){ //towards mars
+                if (Math.random() < 0.05) {
+                    createStone();
+                } if (Math.random() < 0.008 && rotators.length < 2 && timePassed >= 30){
+                    createRotator();
+                } if (Math.random() < 0.0008 && timePassed >= 60 && alienPlanes.length < 60) {
+                    createAlienPlane();
+                }
+            } else if(level == 2){ //towards jupiter
+                if (Math.random() < 0.02) {
+                    createStone();
+                } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
+                    createRotator();
+                } if(Math.random() < 0.001 && timePassed >= 50){
+                    createAsteroid();
+                } if (Math.random() < 0.002 && timePassed >= 35 && alienPlanes.length < 12) {
+                    createAlienPlane();
+                }
+            } else if(level == 3){ //towards saturn
+                if (Math.random() < 0.01) {
+                    createStone();
+                } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
+                    createRotator();
+                } if (Math.random() < 0.004 && timePassed >= 15 && alienPlanes.length < 12) {
+                    createAlienPlane();
+                } if(Math.random() < 0.004 && timePassed >= 35){
+                    createAsteroid();
+                }
+            } else if(level == 4){ //towards uranus
+                if (Math.random() < 0.01) {
+                    createStone();
+                } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
+                    createRotator();
+                } if (Math.random() < 0.008 && timePassed >= 10 && alienPlanes.length < 12) {
+                    createAlienPlane();
+                } if(Math.random() < 0.002 && timePassed >= 30){
+                    createAsteroid();
+                } if(Math.random() < 0.001 && timePassed >= 50 && advancedAliens.length < 8){
+                    createAdvancedAliens();
+                }
+            } else if(level == 5){ //towards neptune
+                if (Math.random() < 0.01) {
+                    createStone();
+                } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
+                    createRotator();
+                } if (Math.random() < 0.008 && timePassed >= 10 && alienPlanes.length < 12) {
+                    createAlienPlane();
+                } if(Math.random() < 0.002 && timePassed >= 25){
+                    createAsteroid();
+                } if(Math.random() < 0.003 && timePassed >= 30 && advancedAliens.length < 8){
+                    createAdvancedAliens();
+                }
+            } else if(level == 6){ //towards pluto,
+                if (Math.random() < 0.01) {
+                    createStone();
+                } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
+                    createRotator();
+                } if (Math.random() < 0.01 && timePassed >= 10 && alienPlanes.length < 12) {
+                    createAlienPlane();
+                } if(Math.random() < 0.004 && timePassed >= 25){
+                    createAsteroid();
+                } if(Math.random() < 0.006 && timePassed >= 25 && advancedAliens.length < 8){
+                    createAdvancedAliens();
+                } 
+            } else if(level == 7){ // boss fight and alpha centauri
+                //boss fight
+            } if(level != 0 && level != 7 && timePassed >= 160){ 
+                if(planets.length < 1){
+                    createPlanet();
+                }
+            }  
             
         }
-        function playGame(){
+        function playGame(lvl){
+            if(lvl != 0 && winned[lvl-1] == 0){
+                return;
+            }
+            towardsmars.pause();
+            towardsmars.currentTime = 0;
+            towardsjupiter.pause();
+            towardsjupiter.currentTime = 0;
+            towardssaturn.pause();
+            towardssaturn.currentTime = 0;
+            towardsuranus.pause();
+            towardsuranus.currentTime = 0;
+            towardsneptune.pause();
+            towardsneptune.currentTime = 0;
+            towardspluto.pause();            
+            towardspluto.currentTime = 0;
+            towardsalpha.pause();            
+            towardsalpha.currentTime = 0;
+            nearalpha.pause();            
+            nearalpha.currentTime = 0;
+            
+            levelScreen.style.display = 'none';
+            timePassed = 0;
+            level = lvl;
             bgmusic.pause();
+            planets= [];
+            asteroids = [];
+            alienPlanes = [];
+            advancedAliens = [];
+            rotators = [];
+            score = 0;
+            stones = [];
+            win = 0;
+
             bgmusic.currentTime = 0;
             if(level == 0){   
                 survivormusic.currentTime = 0;
                 survivormusic.play();
             } else if(level == 1){
                 towardsmars.currentTime = 0;
-                towardsmusic.play();
+                towardsmars.play();
+                planetImage.src = "mars.png";
             } else if(level == 2){
                 towardsjupiter.currentTime = 0;
                 towardsjupiter.play();
+                planetImage.src = "jupiter.png";
             } else if(level == 3){
                 towardssaturn.currentTime = 0;
                 towardssaturn.play();
+                planetImage.src = "titan.png";
             } else if(level == 4){
                 towardsuranus.currentTime = 0;
-                towardsuranus.play();
+                towardsuranus.play();                
+                planetImage.src = "uranus.png";
             } else if(level == 5){
                 towardsneptune.currentTime = 0;
                 towardsneptune.play();
+                planetImage.src = "neptune.png";
             } else if(level == 6){
                 towardspluto.currentTime = 0;
                 towardspluto.play();
+                planetImage.src = "pluto.png";
             } else if(level == 7){
                 towardsalpha.currentTime = 0;
                 towardsalpha.play();
+                nearalpha.currentTime = 0;
+                planetImage.src = "haumea.png";
             }
 
             missileTime = 0;
@@ -1614,11 +1851,11 @@ asteroids.forEach(asteroidd =>{
             plane.moveRight = false;
             hideMenu(); // Hide the menu screen            
             document.getElementById('pauseScreen').style.display = 'none';
-            timePassed = 0;
             gameRunning = true;
             gameOverScreen.style.display = 'none';
             draw();
         }
+
         function gameLoop() {
             // Reset game variables and start timers, etc.
             draw();
@@ -1626,30 +1863,54 @@ asteroids.forEach(asteroidd =>{
         }
 
         function restartGame() {
+            if(win == 1 && level != 7){
+                win = 0;
+                returnToMenu();
+                playGame(level+1);
+                return;
+            }
+            win = 0;
+            towardsmars.pause();
+            towardsmars.currentTime = 0;
+            towardsjupiter.pause();
+            towardsjupiter.currentTime = 0;
+            towardssaturn.pause();
+            towardssaturn.currentTime = 0;
+            towardsuranus.pause();
+            towardsuranus.currentTime = 0;
+            towardsneptune.pause();
+            towardsneptune.currentTime = 0;
+            towardspluto.pause();            
+            towardspluto.currentTime = 0;
+            towardsalpha.pause();            
+            towardsalpha.currentTime = 0;
+            nearalpha.pause();            
+            nearalpha.currentTime = 0;
+
             if(level == 0){   
                 survivormusic.currentTime = 0;
                 survivormusic.play();
             } else if(level == 1){
-                towardsmars.currentTime = 0;
-                towardsmusic.play();
+                towardsmars.play();
+                planetImage.src = "mars.png";
             } else if(level == 2){
-                towardsjupiter.currentTime = 0;
                 towardsjupiter.play();
+                planetImage.src = "jupiter.png";
             } else if(level == 3){
-                towardssaturn.currentTime = 0;
                 towardssaturn.play();
+                planetImage.src = "titan.png";
             } else if(level == 4){
-                towardsuranus.currentTime = 0;
                 towardsuranus.play();
+                planetImage.src = "uranus.png";
             } else if(level == 5){
-                towardsneptune.currentTime = 0;
                 towardsneptune.play();
+                planetImage.src = "neptune.png";
             } else if(level == 6){
-                towardspluto.currentTime = 0;
                 towardspluto.play();
+                planetImage.src = "pluto.png";
             } else if(level == 7){
-                towardsalpha.currentTime = 0;
                 towardsalpha.play();
+                planetImage.src = "haumea.png";
             }
             missileTime = 0;
             if(equippedPlane != 'zxiFighter'){
@@ -1669,6 +1930,7 @@ asteroids.forEach(asteroidd =>{
             stones = [];
             rotators = [];
             asteroids = [];
+            planets = [];
             alienPlanes = [];
             advancedAliens = [];
             explosions = [];
@@ -1682,11 +1944,12 @@ asteroids.forEach(asteroidd =>{
         }
         function returnToMenu() {
             bgmusic.play();
+            win = 0;
             if(level == 0){   
                 survivormusic.pause();
                 survivormusic.currentTime = 0;
             } else if(level == 1){                
-                towardsmusic.pause();
+                towardsmars.pause();
                 towardsmars.currentTime = 0;
             } else if(level == 2){
                 towardsjupiter.pause();
@@ -1706,6 +1969,8 @@ asteroids.forEach(asteroidd =>{
             } else if(level == 7){
                 towardsalpha.pause();
                 towardsalpha.currentTime = 0;
+                nearalpha.pause();
+                nearalpha.currentTime = 0;
             }
             missiles = [];
             plane.x = canvas.width / 2;
@@ -1713,6 +1978,7 @@ asteroids.forEach(asteroidd =>{
             plane.bullets = [];
             rotators = [];
             asteroids = [];
+            planets = [];
             stones = [];
             alienPlanes = [];
             advancedAliens = [];
