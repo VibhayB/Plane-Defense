@@ -1565,7 +1565,7 @@ rotators.forEach(rotator => {
             gameRunning = false;
         }
     }
-}); if(timePassed > 160){
+}); if((timePassed > 160) || (timePassed > 120 && level == 1)){
     win = 1;
     if(level != 7){
         winned[level] = 1;
@@ -1700,7 +1700,7 @@ asteroids.forEach(asteroidd =>{
                     createStone();
                 } if (Math.random() < 0.008 && rotators.length < 2 && timePassed >= 50){
                     createRotator();
-                } if (Math.random() < 0.0008 && timePassed >= 60 && alienPlanes.length < 80) {
+                } if (Math.random() < 0.0008 && timePassed >= 80 && alienPlanes.length < 6) {
                     createAlienPlane();
                 }
             } else if(level == 2){ //towards jupiter
@@ -1761,11 +1761,15 @@ asteroids.forEach(asteroidd =>{
                 } 
             } else if(level == 7){ // boss fight and alpha centauri
                 //boss fight
-            } if(level != 0 && level != 7 && timePassed >= 160){ 
+            } if(level > 1 && level != 7 && timePassed >= 160){ 
                 if(planets.length < 1){
                     createPlanet();
                 }
-            }  
+            } else if(level == 1 && timePassed >= 120){
+                if(planets.length < 1){
+                    createPlanet();
+                }
+            }
             
         }
         function playGame(lvl){
