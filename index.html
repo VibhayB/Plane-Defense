@@ -363,6 +363,23 @@
     box-shadow: none; /* Remove any box shadow */
     outline: none; /* Remove the outline on focus */
     background-image: url('closeicon.png');
+} #initialscreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: black;
+    background-position: center;
+    z-index: 1005;
+    flex-direction: column;
+    color: white; /* Ensuring text is visible */
+    font-size: 18px; /* Adjust font size as needed */
 }
 
     </style>
@@ -420,7 +437,7 @@
 
     <div id="gameOverScreen">
         <div id="gameOverText">Game Over</div>
-        <button id="playAgainButton" onclick="restartGame()">Play Again</button>
+        <button id="playAgainButton" onclick="restartGame(-2)">Play Again</button>
         <button id="returnToMenuButton" onclick="returnToMenu()">Return to Menu</button>
     </div>
 
@@ -435,6 +452,9 @@
         <button id="StorePlanes" onclick="toggleStoreMenu()">Store</button>
     </div>    
 
+    <div id = "initialscreen">
+        <h1> Click anywhere on screen to continue </h1>
+    </div>
 
     <div id="howToPlayPopup">
         <h2>How to Play</h2>
@@ -478,17 +498,26 @@
 
     <div id="levelScreen">
         <button id="closelevelButton" onclick="closelevel()"></button>
-        <button class= "levelbutton" onclick="playGame(0)">Endless Mode</button>
-        <button class= "levelbutton" onclick="playGame(1)">Level 1: Mission Red</button>
-        <button class= "levelbutton" onclick="playGame(2)">Level 2: Mission Gas Giant</button>
-        <button class= "levelbutton" onclick="playGame(3)">Level 3: Mission Titan</button>
-        <button class= "levelbutton" onclick="playGame(4)">Level 4: Mission Blue</button>
-        <button class= "levelbutton" onclick="playGame(5)">Level 5: Mission Icy Planet</button>
-        <button class= "levelbutton" onclick="playGame(6)">Level 6: Mission Dwarf</button>
-        <button class= "levelbutton" onclick="playGame(7)">Level 7: Mission Haumea</button>
+        <button class= "levelbutton" onclick="restartGame(0)">Endless Mode</button>
+        <button class= "levelbutton" onclick="restartGame(1)">Level 1: Mission Red</button>
+        <button class= "levelbutton" onclick="restartGame(2)">Level 2: Mission Gas Giant</button>
+        <button class= "levelbutton" onclick="restartGame(3)">Level 3: Mission Titan</button>
+        <button class= "levelbutton" onclick="restartGame(4)">Level 4: Mission Blue</button>
+        <button class= "levelbutton" onclick="restartGame(5)">Level 5: Mission Icy Planet</button>
+        <button class= "levelbutton" onclick="restartGame(6)">Level 6: Mission Dwarf</button>
+        <button class= "levelbutton" onclick="restartGame(7)">Level 7: Mission Haumea</button>
     </div>
 
     <script>
+
+    let gameworking = 0;
+    function initialize(){
+        // Hide the initial screen and show the game content
+        document.getElementById('initialscreen').style.display = 'none';
+        bgmusic.play();
+        document.removeEventListener('click',initialize);
+    } document.addEventListener('click', initialize);
+    
     winned = [1,0,0,0,0,0,0];
     function closelevel(){
         document.getElementById('levelScreen').style.display = 'none';
@@ -548,6 +577,7 @@ const planes = [
     }
 ];
 
+let firststart = false;
 let currenthealth = 0;
 let equippeddamage = 1;
 let currentPlaneIndex = 0;
@@ -555,6 +585,7 @@ let equippedPlane = 'monoFighter';
 let equippedImage = 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05001234/plane_preview.png';
 let equippedhealth = 1;
 let level = 0;
+let levelup = false;
 levelScreen.style.display = 'none';
 function updateStoreMenu() {
     const plane = planes[currentPlaneIndex];
@@ -1182,7 +1213,10 @@ createStars(); // Call this function to initialize stars
                     playAgainButton.textContent = 'Play Again';
                 } else{
                     gameOverText.textContent = 'You Won!';
-                    totalCoins += 70;
+                    if(levelup){
+                        totalCoins += 70;
+                        levelup = false;
+                    }
                     if(level != 7){
                         playAgainButton.textContent = 'Next Level';
                     } 
@@ -1195,12 +1229,14 @@ createStars(); // Call this function to initialize stars
         let immunityTimerElement = document.getElementById('timerDisplay');
 
         function update() {
-
-            let currentTime = Date.now();
-            let deltaTime = (currentTime - lastTime) / 1000; // deltaTime in seconds
-            lastTime = currentTime;
-
-            timePassed += deltaTime;
+            if(true){
+                let currentTime = Date.now();
+                let deltaTime = (currentTime - lastTime) / 1000; // deltaTime in seconds
+                lastTime = currentTime;
+                timePassed += deltaTime;
+            } else{
+                timePassed = 0;
+            }
 let missileTimeRemaining = missileTime - Date.now();
 if((missileButton.style.display === 'none' && missileTimeRemaining > 0)||(equippedPlane !== 'zxiFighter')){
     
@@ -1236,7 +1272,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
 coins.forEach(coin => {
         coin.y += 2; // Adjust speed as needed
         if (coin.y > canvas.height) {
-            coins.splice(coins.indexOf(coin), 1); // Remove coins that are out of canvas
+            coins.splice(coins.indexOf(coin), 1); // Remove coins that are out of canvas 
         }
         // Check collision with player's plane
         if (coin.x < plane.x + plane.width &&
@@ -1565,7 +1601,8 @@ rotators.forEach(rotator => {
             gameRunning = false;
         }
     }
-}); if((timePassed > 160) || (timePassed > 120 && level == 1)){
+}); if(((timePassed > 130 && level == 1) || (timePassed > 190 && (level == 2 || level == 3)) || (timePassed > 250 && (level == 4 || level == 5))  || (timePassed > 270 && level == 6))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
+    levelup = true;
     win = 1;
     if(level != 7){
         winned[level] = 1;
@@ -1708,31 +1745,33 @@ asteroids.forEach(asteroidd =>{
                     createStone();
                 } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
                     createRotator();
-                } if(Math.random() < 0.001 && timePassed >= 50){
+                } if(Math.random() < 0.006 && timePassed >= 80 && asteroids.length < 3){
                     createAsteroid();
-                } if (Math.random() < 0.002 && timePassed >= 35 && alienPlanes.length < 12) {
+                } if (Math.random() < 0.004 && timePassed >= 35 && alienPlanes.length < 12) {
                     createAlienPlane();
                 }
             } else if(level == 3){ //towards saturn
                 if (Math.random() < 0.01) {
                     createStone();
-                } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
+                } if (Math.random() < 0.0006 && rotators.length < 2 && timePassed >= 20){
                     createRotator();
                 } if (Math.random() < 0.004 && timePassed >= 15 && alienPlanes.length < 12) {
                     createAlienPlane();
-                } if(Math.random() < 0.004 && timePassed >= 35){
+                } if(Math.random() < 0.003 && timePassed >= 35){
                     createAsteroid();
+                } if(Math.random() < 0.003 && timePassed >= 80 && advancedAliens.length < 8){
+                    createAdvancedAliens();
                 }
             } else if(level == 4){ //towards uranus
                 if (Math.random() < 0.01) {
                     createStone();
                 } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
                     createRotator();
-                } if (Math.random() < 0.008 && timePassed >= 10 && alienPlanes.length < 12) {
+                } if (Math.random() < 0.007 && timePassed >= 10 && alienPlanes.length < 12) {
                     createAlienPlane();
                 } if(Math.random() < 0.002 && timePassed >= 30){
                     createAsteroid();
-                } if(Math.random() < 0.001 && timePassed >= 50 && advancedAliens.length < 8){
+                } if(Math.random() < 0.004 && timePassed >= 50 && advancedAliens.length < 10){
                     createAdvancedAliens();
                 }
             } else if(level == 5){ //towards neptune
@@ -1740,11 +1779,11 @@ asteroids.forEach(asteroidd =>{
                     createStone();
                 } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
                     createRotator();
-                } if (Math.random() < 0.008 && timePassed >= 10 && alienPlanes.length < 12) {
+                } if (Math.random() < 0.005 && timePassed >= 10 && alienPlanes.length < 15) {
                     createAlienPlane();
                 } if(Math.random() < 0.002 && timePassed >= 25){
                     createAsteroid();
-                } if(Math.random() < 0.003 && timePassed >= 30 && advancedAliens.length < 8){
+                } if(Math.random() < 0.008 && timePassed >= 30 && advancedAliens.length < 12){
                     createAdvancedAliens();
                 }
             } else if(level == 6){ //towards pluto,
@@ -1752,112 +1791,21 @@ asteroids.forEach(asteroidd =>{
                     createStone();
                 } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 20){
                     createRotator();
-                } if (Math.random() < 0.01 && timePassed >= 10 && alienPlanes.length < 12) {
+                } if (Math.random() < 0.006 && timePassed >= 10) {
                     createAlienPlane();
                 } if(Math.random() < 0.004 && timePassed >= 25){
                     createAsteroid();
-                } if(Math.random() < 0.006 && timePassed >= 25 && advancedAliens.length < 8){
+                } if(Math.random() < 0.007 && timePassed >= 25){
                     createAdvancedAliens();
                 } 
             } else if(level == 7){ // boss fight and alpha centauri
                 //boss fight
-            } if(level > 1 && level != 7 && timePassed >= 160){ 
-                if(planets.length < 1){
-                    createPlanet();
-                }
-            } else if(level == 1 && timePassed >= 120){
+            } if(((timePassed > 120 && level == 1) || (timePassed > 180 && (level == 2 || level == 3)) || (timePassed > 240 && (level == 4 || level == 5))  || (timePassed > 260 && level == 6))&&win == 0){  //timerwin 120 180 180 240 240 260 100+boss spaces
                 if(planets.length < 1){
                     createPlanet();
                 }
             }
             
-        }
-        function playGame(lvl){
-            if(lvl != 0 && winned[lvl-1] == 0){
-                return;
-            }
-            towardsmars.pause();
-            towardsmars.currentTime = 0;
-            towardsjupiter.pause();
-            towardsjupiter.currentTime = 0;
-            towardssaturn.pause();
-            towardssaturn.currentTime = 0;
-            towardsuranus.pause();
-            towardsuranus.currentTime = 0;
-            towardsneptune.pause();
-            towardsneptune.currentTime = 0;
-            towardspluto.pause();            
-            towardspluto.currentTime = 0;
-            towardsalpha.pause();            
-            towardsalpha.currentTime = 0;
-            nearalpha.pause();            
-            nearalpha.currentTime = 0;
-            
-            levelScreen.style.display = 'none';
-            timePassed = 0;
-            level = lvl;
-            bgmusic.pause();
-            planets= [];
-            asteroids = [];
-            alienPlanes = [];
-            advancedAliens = [];
-            rotators = [];
-            score = 0;
-            stones = [];
-            win = 0;
-
-            bgmusic.currentTime = 0;
-            if(level == 0){   
-                survivormusic.currentTime = 0;
-                survivormusic.play();
-            } else if(level == 1){
-                towardsmars.currentTime = 0;
-                towardsmars.play();
-                planetImage.src = "mars.png";
-            } else if(level == 2){
-                towardsjupiter.currentTime = 0;
-                towardsjupiter.play();
-                planetImage.src = "jupiter.png";
-            } else if(level == 3){
-                towardssaturn.currentTime = 0;
-                towardssaturn.play();
-                planetImage.src = "titan.png";
-            } else if(level == 4){
-                towardsuranus.currentTime = 0;
-                towardsuranus.play();                
-                planetImage.src = "uranus.png";
-            } else if(level == 5){
-                towardsneptune.currentTime = 0;
-                towardsneptune.play();
-                planetImage.src = "neptune.png";
-            } else if(level == 6){
-                towardspluto.currentTime = 0;
-                towardspluto.play();
-                planetImage.src = "pluto.png";
-            } else if(level == 7){
-                towardsalpha.currentTime = 0;
-                towardsalpha.play();
-                nearalpha.currentTime = 0;
-                planetImage.src = "haumea.png";
-            }
-
-            missileTime = 0;
-            missiles = [];
-            if(equippedPlane != 'zxiFighter'){
-                missileButton.style.display = 'none';
-            } else{
-                missileButton.style.display = 'flex';
-            }
-            currenthealth = equippedhealth;
-            planeImage.src = equippedImage;
-            fireButtonPressed = false;
-            plane.moveLeft = false;
-            plane.moveRight = false;
-            hideMenu(); // Hide the menu screen            
-            document.getElementById('pauseScreen').style.display = 'none';
-            gameRunning = true;
-            gameOverScreen.style.display = 'none';
-            draw();
         }
 
         function gameLoop() {
@@ -1866,14 +1814,24 @@ asteroids.forEach(asteroidd =>{
             requestAnimationFrame(gameLoop);
         }
 
-        function restartGame() {
-            if(win == 1 && level != 7){
-                win = 0;
-                returnToMenu();
-                playGame(level+1);
+        function restartGame(lvl) {
+            levelup = false;
+            if(lvl < 0){
+                lvl = level;
+            }
+            hideMenu();
+            levelScreen.style.display = 'none';
+            if(lvl != 0 && winned[lvl-1] == 0){
                 return;
             }
-            win = 0;
+            timePassed = 0;
+            if(win == 1 && level != 7){
+                win = 0;
+                restartGame(level+1);
+                return;
+            }
+            win = 0; 
+            level = lvl;
             towardsmars.pause();
             towardsmars.currentTime = 0;
             towardsjupiter.pause();
@@ -1890,6 +1848,8 @@ asteroids.forEach(asteroidd =>{
             towardsalpha.currentTime = 0;
             nearalpha.pause();            
             nearalpha.currentTime = 0;
+            bgmusic.pause();
+            bgmusic.currentTime = 0;
 
             if(level == 0){   
                 survivormusic.currentTime = 0;
@@ -1926,6 +1886,7 @@ asteroids.forEach(asteroidd =>{
             currenthealth = equippedhealth;
             planeImage.src = equippedImage;
             fireButtonPressed = false;
+
             plane.moveLeft = false;
             plane.moveRight = false;
             plane.x = canvas.width / 2;
@@ -1941,12 +1902,14 @@ asteroids.forEach(asteroidd =>{
 	        coins = [];
             immunityPill = null;
             score = 0;
-            timePassed = 0;
             gameRunning = true;
             gameOverScreen.style.display = 'none';            
+            document.getElementById('pauseScreen').style.display = 'none';            
             lastTime = Date.now();
         }
         function returnToMenu() {
+            levelup = false;
+            timePassed = 0;
             bgmusic.play();
             win = 0;
             if(level == 0){   
@@ -1990,7 +1953,6 @@ asteroids.forEach(asteroidd =>{
 	        coins = [];
             immunityPill = null;
             score = 0;
-            timePassed = 0;
             gameRunning = false;
             gameOverScreen.style.display = 'none';
             lastTime = Date.now();
@@ -2012,8 +1974,8 @@ asteroids.forEach(asteroidd =>{
             requestAnimationFrame(draw); // Restart the draw loop
         } function restarttheGame(){
             resumeGame();
-            restartGame();
-        } function returntowardsmenu(){
+            restartGame(level);
+        } function returntowardsmenu(){       
             resumeGame();
             returnToMenu();
         }
