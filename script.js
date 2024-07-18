@@ -1,4 +1,23 @@
-let gameworking = 0;
+let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+let initialbossremoved = 0;
+
+//Update volumes: explosion, big explosion
+bigexplode.volume = 0.5;
+missilelaunch.volume = 0.25;
+exploding.volume = 0.5;
+shootsound.volume = 0.5;
+teleport.volume = 0.5;
+
+
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.shiftKey && e.key === 'J') || (e.ctrlKey && e.key === 'U')) {
+        e.preventDefault();
+    }
+});
+
     function initialize(){
         // Hide the initial screen and show the game content
         document.getElementById('initialscreen').style.display = 'none';
@@ -6,31 +25,27 @@ let gameworking = 0;
         document.removeEventListener('click',initialize);
     } document.addEventListener('click', initialize);
     
-    winned = [1,0,0,0,0,0,0];
+
+    var storedwinned = localStorage.getItem('winned');
+    var winned = storedwinned ? JSON.parse(storedwinned) : [1, 0, 0, 0, 0, 0, 0];
+
+    var storedScheme = localStorage.getItem('coloring');
+    var coloring = storedScheme ? JSON.parse(storedScheme) : [2, 1, 0, 0, 0, 0, 0, 0];
+
     function closelevel(){
         document.getElementById('levelScreen').style.display = 'none';
     }
 
     const initiallevelcolors = document.querySelectorAll('.levelbutton');
-
-    // Update button colors based on the level variable
-    initiallevelcolors.forEach((button, index) => {
-        if (index == 0) {
-            button.style.backgroundColor = 'green'; // give to blue
-        } if(index == 1){
-            button.style.backgroundColor = 'blue'; // give to green
-        }
-    }); 
-
-    let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
-    totalCoins = 0;
+    
     let win = 0;
+    let level7 = 0;
 
     const missileImage = new Image();
     missileImage.src = 'missile.png';
 
 // Function to resize and replace the image
-const planes = [
+let planes = [
     {
         id: 'monoFighter',
         name: 'Mono Fighter (1x)',
@@ -41,42 +56,57 @@ const planes = [
     },
     {
         id: 'miniDualShooter',
-        name: 'Dual Shooter Phantom (2x)',
+        name: 'Phantom Raider (1.5x)',
         health: 2,
-        cost: ' 230',
+        cost: ' 290',
         imgSrc: 'dualshooter.png',
         bought: false
     },
     {
         id: 'heavyDuty',
-        name: 'Heavy Duty Fighter (4x)',
+        name: 'SkyBlazer (3.5x)',
         health: 4,
-        cost: ' 510',
+        cost: ' 710',
         imgSrc: 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05010017/plane-animated-top-down-game-art.png',
         bought: false
     },
     {
         id: 'zxiFighter',
-        name: 'ZXI SpaceShip (8x)',
+        name: 'Kaiser\'s Wrath (6x)',
         health: 6,
-        cost: ' 980',
+        cost: ' 1400',
         imgSrc: 'zxiFighter.png',
         bought: false
     }
 ];
 
 let firststart = false;
-let currenthealth = 0;
+let currenthealth = 0;/* */
 let equippeddamage = 1;
 let currentPlaneIndex = 0;
 let equippedPlane = 'monoFighter';
-let equippedImage = 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05001234/plane_preview.png';
-let equippedhealth = 1;
-let level = 0;
+let equippedImage = 'basicplane.png';
+let equippedfreeze = 'basicplanefreezed.png';
+let equippedhealth = 1; 
+let level = 0; /* */
 let levelup = false;
 levelScreen.style.display = 'none';
+
+function saveGameState() {
+    var gameState = {
+        planes,
+        equippedPlane,
+        equippedImage,
+        equippedfreeze,
+        equippedhealth,
+        equippeddamage,
+    };
+    localStorage.setItem('gameState', JSON.stringify(gameState));
+}
+
 function updateStoreMenu() {
     const plane = planes[currentPlaneIndex];
+    
     document.getElementById('planeImage').src = plane.imgSrc;
     document.getElementById('planeName').innerText = plane.name;
     document.getElementById('healthValue').innerText = plane.health;
@@ -99,10 +129,20 @@ function updateStoreMenu() {
     } else {
         buyButton.style.display = 'inline-block';
         equipButton.style.display = 'none';
-    }
+    } 
+    saveGameState();
 }
 
 function showlevelscreen(){
+    initiallevelcolors.forEach((button, index) => {
+        if (coloring[index] == 2) {
+            button.style.backgroundColor = 'green'; // give to blue
+        } else if(coloring[index] == 1){
+            button.style.backgroundColor = 'blue'; // give to green
+        }
+    }); 
+    buttonclickk.currentTime = 0.25;
+    buttonclickk.play();
     levelScreen.style.display = 'flex';
 }
 
@@ -129,7 +169,10 @@ function nextPlane() {
 function buyCurrentPlane() {
     const plane = planes[currentPlaneIndex];
     if (totalCoins >= plane.cost && !plane.bought) {
+        buttonclickk.currentTime = 0.25;
+        buttonclickk.play();
         totalCoins -= plane.cost;
+        localStorage.setItem('totalCoins', totalCoins);
         plane.bought = true;
         updateCoinDisplay();
         updateStoreMenu();
@@ -139,23 +182,29 @@ function buyCurrentPlane() {
 function equipCurrentPlane() {
     const plane = planes[currentPlaneIndex];
     if (plane.bought) {
+        buttonclickk.currentTime = 0.25;
+        buttonclickk.play();
         equippedPlane = plane.id;
         if(currentPlaneIndex === 0){
-            equippedImage = 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05001234/plane_preview.png';
+            equippedImage = 'basicplane';
             equippedhealth = 1;
             equippeddamage = 1;
+            equippedfreeze = 'basicplanefreezed.png';
         } else if(currentPlaneIndex === 1){
             equippedImage = 'dualshooter.png';
             equippedhealth = 2;
-            equippeddamage = 2;
+            equippeddamage = 1.5;
+            equippedfreeze = 'dualshooterfreezed.png';
+            
         } else if(currentPlaneIndex === 2){
-            equippedImage = 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05010017/plane-animated-top-down-game-art.png';
+            equippedImage = 'heavyplane.png';
             equippedhealth = 4;
-            equippeddamage = 5;
+            equippeddamage = 3.5;
+            equippedfreeze = 'heavyplanefreezed.png';
         } else{
             equippedImage = 'zxiFighter.png';
             equippedhealth = 6;
-            equippeddamage = 8;
+            equippeddamage = 6;
         }
         updateStoreMenu();
     }
@@ -163,9 +212,29 @@ function equipCurrentPlane() {
 
 function toggleStoreMenu() {
     const storeMenu = document.getElementById('storeMenu');
-    storeMenu.style.display = storeMenu.style.display === 'none' ? 'flex' : 'none';
+    if(storeMenu.style.display === 'none'){
+        storeMenu.style.display = 'flex';
+        buttonclickk.currentTime = 0.25;
+        buttonclickk.play();
+    } else{
+        storeMenu.style.display = 'none';
+    }
+}
+function loadGameState() {
+    var savedState = localStorage.getItem('gameState');
+    if (savedState) {
+        var gameState = JSON.parse(savedState);
+        planes = gameState.planes;
+        equippedPlane = gameState.equippedPlane;
+        equippedImage = gameState.equippedImage;
+        equippedfreeze = gameState.equippedfreeze;
+        equippedhealth = gameState.equippedhealth;
+        equippeddamage = gameState.equippeddamage;
+        updateCoinDisplay();  // Make sure to update the coin display after loading the state
+    }
 }
 
+loadGameState();
 // Initialize the display
 updateStoreMenu();
 
@@ -182,6 +251,8 @@ function hideMenu() {
 }
 
 function showHowToPlay() {
+    buttonclickk.currentTime = 0.25;
+    buttonclickk.play();
     document.getElementById('howToPlayPopup').style.display = 'block';
 }
 
@@ -206,6 +277,7 @@ let freezetime = 0;
 let immunityDuration = 10; // in seconds
 let immunityEndTime = 0;
 let missileTime = 0;
+let shooterTime = 0;
 
 function createCoin() {
     let coin = {
@@ -234,7 +306,7 @@ function createImmunityPill() {
         const stoneImage = new Image();
         stoneImage.src = 'stone.png';
         const rotatorImage = new Image();
-        rotatorImage.src = 'rotator.png';
+        rotatorImage.src = 'satellite.png';
         const explosionImage = new Image();
         explosionImage.src = 'explosion.png';
         const alienPlaneImage = new Image();
@@ -257,11 +329,18 @@ function createImmunityPill() {
         semibossImage.src = 'semiboss.png';
         const bossinitialImage = new Image();
         bossinitialImage.src = 'bossupwards.png';
-        const bossfinalImage = new Image();
-        bossfinalImage.src = 'bossdownwards.png';
         const bluebulettImage = new Image();
         bluebulettImage.src = 'bluebullet.png';
-        let planetImage = new Image();
+        let bubbleImage = new Image();
+        bubbleImage.src = '';
+        const shooterImage = new Image();
+        shooterImage.src ='missilethrower.png';
+        let planetImage = new Image();        
+        let bossfinalImage = new Image();
+        bossfinalImage.src = 'bossdownwards.png';
+        let rocketImage = new Image();
+        rocketImage.src = 'missiledown.png';
+        
 
         let plane = {
             x: canvas.width / 2,
@@ -271,20 +350,30 @@ function createImmunityPill() {
             speed: 4,
             shooting: false,
             bullets: []
-        };
+        }; let bubble = {
+            x: canvas.width / 2,
+            y: canvas.height - 100,
+            width: 100,
+            height: 100,
+        }; 
 
         let stones = [];
         let nebulas = [];
         let rotators = [];
         let asteroids = [];
+        let boss = [];
+        let massexplosions = [];
         let planets = [];
         let explosions = [];
         let alienPlanes = [];
         let advancedAliens = [];
+        let finalboss = [];
+        let defenders = [];
         let blueArcs = [];
         let missiles = [];
+        let shooters = [];
         let score = 0;
-        let highScore = 0;
+        let highScore = parseInt(localStorage.getItem('highScore')) || 0;
         let timePassed = 0;
         let gameRunning = true;
         let lastTime = Date.now();
@@ -297,6 +386,7 @@ function createImmunityPill() {
 
         let fireButtonPressed = false;
         let missileButtonPressed = false;
+        let shooterButtonPressed = false;
 
 document.getElementById('fireButton').addEventListener('touchstart', function(event) {
     event.stopPropagation();
@@ -320,6 +410,18 @@ document.getElementById('missileButton').addEventListener('mousedown', function(
     event.stopPropagation();
     missileButtonPressed = true;
     missile();
+}, false);
+
+document.getElementById('shooterButton').addEventListener('touchstart', function(event) {
+    event.stopPropagation();
+    shooterButtonPressed = true;
+    createshooter();
+}, false);
+
+document.getElementById('shooterButton').addEventListener('mousedown', function(event) {
+    event.stopPropagation();
+    shooterButtonPressed = true;
+    createshooter();
 }, false);
 
 document.addEventListener('touchstart', function(event) {
@@ -355,7 +457,7 @@ document.addEventListener('mouseup', function(event) {
 }, false);
 
         function startMoveLeft() {
-            if(freezetime <= 0){
+            if(freezetime <= 0 && level7 != 1 && level7 != 5 && level7 != 5.5){
                 plane.moveLeft = true;
             } else{
                 plane.moveLeft = false;
@@ -366,8 +468,8 @@ document.addEventListener('mouseup', function(event) {
             plane.moveLeft = false;
         }
 
-        function startMoveRight() {
-            if(freezetime <= 0){
+        function startMoveRight() {            
+            if(freezetime <= 0 && level7 != 1 && level7 != 5 && level7 != 5.5){
                 plane.moveRight = true;
             } else{
                 plane.moveRight = false;
@@ -379,18 +481,28 @@ document.addEventListener('mouseup', function(event) {
         }
 
         function shoot() {
-            if(freezetime <= 0){
+            if(freezetime <= 0 && level7 != 1  && level7 != 5 && level7 != 5.5){
                 plane.shooting = true;
             } else{
                 plane.shooting = false;
             }
         } function missile(){
-            if(missileTime === 0 && equippedPlane === 'zxiFighter' && freezetime <= 0){
+            if(missileTime === 0 && equippedPlane === 'zxiFighter' && level7 != 1  && level7 != 5 && level7 != 5.5){
                 // Set missile reuse time
                 missileButton.style.display = 'none';
+                missileTime = timePassed + 20;
                 missileButtonPressed = true;
             } else{
                 missileButtonPressed = false;
+            }
+        } function createshooter(){
+            if(shooterTime === 0 && equippedPlane === 'heavyDuty' && level7 != 1  && level7 != 5 && level7 != 5.5){
+                // Set shooter reuse time
+                shooterButton.style.display = 'none';
+                shooterTime = timePassed + 20;
+                shooterButtonPressed = true;
+            } else{
+                shooterButtonPressed = false;
             }
         }
         
@@ -407,6 +519,7 @@ function handleKeyDown(event) {
         shoot();
     } else if (event.key === 'ArrowUp'){
         missile();
+        createshooter();
     }
 }
 
@@ -476,7 +589,7 @@ function isWithinPauseButton(x, y) {
                 y: -40,
                 width: 100,
                 height: 100,
-                type: 'rotator'
+                tyPe: 'rotator'
             };
             rotators.push(rotator);
         } function createAsteroid(){
@@ -495,8 +608,26 @@ function isWithinPauseButton(x, y) {
                 width: 2000,
                 height: 2000,
                 type: 'planet'
+            }; planets.push(planet);
+        } function createMassExplode(ax,ay){
+            let massExplode = {
+                x: ax-40,
+                y: ay-100,
+                time: timePassed,
+                width: 120,
+                height: 120,
+                type:'massExplode'
             };
-            planets.push(planet);
+            massexplosions.push(massExplode);
+        } function createBoss(){
+            let bossinitial = {
+                x: canvas.width / 2 - 140,
+                y: canvas.height - 10,
+                width: 280,
+                height: 280,
+                type: 'bosss'
+            };
+            boss.push(bossinitial);
         }
 
         function createAlienPlane() {
@@ -532,13 +663,59 @@ function isWithinPauseButton(x, y) {
                 type: 'blueArc'
             };
             blueArcs.push(blueArc);
+        } function createDefenders(){
+            let intersects = false;
+
+            let defender = {
+                x: level === 7 ? canvas.width / 2 - 160 + Math.random() * 240 : Math.random() * (canvas.width - 60),
+                y: -60,
+                width: 60,
+                height: 60,
+                bullets: [],
+                health: 35, // takes 35 bullets to destroy
+                state: false,
+                type: 'defender'
+            };
+
+            for (let existingDefender of defenders) {
+                let intersectionWidth = Math.min(defender.x + defender.width, existingDefender.x + existingDefender.width) - Math.max(defender.x, existingDefender.x);
+
+                if (intersectionWidth > Math.min(defender.width, existingDefender.width) / 2) {
+                    intersects = true;
+                }
+            } if(!intersects){
+                defenders.push(defender);
+                return true;
+            } else{
+                return false;
+            }
+        } function createFinalBoss(){
+            let bossfinal = {
+                x: canvas.width / 2 - 140,
+                y: -200,
+                width: 280,
+                height: 280,
+                health: 500,
+                missileTimer: 0,
+                rockets: [],
+                flareInterval: 0,
+                flares: [],
+                type: 'bossFinal'
+            };
+            finalboss.push(bossfinal);
         }
 
         function createExplosion(x, y) {
+            exploding.currentTime = 0.5;
+            exploding.play();
     explosions.push({ x: x, y: y, frame: 0});
 } 
 
 function MissileExplosion(x,y){
+    createMassExplode(x,y);
+    bigexplode.currentTime = 1;
+    bigexplode.play();    
+    missilelaunch.pause();
     const explosionRadius = 50;
 
     // Check collision with stones
@@ -550,6 +727,7 @@ function MissileExplosion(x,y){
             score += 10; // Increase score for destroying a stone
             if (score > highScore) {
                 highScore = score; // Update high score
+                localStorage.setItem('highScore', highScore); // Store high score in local storage
             }
         }
     }); 
@@ -562,6 +740,7 @@ function MissileExplosion(x,y){
             score += 20; // Increase score for destroying a rotator
             if (score > highScore) {
                 highScore = score; // Update high score
+                localStorage.setItem('highScore', highScore); // Store high score in local storage
             }
         }
     }); 
@@ -576,6 +755,7 @@ function MissileExplosion(x,y){
             score += 50; // Increase score for destroying an alien plane
             if (score > highScore) {
                 highScore = score; // Update high score
+                localStorage.setItem('highScore', highScore); // Store high score in local storage
             }
         }
     }); advancedAliens.forEach(advancedAlienplane => {
@@ -587,22 +767,53 @@ function MissileExplosion(x,y){
             score += 100; // Increase score for destroying an alien plane
             if (score > highScore) {
                 highScore = score; // Update high score
+                localStorage.setItem('highScore', highScore); // Store high score in local storage
             }
         }
     }); blueArcs.forEach(blueArc => {
         if (x + explosionRadius > blueArc.x && x - explosionRadius < blueArc.x + blueArc.width &&
         y + explosionRadius > blueArc.y && y - explosionRadius < blueArc.y + blueArc.height){
-            blueArc.health -= 10;
+            blueArc.health -= 20;
             if(blueArc.health <= 0){
                 createExplosion(blueArc.x, blueArc.y);
                 blueArcs.splice(blueArcs.indexOf(blueArc), 1);
                 score += 200; // Increase score for destroying an alien plane
                 if (score > highScore) {
                     highScore = score; // Update high score
+                    localStorage.setItem('highScore', highScore); // Store high score in local storage
                 }
             }
         }
+    }); finalboss.forEach(bossfinal => {
+        if (x + explosionRadius > bossfinal.x && x - explosionRadius < bossfinal.x + bossfinal.width &&
+            y + explosionRadius > bossfinal.y && y - explosionRadius < bossfinal.y + bossfinal.height){
+                bossfinal.health -= 20;
+                createExplosion(x, y);
+                if(bossfinal.health <= 0){
+                    level7 = 5;
+                } else if(bossfinal.health <= 166){
+                    level7 = 4;
+                } else if(bossfinal.health <= 333){
+                    level7 = 3;
+                }
+        } bossfinal.rockets.forEach(rocket => {
+            if (x + explosionRadius > rocket.x && x - explosionRadius < rocket.x + rocket &&
+                y + explosionRadius > rocket.y && y - explosionRadius < rocket.y + rocket.height){
+                    bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
+                    createExplosion(rocket.x, rocket.y);
+                }
+        });
     });
+
+    defenders.forEach(defender => {
+        if (x + explosionRadius > defender.x && x - explosionRadius < defender.x + defender.width &&
+        y + explosionRadius > defender.y && y - explosionRadius < defender.y + defender.height){
+            defender.health -= 20;
+            if(defender.health <= 0){
+                defender.state = true;
+            }
+        }
+    }); 
 }
 
         let stars = [];
@@ -621,6 +832,35 @@ function createStars() {
 
 createStars(); // Call this function to initialize stars
 
+// Function to check collision between a bullet and the downward equilateral triangular boss
+function checkBulletCollision(bullet, boss) {
+    // Define the vertices of the equilateral triangle
+    let bottomLeft = { x: boss.x, y: boss.y };
+    let bottomRight = { x: boss.x + boss.width, y: boss.y };
+    let top = { x: boss.x + 140, y: boss.y + 280};
+
+    // Calculate the slopes of the triangle's sides
+    let leftSlope = (top.y - bottomLeft.y) / (top.x - bottomLeft.x);
+    let rightSlope = (top.y - bottomRight.y) / (top.x - bottomRight.x);
+
+    // Calculate the y-intercepts of the triangle's sides
+    let leftIntercept = top.y - (leftSlope * top.x);
+    let rightIntercept = top.y - (rightSlope * top.x);
+
+    // Check if the bullet is within the y-bounds of the triangle
+    if (bullet.y >= boss.y && bullet.y <= top.y) {
+        // Check the left and right bounds at the bullet's y level
+        let leftBound = (bullet.y - leftIntercept) / leftSlope;
+        let rightBound = (bullet.y - rightIntercept) / rightSlope;
+
+        // Check if the bullet's x-coordinate is within the bounds
+        return bullet.x >= leftBound && bullet.x <= rightBound;
+    }
+
+    return false;
+}
+
+
         function draw() {
             if(equippedPlane === 'zxiFighter'){
                 plane.height = 117;
@@ -635,16 +875,19 @@ createStars(); // Call this function to initialize stars
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
            ctx.fillStyle = 'white';
-    stars.forEach(star => {
-        ctx.fillRect(star.x, star.y, star.size, star.size);
-        if(gameRunning){
-            star.y += star.speed; // Move stars downwards
-        }
-        if (star.y > canvas.height) {
-            star.y = 0; // Reset star position when it goes below canvas
-            star.x = Math.random() * canvas.width; // Randomize x position
-        }
+        stars.forEach(star => {
+            ctx.fillRect(star.x, star.y, star.size, star.size);
+            if(gameRunning && level7 != 1  && level7 != 5 && level7 != 5.5){
+                star.y += star.speed; // Move stars downwards
+            }
+            if (star.y > canvas.height && level7 != 1  && level7 != 5 && level7 != 5.5) {
+                star.y = 0; // Reset star position when it goes below canvas
+                star.x = Math.random() * canvas.width; // Randomize x position
+            }
     }); 
+        boss.forEach(bossinitial => {
+            ctx.drawImage(bossinitialImage, bossinitial.x, bossinitial.y, bossinitial.width, bossinitial.height);
+        });
     
     planets.forEach(planet => {
                 ctx.drawImage(planetImage, planet.x, planet.y - planet.height, planet.width, planet.height);
@@ -653,6 +896,10 @@ createStars(); // Call this function to initialize stars
             coins.forEach(coin => {
         ctx.drawImage(coinImage, coin.x, coin.y, coin.width, coin.height);
     });
+
+    shooters.forEach(shooter=>{
+        ctx.drawImage(shooterImage, shooter.x, shooter.y, shooter.width, shooter.height);
+    }); 
 
     // Draw immunity pill
     if (immunityPill) {
@@ -671,17 +918,30 @@ createStars(); // Call this function to initialize stars
                 ctx.drawImage(rotatorImage, rotator.x, rotator.y, rotator.width, rotator.height);
             });
 
+            finalboss.forEach(bossfinal => {
+                bossfinal.rockets.forEach(rocket => {
+                    ctx.drawImage(rocketImage, rocket.x, rocket.y, rocket.width, rocket.height);
+                }); bossfinal.flares.forEach(flare => {
+                    ctx.drawImage(bluebulettImage, flare.x, flare.y, flare.width, flare.height);
+                }); ctx.drawImage(bossfinalImage, bossfinal.x, bossfinal.y, bossfinal.width, bossfinal.height);
+            });
+
             asteroids.forEach(asteroidd => {
                 ctx.drawImage(asteroidImage, asteroidd.x, asteroidd.y, asteroidd.width, asteroidd.height);
             });
 
+            massexplosions.forEach(massExplode => {
+                ctx.drawImage(massExplosion, massExplode.x, massExplode.y, massExplode.width, massExplode.height);
+            });
+
             
+            // Draw plane
+            ctx.drawImage(planeImage, plane.x, plane.y, plane.width, plane.height);
 
             if (immunityActive) {
-        ctx.strokeStyle = 'yellow';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(plane.x, plane.y, plane.width, plane.height);
-    } 
+                bubbleImage.src = 'bubble.png';
+                ctx.drawImage(bubbleImage, bubble.x, bubble.y, bubble.width, bubble.height);
+            } 
 
             // Draw explosions
             explosions.forEach(explosion => {
@@ -690,19 +950,8 @@ createStars(); // Call this function to initialize stars
                 if (explosion.frame > 20) { // Remove explosion after 1 second
                     explosions.splice(explosions.indexOf(explosion), 1);
                 }
-            });
+            }); 
 
-            // Draw plane
-            ctx.drawImage(planeImage, plane.x, plane.y, plane.width, plane.height);
-
-            // Handle blinking effect when immunity is about to expire
-    if (immunityActive && immunityEndTime - Date.now() < 3000) { // 3000 milliseconds = 3 seconds
-        if (Date.now() % 1000 < 500) { // Toggle every half second
-            ctx.strokeStyle = 'yellow';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(plane.x, plane.y, plane.width, plane.height);
-        }
-    }
 
             // Draw alien planes
             alienPlanes.forEach(alienPlane => {
@@ -719,7 +968,7 @@ createStars(); // Call this function to initialize stars
                 ctx.drawImage(advancedAlienImage, advancedallie.x, advancedallie.y, advancedallie.width, advancedallie.height);
                 // Draw bullets for alien plane
                 advancedallie.bullets.forEach(bullet => {
-                    ctx.drawImage(bulletImage, bullet.x - 10, bullet.y - 20, 15, 60);
+                    ctx.drawImage(bulletImage, bullet.x - 10, bullet.y - 20, 17, 95);
                 });
             }); 
 
@@ -729,13 +978,17 @@ createStars(); // Call this function to initialize stars
                 blueArc.bullets.forEach(bullet => {
                     ctx.drawImage(blueflare, bullet.x - 20, bullet.y - 20, 30, 30);
                 });
-            })
+            }); 
+
+            defenders.forEach(defender => {
+                ctx.drawImage(defenderImage, defender.x, defender.y, defender.width, defender.height);
+            });
 
             // Inside your drawing function (e.g., drawMissiles()), replace the ctx.fillRect() calls with:
             missiles.forEach(missile => {
                 ctx.drawImage(missileImage, missile.x, missile.y, missile.width, missile.height);
             });
-
+            
             
             // Draw bullets for our plane
             plane.bullets.forEach(bullet => {
@@ -753,7 +1006,17 @@ createStars(); // Call this function to initialize stars
                     ctx.fillRect(bullet.x, bullet.y, 2, 18);
                 }
                 
-            }); 
+            }); //Draw bullets for shooters
+
+            if(equippedPlane === 'heavyDuty'){
+                shooters.forEach(shooter => {
+                    shooter.bullets.forEach(bullet => {
+                        ctx.fillStyle = 'pink';
+                        ctx.fillRect(bullet.x, bullet.y, 2, 8);
+                    });
+                });
+            }
+            
 
             // Clear and Draw score
             // Draw score
@@ -780,6 +1043,7 @@ createStars(); // Call this function to initialize stars
                     gameOverText.textContent = 'You Won!';
                     if(levelup){
                         totalCoins += 70;
+                        localStorage.setItem('totalCoins', totalCoins);
                         levelup = false;
                     }
                     if(level != 7){
@@ -794,24 +1058,22 @@ createStars(); // Call this function to initialize stars
         let immunityTimerElement = document.getElementById('timerDisplay');
 
         function update() {
-            if(true){
-                let currentTime = Date.now();
-                let deltaTime = (currentTime - lastTime) / 1000; // deltaTime in seconds
-                lastTime = currentTime;
-                timePassed += deltaTime;
-            } else{
-                timePassed = 0;
-            }
-let missileTimeRemaining = missileTime - Date.now();
-if((missileButton.style.display === 'none' && missileTimeRemaining > 0)||(equippedPlane !== 'zxiFighter')){
-    
-} else{
+            let currentTime = Date.now();
+            let deltaTime = (currentTime - lastTime) / 1000; // deltaTime in seconds
+            lastTime = currentTime;
+            timePassed += deltaTime;
+            
+if(missileTime <= timePassed && equippedPlane == 'zxiFighter'){
     missileButton.style.display = 'flex';
     missileTime = 0;
-} 
+} if(shooterTime <= timePassed && equippedPlane == 'heavyDuty'){
+    shooterButton.style.display = 'flex';
+    shooterTime = 0;
+}
 
-if(freezetime - Date.now() <= 0){
+if(freezetime - Date.now() <= 0 || immunityActive){
     freezetime = 0;
+    planeImage.src = equippedImage;
 }
 
 let immunityTimeRemaining = immunityEndTime - Date.now();
@@ -831,32 +1093,33 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
         timerDisplay.textContent = ''; // Hide timer if immunity is not active
     }
 
-            if (plane.moveLeft && plane.x > 0) {
+            if (plane.moveLeft && plane.x > 0  && level7 != 1 && level7 != 5 && level7 != 5.5) {
                 plane.x -= plane.speed;
             }
-            if (plane.moveRight && plane.x < canvas.width - plane.width) {
+            if (plane.moveRight && plane.x < canvas.width - plane.width  &&level7 != 1 && level7 != 5 && level7 != 5.5) {
                 plane.x += plane.speed;
+            } bubble.x = plane.x;
+    if(level7 != 1  && level7 != 5 && level7 != 5.5){
+        coins.forEach(coin => {
+            coin.y += 2; // Adjust speed as needed
+            if (coin.y > canvas.height) {
+                coins.splice(coins.indexOf(coin), 1); // Remove coins that are out of canvas 
             }
-
-coins.forEach(coin => {
-        coin.y += 2; // Adjust speed as needed
-        if (coin.y > canvas.height) {
-            coins.splice(coins.indexOf(coin), 1); // Remove coins that are out of canvas 
-        }
-        // Check collision with player's plane
-        if (coin.x < plane.x + plane.width &&
-            coin.x + coin.width > plane.x &&
-            coin.y < plane.y + plane.height &&
-            coin.y + coin.height > plane.y) {
-            // When a coin is collected
-totalCoins += 10;
-localStorage.setItem('totalCoins', totalCoins);
-            coins.splice(coins.indexOf(coin), 1); // Remove collected coin
-        }
-    });
+            // Check collision with player's plane
+            if (coin.x < plane.x + plane.width &&
+                coin.x + coin.width > plane.x &&
+                coin.y < plane.y + plane.height &&
+                coin.y + coin.height > plane.y) {
+                // When a coin is collected
+                totalCoins += 10;
+                localStorage.setItem('totalCoins', totalCoins);
+                coins.splice(coins.indexOf(coin), 1); // Remove collected coin
+            }
+        });
+    }
 
     // Move immunity pill
-    if (immunityPill) {
+    if (immunityPill && level7 < 1) {
         immunityPill.y += 2; // Adjust speed as needed
         if (immunityPill.y > canvas.height) {
             immunityPill = null; // Remove immunity pill if it goes out of canvas
@@ -868,24 +1131,32 @@ localStorage.setItem('totalCoins', totalCoins);
             immunityPill.y < plane.y + plane.height &&
             immunityPill.y + immunityPill.height > plane.y) {
             immunityActive = true;
+            bubbleImage.src = "bubble.png";
+            bubble.x = plane.x;
+            bubble.y = plane.y;
+            bubble.width = plane.width;
+            bubble.height = plane.height;
             immunityEndTime = Date.now() + (immunityDuration * 1000); // Set immunity end time
             immunityPill = null; // Remove collected immunity pill
         }
+    } else if(level7 >= 1){
+        immunityPill = null;
     }
 
 // Check if immunity has expired
-    if (immunityActive && Date.now() > immunityEndTime) {
+    if ((immunityActive && Date.now() > immunityEndTime)||level7>=1) {
         immunityActive = false;
+        bubbleImage.src = "";
     }
 
     // Create new coins and immunity pill
-    if (Math.random() < 0.002) { // Adjust spawn rates as needed
+    if (Math.random() < 0.002  && level7 < 5) { // Adjust spawn rates as needed
         createCoin();
     }
-    if (Math.random() < 0.0003) { // Adjust spawn rates as needed
+    if (Math.random() < 0.0003 && level7 < 1) { // Adjust spawn rates as needed abx
         createImmunityPill();
     }
-
+        if(level7 != 5 && level7 != 5.5){
             stones.forEach(stone => {
                 stone.y += 2; // Stone falling speed
                 if (stone.y > canvas.height) {
@@ -898,7 +1169,7 @@ localStorage.setItem('totalCoins', totalCoins);
                 if (nebula.y > canvas.height) {
                     nebulas.splice(nebulas.indexOf(nebula), 1); // Remove nebulas that are out of canvas
                 }
-            })
+            });
 
             rotators.forEach(rotator => {
                 rotator.y += 1; // Rotator falling speed
@@ -913,22 +1184,35 @@ localStorage.setItem('totalCoins', totalCoins);
                 if (asteroidd.y > canvas.height) {
                     asteroids.splice(asteroids.indexOf(asteroidd), 1); // Remove asteroids that are out of canvas
                 }
+            }); boss.forEach(bossinitial => {
+                bossinitial.y -= 5.5; // Boss initial going speed
             });
 
-            planets.forEach(planet =>{
-                planet.y += 2; // Asteroid falling speed
-                if (planet.y > 2*canvas.height) {
-                    planets.splice(planets.indexOf(planet), 1); // Remove asteroids that are out of canvas
+            massexplosions.forEach(massExplode => {
+                if(timePassed - massExplode.time > 1){
+                    massexplosions.splice(massexplosions.indexOf(massExplode), 1); // Remove mass explosions that are out of canvas
                 }
             });
-
+            
+            planets.forEach(planet =>{
+                if(level7 != 1){
+                    planet.y += 2; // Planet falling speed
+                }
+                if (planet.y > 4*canvas.height) {
+                    planets.splice(planets.indexOf(planet), 1); // Remove planet that are out of canvas
+                }
+            });
+        }
             alienPlanes.forEach(alienPlane => {
                 const stopY = 50; // Adjust this value to your desired threshold
-        if (alienPlane.y < stopY) {
+        if (alienPlane.y < stopY && level7 != 5 && level7 != 5.5) {
             alienPlane.y += 0.7; // Adjust the speed if needed
         }
                 if (alienPlane.y > canvas.height) {
                     alienPlanes.splice(alienPlanes.indexOf(alienPlane), 1); // Remove alien planes that are out of canvas
+                } if(level7 == 5.5){   
+                    alienPlanes.splice(alienPlanes.indexOf(alienPlane), 1);
+                    createExplosion(alienPlane.x, alienPlane.y);
                 }
                 // Alien plane shooting bullets
                 if (Math.random() < 0.005) {
@@ -939,7 +1223,9 @@ localStorage.setItem('totalCoins', totalCoins);
                 }
                 // Move alien bullets
                 alienPlane.bullets.forEach(bullet => {
-                    bullet.y += 4;
+                    if(level7 != 5){
+                        bullet.y += 4;
+                    }
                     if (bullet.y > canvas.height) {
                         alienPlane.bullets.splice(alienPlane.bullets.indexOf(bullet), 1);
                     }
@@ -954,14 +1240,26 @@ localStorage.setItem('totalCoins', totalCoins);
                             currenthealth = 0;
                             gameRunning = false;
                         }
-                    }
+                    } shooters.forEach(shooter =>{
+                        if (bullet.x > shooter.x && bullet.x < shooter.x + shooter.width &&
+                            bullet.y > shooter.y && bullet.y < shooter.y + shooter.height) {
+                            createExplosion(shooter.x, shooter.y);
+                            alienPlane.bullets.splice(alienPlane.bullets.indexOf(bullet), 1);
+                            shooters.splice(shooters.indexOf(shooter),1);
+                        }
+                    });
                 });
             });
 
             advancedAliens.forEach(alienPlane => {
-                alienPlane.y += 0.5; // Adjust the speed if needed
+                if(level7 != 5 && level7 != 5.5){
+                    alienPlane.y += 0.5; // Adjust the speed if needed
+                }
                 if (alienPlane.y > canvas.height) {
                     advancedAliens.splice(advancedAliens.indexOf(alienPlane), 1); // Remove alien planes that are out of canvas
+                } if(level7 == 5.5){   
+                    advancedAliens.splice(advancedAliens.indexOf(alienPlane), 1);
+                    createExplosion(alienPlane.x, alienPlane.y);
                 }
                 // Alien plane shooting bullets
                 if (Math.random() < 0.005) {
@@ -972,7 +1270,9 @@ localStorage.setItem('totalCoins', totalCoins);
                 }
                 // Move alien bullets
                 alienPlane.bullets.forEach(bullet => {
-                    bullet.y += 2;
+                    if(level7 != 5){
+                        bullet.y += 2;
+                    }
                     if (bullet.y > canvas.height) {
                         alienPlane.bullets.splice(alienPlane.bullets.indexOf(bullet), 1);
                     }
@@ -987,17 +1287,28 @@ localStorage.setItem('totalCoins', totalCoins);
                             currenthealth = 0;
                             gameRunning = false;
                         }
-                    }
+                    } shooters.forEach(shooter =>{
+                        if (bullet.x > shooter.x && bullet.x < shooter.x + shooter.width &&
+                            bullet.y > shooter.y && bullet.y < shooter.y + shooter.height) {
+                            createExplosion(shooter.x, shooter.y);
+                            alienPlane.bullets.splice(alienPlane.bullets.indexOf(bullet), 1);
+                            shooters.splice(shooters.indexOf(shooter),1);
+                        }
+                    });
                 });
             });
 
         blueArcs.forEach(blueArc => {
                 const stopY = 50; // Adjust this value to your desired threshold
-        if (blueArc.y < stopY) {
+        if (blueArc.y < stopY && level7 != 5 && level7 != 5.5) {
             blueArc.y += 0.4; // Adjust the speed if needed
         }
                 if (blueArc.y > canvas.height) {
                     blueArcs.splice(blueArcs.indexOf(blueArc), 1); // Remove alien planes that are out of canvas
+                }
+                if(level7 == 5.5){   
+                    blueArcs.splice(blueArcs.indexOf(blueArc), 1);
+                    createExplosion(blueArc.x, blueArc.y);
                 }
                 // Alien plane shooting bullets
                 if (Math.random() < 0.004) {
@@ -1008,7 +1319,9 @@ localStorage.setItem('totalCoins', totalCoins);
                 }
                 // Move alien bullets
                 blueArc.bullets.forEach(bullet => {
-                    bullet.y += 3;
+                    if(level7 != 5){
+                        bullet.y += 3;
+                    }
                     if (bullet.y > canvas.height) {
                         blueArc.bullets.splice(blueArc.bullets.indexOf(bullet), 1);
                     }
@@ -1017,8 +1330,166 @@ localStorage.setItem('totalCoins', totalCoins);
                         bullet.y > plane.y && bullet.y < plane.y + plane.height) {
                         // stalling logic
                         blueArc.bullets.splice(blueArc.bullets.indexOf(bullet), 1);
-                        freezetime = Date.now() + (3000);
+                        if(equippedPlane != 'zxiFighter'){
+                            freezetime = Date.now() + (3000);
+                            frozen.currentTime = 0;
+                            frozen.play();
+                            planeImage.src = equippedfreeze; // Apply a blue filter to the plane's image
+                        }
+                    } shooters.forEach(shooter =>{
+                        if (bullet.x > shooter.x && bullet.x < shooter.x + shooter.width &&
+                            bullet.y > shooter.y && bullet.y < shooter.y + shooter.height) {
+                            createExplosion(shooter.x, shooter.y);
+                            blueArc.bullets.splice(blueArc.bullets.indexOf(bullet), 1);
+                            shooters.splice(shooters.indexOf(shooter),1);
+                        }
+                    });
+                });
+            });
+
+            defenders.forEach(defender => {
+                const stopY = 100; // Adjust this value to your desired threshold
+                
+                if ((defender.y < stopY || (finalboss.length>=1&&checkBulletCollision(defender, finalboss[0]))) && level7 != 5 && level7 != 5.5) {
+                    defender.y += 1; // Adjust the speed if needed
+                } if(level7 == 5.5){   
+                    defenders.splice(defenders.indexOf(defender), 1);
+                    createExplosion(defender.x, defender.y);
+                }                
+                else if(defender.y >= plane.y){
+                    createExplosion(defender.x, defender.y);
+                    defenders.splice(defenders.indexOf(defender), 1);
+                    score += 400; // Increase score for destroying a defender
+                    if (score > highScore) {
+                        highScore = score; // Update high score
+                        localStorage.setItem('highScore', highScore); // Store high score in local storage
                     }
+                } else if(defender.state){
+                    defender.y += 3;
+                } if (defender.y > canvas.height) {
+                    defenders.splice(defenders.indexOf(defender), 1); // Remove alien planes that are out of canvas
+                }
+            });
+
+            finalboss.forEach(bossfinal => {
+                const stopY = 40; // Adjust this value to your desired threshold
+        if (bossfinal.y < stopY) {
+            bossfinal.y += 0.7; // Adjust the speed if needed
+        }
+                if(level7 == 3 || level7 == 4){
+                    // Boss plane shooting bullets
+                    console.log(bossfinal.flareInterval - timePassed);
+                    if (timePassed >= bossfinal.flareInterval) {
+                        bossfinal.flareInterval = timePassed + 12;
+                        bossfinal.flares = [];
+                    } 
+                    else if (bossfinal.flareInterval - timePassed <= 5) {
+                        // Boss shoots bullets only when flareShiner equals timePassed                        
+                        bossfinal.flares = [];                        
+                        bossfinalImage.src = 'bossdownwards.png';  
+                    } else if (bossfinal.flareInterval - timePassed <= 10 && bossfinal.flares.length == 0) {
+                        console.log("fired blue flare"); // make sure to splice bullets after time and create within here itself
+                        bossfinal.flares.push({
+                            x: bossfinal.x + bossfinal.width / 6.8,
+                            y: bossfinal.y + 34, 
+                            height: 45,
+                            width: 45
+                        });                      
+                        bossfinal.flares.push({
+                            x: bossfinal.x + 2* bossfinal.width / 3,
+                            y: bossfinal.y + 34,
+                            height: 45,
+                            width: 45
+                        });  
+                    } else if (bossfinal.flareInterval - timePassed <= 10) {
+                        // Switch image to downwards position
+                        bossfinal.flares.forEach(flare => {
+                            if(level7 != 5){
+                                flare.height += 8;
+                            } 
+                            console.log("flare height shall increase",flare.height);
+                            // Check collision with player's plane
+                            if (plane.x> flare.x && plane.x < flare.x + flare.width &&
+                                plane.y> flare.y && plane.y < flare.y + flare.height) {
+                                console.log("flare contact");
+                                createExplosion(flare.x, flare.y);
+                                if(currenthealth > 1){
+                                    bossfinal.flares.splice(bossfinal.flares.indexOf(flare), 1);
+                                    currenthealth--;
+                                } else{
+                                    currenthealth = 0;
+                                    gameRunning = false;
+                                }
+                            } shooters.forEach(shooter =>{
+                                if (shooter.x> flare.x && shooter.x < flare.x + flare.width &&
+                                    shooter.y> flare.y && shooter.y < flare.y + flare.height) {
+                                    createExplosion(shooter.x, shooter.y);
+                                    shooters.splice(shooters.indexOf(shooter),1);
+                                }
+                            });
+                        });                                      
+                    } else if(bossfinal.flareInterval - timePassed <= 12){
+                        bossfinalImage.src = 'shootingboss.png'; 
+                        laser.play();
+                        laser.currentTime = 1;
+                    }
+                } if (bossfinal.missileTimer <= timePassed && level7 < 5) {
+                    bossfinal.missileTimer = timePassed + 10;
+                    bossfinal.rockets.push({
+                        x: bossfinal.x + bossfinal.width / 3,
+                        y: bossfinal.y, 
+                        height: 124,
+                        width: 60,
+                        health: 2
+                    });
+                    bossfinal.rockets.push({
+                        x: bossfinal.x + 2* bossfinal.width / 3,
+                        y: bossfinal.y,
+                        height: 124,
+                        width: 60,
+                        health: 2
+                    });
+                } // Alien plane shooting bullets
+            
+                // Move rockets
+                bossfinal.rockets.forEach(rocket => {
+                    if (level7 < 5) {
+                        rocket.y += 3;
+                    } else{   
+                        bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
+                        createExplosion(rocket.x, rocket.y);
+                    }
+                    if(Math.abs(rocket.x - plane.x) <= plane.width/3){
+                        rocketImage.src ='missiledown.png';
+                    } else if(rocket.x < plane.x){
+                        rocketImage.src = 'missileright.png';
+                        rocket.x += 1;
+                    } else if(rocket.x > plane.x){
+                        rocketImage.src = 'missileleft.png';
+                        rocket.x -= 1;
+                    }
+                    if (rocket.y > canvas.height) {
+                        bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
+                    }
+                    // Check collision with player's plane
+                    if (rocket.x + 10 > plane.x && rocket.x < plane.x + plane.width + 10 &&
+                        rocket.y + 10> plane.y && rocket.y < plane.y + plane.height + 10) {
+                        createExplosion(rocket.x, rocket.y);
+                        if(currenthealth > 1){
+                            bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
+                            currenthealth--;
+                        } else{
+                            currenthealth = 0;
+                            gameRunning = false;
+                        }
+                    } shooters.forEach(shooter =>{
+                        if (rocket.x > shooter.x && rocket.x < shooter.x + shooter.width &&
+                            rocket.y > shooter.y && rocket.y < shooter.y + shooter.height) {
+                            createExplosion(shooter.x, shooter.y);
+                            bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
+                            shooters.splice(shooters.indexOf(shooter),1);
+                        }
+                    });
                 });
             });
 
@@ -1034,32 +1505,18 @@ localStorage.setItem('totalCoins', totalCoins);
                 stones.forEach(stone => {
                     if (missile.x + 40> stone.x && missile.x < stone.x + stone.width &&
                     missile.y + 40 > stone.y && missile.y - 40 < stone.y + stone.height) {
-                        createExplosion(stone.x, stone.y);
-                        stones.splice(stones.indexOf(stone), 1);
-                        missiles.splice(missiles.indexOf(missile), 1); 
                         k = 1;
                         mx = missile.x;
                         my = missile.y;
-                        score += 10; // Increase score for destroying a stone
-                        if (score > highScore) {
-                            highScore = score; // Update high score
-                        }
                     }
                 }); 
                 
                 rotators.forEach(rotator => {
                     if (missile.x + 40> rotator.x && missile.x < rotator.x + rotator.width &&
                     missile.y + 40 > rotator.y && missile.y - 40 < rotator.y + rotator.height) {
-                        createExplosion(rotator.x, rotator.y);
-                        rotators.splice(rotators.indexOf(rotator), 1);
-                        missiles.splice(missiles.indexOf(missile), 1); 
                         k = 1;
                         mx = missile.x;
                         my = missile.y;
-                        score += 20; // Increase score for destroying a rotator
-                        if (score > highScore) {
-                            highScore = score; // Update high score
-                        }
                     }
                 });
 
@@ -1067,17 +1524,9 @@ localStorage.setItem('totalCoins', totalCoins);
                 alienPlanes.forEach(alienPlane => {
                     if (missile.x + 40> alienPlane.x && missile.x < alienPlane.x + alienPlane.width &&
                     missile.y +20 > alienPlane.y && missile.y - 20 < alienPlane.y + alienPlane.height) {
-                        alienPlane.health = 0;
-                        missiles.splice(missiles.indexOf(missile), 1);
-                        createExplosion(alienPlane.x, alienPlane.y);
-                        alienPlanes.splice(alienPlanes.indexOf(alienPlane), 1);      
                         k = 1;
                         mx = missile.x;
                         my = missile.y;
-                        score += 50; // Increase score for destroying an alien plane
-                        if (score > highScore) {
-                            highScore = score; // Update high score
-                        }
                     }
                 });
 
@@ -1085,42 +1534,48 @@ localStorage.setItem('totalCoins', totalCoins);
                 advancedAliens.forEach(alienPlane => {
                     if (missile.x + 40> alienPlane.x && missile.x < alienPlane.x + alienPlane.width &&
                     missile.y +20 > alienPlane.y && missile.y - 20 < alienPlane.y + alienPlane.height) {
-                        alienPlane.health = 0;
-                        missiles.splice(missiles.indexOf(missile), 1);
-                        createExplosion(alienPlane.x, alienPlane.y);
-                        advancedAliens.splice(advancedAliens.indexOf(alienPlane), 1);      
                         k = 1;
                         mx = missile.x;
                         my = missile.y;
-                        score += 100; // Increase score for destroying an alien plane
-                        if (score > highScore) {
-                            highScore = score; // Update high score
-                        }
                     }
                 });
 
                 blueArcs.forEach(blueArc => {
                     if (missile.x + 40> blueArc.x && missile.x < blueArc.x + blueArc.width &&
                     missile.y +20 > blueArc.y && missile.y - 20 < blueArc.y + blueArc.height) {
-                        bluearc.health -= 10;
-                        missiles.splice(missiles.indexOf(missile), 1);
                         k = 1;
                         mx = missile.x;
                         my = missile.y;
-                        if(blueArc.health <= 0){
-                            createExplosion(blueArc.x, blueArc.y);
-                            blueArcs.splice(blueArcs.indexOf(blueArc), 1);
-                            score += 200; // Increase score for destroying a blue arc
-                            if (score > highScore) {
-                            highScore = score; // Update high score
-                            }
-                        }
                     }
+                });
+
+                defenders.forEach(defender => {
+                    if(missile.x + 40> defender.x && missile.x < defender.x + defender.width &&
+                        missile.y +20 > defender.y && missile.y - 20 < defender.y + defender.height){
+                        k = 1;
+                        mx = missile.x;
+                        my = missile.y;
+                    }
+                }); finalboss.forEach(bossfinal =>{
+                    if(missile.x + 40> bossfinal.x && missile.x < bossfinal.x + bossfinal.width &&
+                        missile.y +20 > bossfinal.y && missile.y - 20 < bossfinal.y + bossfinal.height){
+                        k = 1;
+                        mx = missile.x;
+                        my = missile.y;
+                    } bossfinal.rockets.forEach(rocket => {
+                        if(missile.x + 40> rocket.x && missile.x < rocket.x + rocket.width &&
+                            missile.y +20 > rocket.y && missile.y - 20 < rocket.y + rocket.height){
+                            k = 1;
+                            mx = missile.x;
+                            my = missile.y;
+                        } 
+                    });
                 });
             });
                 
             if(k === 1){
-                MissileExplosion(mx,my);
+                MissileExplosion(mx,my);                
+                missiles.splice(missiles.indexOf(missile), 1);                 
                 k = 0;
             }
             // Move player's bullets
@@ -1140,6 +1595,7 @@ localStorage.setItem('totalCoins', totalCoins);
                         score += 10; // Increase score for destroying a stone
                         if (score > highScore) {
                             highScore = score; // Update high score
+                            localStorage.setItem('highScore', highScore); // Store high score in local storage
                         }
                     }
                 }); rotators.forEach(rotator => {
@@ -1161,6 +1617,7 @@ localStorage.setItem('totalCoins', totalCoins);
                             score += 50; // Increase score for destroying an alien plane
                             if (score > highScore) {
                                 highScore = score; // Update high score
+                                localStorage.setItem('highScore', highScore); // Store high score in local storage
                             }
                         }
                     }
@@ -1177,6 +1634,7 @@ localStorage.setItem('totalCoins', totalCoins);
                             score += 100; // Increase score for destroying an alien plane
                             if (score > highScore) {
                                 highScore = score; // Update high score
+                                localStorage.setItem('highScore', highScore); // Store high score in local storage
                             }
                         }
                     }
@@ -1193,11 +1651,164 @@ localStorage.setItem('totalCoins', totalCoins);
                             score += 200; // Increase score for destroying a blue arc
                             if (score > highScore) {
                                 highScore = score; // Update high score
+                                localStorage.setItem('highScore', highScore); // Store high score in local storage
                             }
                         }
                     }
                 });
 
+                defenders.forEach(defender => {
+                    if(bullet.x > defender.x && bullet.x < defender.x + defender.width &&
+                        bullet.y > defender.y && bullet.y < defender.y + defender.height){
+                        defender.health -= equippeddamage;
+                        plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
+                        if(defender.health <= 0){
+                            defender.state = true;
+                        }
+                    }
+                }); finalboss.forEach(bossfinal =>{
+                    if(checkBulletCollision(bullet, bossfinal)){
+                        bossfinal.health -= equippeddamage;
+                        plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
+                        createExplosion(bullet.x, bullet.y);
+                        if(bossfinal.health <= 0 && level7 < 5){
+                            level7 = 5;
+                        } else if(bossfinal.health <= 166  && level7 < 5){
+                            level7 = 4;
+                        } else if(bossfinal.health <= 333  && level7 < 5){
+                            level7 = 3;
+                        }
+                    } bossfinal.rockets.forEach(rocket =>{
+                        if(bullet.x > rocket.x && bullet.x < rocket.x + rocket.width &&
+                            bullet.y > rocket.y && bullet.y < rocket.y + rocket.height){
+                            rocket.health -= equippeddamage;
+                            plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
+                            if(rocket.health <= 0){
+                                bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
+                                createExplosion(rocket.x, rocket.y);
+                            }
+                        }
+                    });
+                });
+
+            }); // Move player's bullets
+            shooters.forEach(shooter => {
+                shooter.bullets.forEach(bullet => {
+                    bullet.y -= 5;
+                    if (bullet.y < 0) {
+                        shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                    }
+
+                    // Check collision with stones
+                    stones.forEach(stone => {
+                        if (bullet.x > stone.x && bullet.x < stone.x + stone.width &&
+                            bullet.y > stone.y && bullet.y < stone.y + stone.height) {
+                            createExplosion(stone.x, stone.y);
+                            stones.splice(stones.indexOf(stone), 1);
+                            shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                            score += 10; // Increase score for destroying a stone
+                            if (score > highScore) {
+                                highScore = score; // Update high score
+                                localStorage.setItem('highScore', highScore); // Store high score in local storage
+                            }
+                        }
+                    }); rotators.forEach(rotator => {
+                        if (bullet.x > rotator.x && bullet.x < rotator.x + rotator.width &&
+                            bullet.y > rotator.y && bullet.y < rotator.y + rotator.height) {
+                            shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                        }
+                    });
+
+                    // Check collision with alien planes
+                    alienPlanes.forEach(alienPlane => {
+                        if (bullet.x > alienPlane.x && bullet.x < alienPlane.x + alienPlane.width &&
+                            bullet.y > alienPlane.y && bullet.y < alienPlane.y + alienPlane.height) {
+                            alienPlane.health -= 1;
+                            shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                            if (alienPlane.health <= 0) {
+                                createExplosion(alienPlane.x, alienPlane.y);
+                                alienPlanes.splice(alienPlanes.indexOf(alienPlane), 1);
+                                score += 50; // Increase score for destroying an alien plane
+                                if (score > highScore) {
+                                    highScore = score; // Update high score
+                                    localStorage.setItem('highScore', highScore); // Store high score in local storage
+                                }
+                            }
+                        }
+                    });
+
+                    advancedAliens.forEach(alienPlane => {
+                        if (bullet.x > alienPlane.x && bullet.x < alienPlane.x + alienPlane.width &&
+                            bullet.y > alienPlane.y && bullet.y < alienPlane.y + alienPlane.height) {
+                            alienPlane.health -= 1;
+                            shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                            if (alienPlane.health <= 0) {
+                                createExplosion(alienPlane.x, alienPlane.y);
+                                advancedAliens.splice(advancedAliens.indexOf(alienPlane), 1);
+                                score += 100; // Increase score for destroying an alien plane
+                                if (score > highScore) {
+                                    highScore = score; // Update high score
+                                    localStorage.setItem('highScore', highScore); // Store high score in local storage
+                                }
+                            }
+                        }
+                    });
+
+                    blueArcs.forEach(blueArc => {
+                        if (bullet.x > blueArc.x && bullet.x < blueArc.x + blueArc.width &&
+                        bullet.y > blueArc.y && bullet.y < blueArc.y + blueArc.height) {
+                            blueArc.health -= 1;
+                            shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                            if(blueArc.health <= 0){
+                                createExplosion(blueArc.x, blueArc.y);
+                                blueArcs.splice(blueArcs.indexOf(blueArc), 1);
+                                score += 200; // Increase score for destroying a blue arc
+                                if (score > highScore) {
+                                    highScore = score; // Update high score
+                                    localStorage.setItem('highScore', highScore); // Store high score in local storage
+                                }
+                            }
+                        }
+                    });
+
+                    defenders.forEach(defender => {
+                        if(bullet.x > defender.x && bullet.x < defender.x + defender.width &&
+                            bullet.y > defender.y && bullet.y < defender.y + defender.height){
+                            defender.health -= 1;
+                            shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                            if(defender.health <= 0){
+                                defender.state = true;
+                            }
+                        }
+                    });
+
+                    finalboss.forEach(bossfinal =>{
+                        if(checkBulletCollision(bullet, bossfinal)){
+                            bossfinal.health -= equippeddamage;
+                            shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                            createExplosion(bullet.x, bullet.y);
+                            if(bossfinal.health <= 0  && level7 < 5){
+                                level7 = 5;
+                            } else if(bossfinal.health <= 166  && level7 < 5){
+                                level7 = 4;
+                            } else if(bossfinal.health <= 333  && level7 < 5){
+                                level7 = 3;
+                            }
+                        } bossfinal.rockets.forEach(rocket =>{
+                            if(bullet.x > rocket.x && bullet.x < rocket.x + rocket.width &&
+                                bullet.y > rocket.y && bullet.y < rocket.y + rocket.height){
+                                rocket.health -= equippeddamage;
+                                shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
+                                if(rocket.health <= 0){
+                                    bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
+                                    createExplosion(rocket.x, rocket.y);
+                                }
+                            }
+                        });
+                    });
+
+                });
+            
             });
 
             // Check collision between player's plane and nebulas
@@ -1214,7 +1825,17 @@ localStorage.setItem('totalCoins', totalCoins);
         playerBottom > nebula.y) {
             nebulas.splice(nebulas.indexOf(nebula), 1);
             plane.x = Math.random()*(canvas.width-40);
-    }
+            teleport.currentTime = 0;
+            teleport.play();
+    } shooters.forEach(shooter =>{
+        if (shooter.x < nebula.x + nebula.width &&
+            shooter.x + shooter.width > nebula.x &&
+            shooter.y < nebula.y + nebula.height &&
+            shooter.y + shooter.height > nebula.y) {
+            createExplosion(shooter.x, shooter.y);
+            shooters.splice(shooters.indexOf(shooter), 1);
+        }
+    });
 }); stones.forEach(stone => {
     // Calculate smaller bounding box for collision detection
     let playerLeft = plane.x + 20; // Adjust as needed
@@ -1234,7 +1855,17 @@ localStorage.setItem('totalCoins', totalCoins);
             currenthealth = 0;
             gameRunning = false;
         }
-    }
+    } 
+    shooters.forEach(shooter =>{
+        if (shooter.x < stone.x + stone.width &&
+            shooter.x + shooter.width > stone.x &&
+            shooter.y < stone.y + stone.height &&
+            shooter.y + shooter.height > stone.y) {
+            createExplosion(shooter.x, shooter.y);
+            shooters.splice(shooters.indexOf(shooter), 1);
+        }
+    });
+    
 }); 
 
 rotators.forEach(rotator => {
@@ -1256,13 +1887,79 @@ rotators.forEach(rotator => {
             currenthealth = 0;
             gameRunning = false;
         }
-    }
-}); if(((timePassed > 130 && level == 1) || (timePassed > 190 && (level == 2 || level == 3)) || (timePassed > 250 && (level == 4 || level == 5))  || (timePassed > 270 && level == 6))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
+    } shooters.forEach(shooter =>{
+        if (shooter.x < rotator.x + rotator.width &&
+            shooter.x + shooter.width > rotator.x &&
+            shooter.y < rotator.y + rotator.height &&
+            shooter.y + shooter.height > rotator.y) {
+            createExplosion(shooter.x, shooter.y);
+            shooters.splice(shooters.indexOf(shooter), 1);
+        }
+    });
+}); 
+    finalboss.forEach( bossfinal => {
+    bossfinal.rockets.forEach(rocket => {
+        // Calculate smaller bounding box for collision detection
+        let playerLeft = plane.x + 20; // Adjust as needed
+        let playerRight = plane.x + plane.width - 20; // Adjust as needed
+        let playerTop = plane.y + 20; // Adjust as needed
+        let playerBottom = plane.y + plane.height - 20; // Adjust as needed
+
+        if (playerLeft < rocket.x + rocket.width &&
+            playerRight > rocket.x &&
+            playerTop < rocket.y + rocket.height &&
+            playerBottom > rocket.y) {
+            createExplosion(plane.x, plane.y);
+            if(currenthealth > 1){
+                bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
+                createExplosion(rocket.x, rocket.y);
+                currenthealth--;
+            } else{
+                currenthealth = 0;
+                gameRunning = false;
+            }
+        } shooters.forEach(shooter =>{
+            if (shooter.x < rocket.x + rocket.width &&
+                shooter.x + shooter.width > rocket.x &&
+                shooter.y < rocket.y + rocket.height &&
+                shooter.y + shooter.height > rocket.y) {
+                createExplosion(shooter.x, shooter.y);
+                shooters.splice(shooters.indexOf(shooter), 1);
+            }
+        });
+    }); 
+});
+
+if(((timePassed > 130 && level == 1) || (timePassed > 190 && (level == 2 || level == 3)) || (timePassed > 250 && (level == 4 || level == 5))  || (timePassed > 270 && level == 6) || (level7 == 7 && level == 7))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
     levelup = true;
     win = 1;
+    wins.currentTime = 0;
+    wins.play();
+    towardsmars.pause();
+    towardsmars.currentTime = 0;
+    towardsjupiter.pause();
+    towardsjupiter.currentTime = 0;
+    towardssaturn.pause();
+    towardssaturn.currentTime = 0;
+    towardsuranus.pause();
+    towardsuranus.currentTime = 0;
+    towardsneptune.pause();
+    towardsneptune.currentTime = 0;
+    towardspluto.pause();            
+    towardspluto.currentTime = 0;
+    towardsalpha.pause();            
+    towardsalpha.currentTime = 0;
+    nearalpha.pause();            
+    nearalpha.currentTime = 0;
+
+    coloring[level] = 2;
     if(level != 7){
         winned[level] = 1;
+        coloring[level+1] = 1;
     }
+    
+    localStorage.setItem('coloring', JSON.stringify(coloring));
+    localStorage.setItem('winned', JSON.stringify(winned));
     const levelButtons = document.querySelectorAll('.levelbutton');
 
     // Update button colors based on the level variable
@@ -1297,7 +1994,15 @@ asteroids.forEach(asteroidd =>{
             currenthealth = 0;
             gameRunning = false;
         }
-    }
+    } shooters.forEach(shooter =>{
+        if (shooter.x < asteroidd.x + asteroidd.width &&
+            shooter.x + shooter.width > asteroidd.x &&
+            shooter.y < asteroidd.y + asteroidd.height &&
+            shooter.y + shooter.height > asteroidd.y) {
+            createExplosion(shooter.x, shooter.y);
+            shooters.splice(shooters.indexOf(shooter), 1);
+        }
+    });
 });
 
             // Check collision between player's plane and alien planes
@@ -1314,7 +2019,15 @@ asteroids.forEach(asteroidd =>{
                             currenthealth = 0;
                             gameRunning = false;
                         }
-                }
+                } shooters.forEach(shooter =>{
+                    if (shooter.x < alienPlane.x + alienPlane.width &&
+                        shooter.x + shooter.width > alienPlane.x &&
+                        shooter.y < alienPlane.y + alienPlane.height &&
+                        shooter.y + shooter.height > alienPlane.y) {
+                        createExplosion(shooter.x, shooter.y);
+                        shooters.splice(shooters.indexOf(shooter), 1);
+                    }
+                });
             });
 
             // Check collision between player's plane and alien planes
@@ -1331,11 +2044,64 @@ asteroids.forEach(asteroidd =>{
                             currenthealth = 0;
                             gameRunning = false;
                         }
+                } shooters.forEach(shooter =>{
+                    if (shooter.x < alienPlane.x + alienPlane.width &&
+                        shooter.x + shooter.width > alienPlane.x &&
+                        shooter.y < alienPlane.y + alienPlane.height &&
+                        shooter.y + shooter.height > alienPlane.y) {
+                        createExplosion(shooter.x, shooter.y);
+                        shooters.splice(shooters.indexOf(shooter), 1);
+                    }
+                });
+            }); defenders.forEach(defender => {
+                shooters.forEach(shooter =>{
+                    if (shooter.x < defender.x + defender.width &&
+                        shooter.x + shooter.width > defender.x &&
+                        shooter.y < defender.y + defender.height &&
+                        shooter.y + shooter.height > defender.y) {
+                        createExplosion(shooter.x, shooter.y);
+                        shooters.splice(shooters.indexOf(shooter), 1);
+                    }
+                });
+                if (!immunityActive && plane.x < defender.x + defender.width + 10 &&
+                    plane.x + plane.width + 10> defender.x &&
+                    plane.y < defender.y + defender.height + 10 &&
+                    plane.height + plane.y + 10> defender.y) {
+                    createExplosion(plane.x, plane.y);
+                    defenders.splice(defenders.indexOf(defender), 1);
+                    if(currenthealth > 1){
+                        currenthealth--;
+                        score += 400; // Increase score for destroying a defender
+                        if (score > highScore) {
+                            highScore = score; // Update high score
+                            localStorage.setItem('highScore', highScore); // Store high score in local storage
+                        }
+                    } else{
+                        currenthealth = 0;
+                        gameRunning = false;
+                    }
+                } else if(defenders.y >= plane.y){
+                    createExplosion(defender.x, defender.y);
+                    defenders.splice(defenders.indexOf(defender), 1);
+                    score += 400; // Increase score for destroying a defender
+                    if (score > highScore) {
+                        highScore = score; // Update high score
+                        localStorage.setItem('highScore', highScore); // Store high score in local storage
+                    }
                 }
             });
 
             // Check collision between player's plane and blue arcs
             blueArcs.forEach(blueArc => {
+                shooters.forEach(shooter =>{
+                    if (shooter.x < blueArc.x + blueArc.width &&
+                        shooter.x + shooter.width > blueArc.x &&
+                        shooter.y < blueArc.y + blueArc.height &&
+                        shooter.y + shooter.height > blueArc.y) {
+                        createExplosion(shooter.x, shooter.y);
+                        shooters.splice(shooters.indexOf(shooter), 1);
+                    }
+                });
                 if (!immunityActive && plane.x < blueArc.x + blueArc.width &&
                     plane.x + plane.width > blueArc.x &&
                     plane.y < blueArc.y + blueArc.height &&
@@ -1351,16 +2117,43 @@ asteroids.forEach(asteroidd =>{
                 }
             });
 
-            if(missileButtonPressed){
+            if(missileButtonPressed && level7 != 1  && level7 != 5 && level7 != 5.5){
                 missileButtonPressed = false;
+                missilelaunch.currentTime = 0;
+                missilelaunch.play();
                 missiles.push({
                     x: plane.x + plane.x/200,
                     y: plane.y + plane.x/16,
                     width:80, // Width of the missile
                     height: 60 // Height of the missile
                 });
+            } if(shooterButtonPressed && level7 != 1  && level7 != 5 && level7 != 5.5){
+                shooterButtonPressed = false;
+                shooters.push({
+                    x: plane.x,
+                    y: plane.y+20,
+                    width: 50, // Width of the shooter
+                    height: 50, // Height of the shooter
+                    timespent: timePassed + 6,
+                    bullets: []
+                }); 
+            } if(equippedPlane == 'heavyDuty' && level7 != 1  && level7 != 5 && level7 != 5.5){
+                shooters.forEach(shooter =>{
+                    if (shooter.timespent <= timePassed) {
+                        shooter.bullets.push({
+                            x: shooter.x + shooter.width / 5,
+                            y: shooter.y + shooter.x/20
+                        }); shooter.bullets.push({
+                            x: shooter.x + 4* shooter.width / 5,
+                            y: shooter.y + shooter.x/20
+                        }); 
+                        shooter.timespent = timePassed + 6;
+                    }
+                });
             }
-            if (plane.shooting) {
+            if (plane.shooting && level7 != 1  && level7 != 5 && level7 != 5.5) {
+                shootsound.currentTime = 0; // Reset sound effect
+                shootsound.play();
                 if(equippedPlane === 'miniDualShooter'){
                     plane.bullets.push({
                         x: plane.x + plane.width / 5,
@@ -1403,10 +2196,12 @@ asteroids.forEach(asteroidd =>{
                 } if(Math.random() < 0.003 && timePassed >= 90 && advancedAliens.length < 8 || (Math.random() < 0.003 + diffindex && timePassed >= 500)){
                     createAdvancedAliens();
                 } if((Math.random() < 0.001 && timePassed >= 120 && blueArcs.length < 4) || (Math.random() < 0.001 + diffindex && timePassed >= 700)){
-                    createBlueArcs();
+                    createBlueArcs(); 
                 } if((Math.random() < 0.007 && timePassed >= 150 && nebulas.length < 2) || (Math.random() < 0.001 + diffindex && timePassed >= 700 && nebulas.length < 2)){
-                    createNebulas();
-                } 
+                    createNebulas(); 
+                } if(Math.random() < 0.001 && timePassed >= 200){
+                    createDefenders();
+                }
             } else if(level == 1){ //towards mars 120
                 if (Math.random() < 0.02) {
                     createStone();
@@ -1484,29 +2279,158 @@ asteroids.forEach(asteroidd =>{
                     createNebulas();
                 } 
             } else if(level == 7){ // boss fight and alpha centauri
-                //boss fight
+                //boss fight level7
+                if(level7 == 0){
+                    if (Math.random() < 0.01 && timePassed <120) {
+                        createStone();
+                    } if (Math.random() < 0.006 && timePassed >= 10 && timePassed <120) {
+                        createAlienPlane();
+                    } if(Math.random() < 0.004 && timePassed >= 50 && timePassed <120){
+                        createAsteroid();
+                    } if(Math.random() < 0.007 && timePassed >= 30 && timePassed <120){
+                        createAdvancedAliens();
+                    } if(Math.random() < 0.0045 && timePassed >= 70 && timePassed <120){
+                        createBlueArcs();
+                    } if(Math.random() < 0.007 && timePassed >= 90 && nebulas.length < 2 && timePassed <120){
+                        createNebulas();
+                    } 
+                    if(stones.length == 0 && alienPlanes.length == 0 && advancedAliens.length == 0 && asteroids.length == 0 && blueArcs.length == 0 && nebulas.length == 0 && planets.length == 0 && timePassed >= 120 && initialbossremoved == 0){
+                        planetImage.src = 'eris.png';
+                        createPlanet();
+                        initialbossremoved = 1;
+                    } planets.forEach(planet => {
+                        if(initialbossremoved != 0 && planet.y >= planet.height + 3.5*plane.height){
+                            level7 = 1;
+                            initialbossremoved = timePassed + 4;
+                            createBoss();
+                        } 
+                    });                    
+                } 
+                
+                if(level7 == 1 && initialbossremoved <= timePassed){                    
+                    nearalpha.currentTime = 0;
+                    nearalpha.play();
+                    towardsalpha.pause();
+                    towardsalpha.currentTime = 0;
+                    level7 = 2;
+                    initialbossremoved = timePassed + 4;
+                    boss.splice(0,1);
+                } else if(level7 == 2){
+                    if((Math.random() < 0.1 && finalboss.length == 0) || Math.random() < 0.05){
+                        let k = 200;
+                        while(!createDefenders()&&k-->0);
+                    } //also add logic for boss spawning 
+                    if(finalboss.length == 0 && initialbossremoved <= timePassed){                        
+                        createFinalBoss(); 
+                        initialbossremoved = 0;
+                    } if(Math.random() < 0.002){
+                        createBlueArcs();
+                    } if (Math.random() < 0.0007 && rotators.length < 1){
+                        createRotator();
+                    } 
+                } else if(level7 == 3){
+                    //boss 1st layer destroyed
+                    if(Math.random() < 0.032 && defenders.length < 30){
+                        let k = 200;
+                        while(!createDefenders()&&k-->0);
+                    } if(Math.random() < 0.007 && nebulas.length < 2){
+                        createNebulas();
+                    } if(Math.random() < 0.0035){
+                        createAsteroid();
+                    }  if(Math.random() < 0.002){
+                        createBlueArcs();
+                    } if (Math.random() < 0.0007 && rotators.length < 1){
+                        createRotator();
+                    } 
+                } else if(level7 == 4){
+                    //boss 2nd layer destroyed
+                    if(Math.random() < 0.025 && defenders.length < 30){
+                        let k = 200;
+                        while(!createDefenders()&&k-->0);
+                    } if(Math.random() < 0.007 && nebulas.length < 2){
+                        createNebulas();
+                    } if(Math.random() < 0.004){
+                        createAsteroid();
+                    } if (Math.random() < 0.0007 && rotators.length < 1){
+                        createRotator();
+                    } if(Math.random() < 0.002){
+                        createBlueArcs();
+                    } if (Math.random() < 0.004) {
+                        createAlienPlane();
+                    } if(Math.random() < 0.0025){
+                        createAdvancedAliens();
+                    } 
+                } else if(level7 == 5 && initialbossremoved ==0){ 
+                    nearalpha.pause();
+                    nearalpha.currentTime = 0;
+                    //remove after animation     finalboss.splice(0,1);
+                    initialbossremoved = timePassed+2;
+
+                } else if(level7 == 5 && initialbossremoved <= timePassed){
+                    createExplosion(finalboss[0].x,finalboss[0].y);                                     
+                    bossfinalImage.src = 'bossexplosion.png';
+                    bigexplode.currentTime = 1;
+                    bigexplode.play();
+                    level7 = 5.5;
+                    initialbossremoved = timePassed+2;
+                } else if(level7 == 5.5 && initialbossremoved <= timePassed){  
+                    level7 = 6;
+                    finalboss = [];
+                    score += 10000;
+                    if(score >= highScore){
+                        highScore = score;
+                        localStorage.setItem('highScore', highScore); // Store high score in local storage
+                    }
+                    initialbossremoved = 0;
+                } else if(level7 == 6 &&initialbossremoved==0){
+                    //won                    
+                    planetImage.src = 'haumea.png';
+                    createPlanet();
+                    initialbossremoved = 1; 
+                } planets.forEach(planet => {
+                    if(initialbossremoved != 0 && planet.y >= 0.75*planet.height&&level7 == 6){
+                        level7 = 7;
+                    }
+                }); 
+
             } if(((timePassed > 120 && level == 1) || (timePassed > 180 && (level == 2 || level == 3)) || (timePassed > 240 && (level == 4 || level == 5))  || (timePassed > 260 && level == 6))&&win == 0){  //timerwin 120 180 180 240 240 260 100+boss spaces
                 if(planets.length < 1){
                     createPlanet();
                 }
-            }
+            } 
         }
 
         function gameLoop() { // Reset game variables and start timers, etc.
             draw();
             requestAnimationFrame(gameLoop);
         }
-
         function restartGame(lvl) {
-            levelup = false;
+            initialbossremoved = 0;
+            bossfinalImage.src = 'bossdownwards.png';
             if(lvl < 0){
                 lvl = level;
-            }
+            } 
+            
+            level = lvl;
+            
+            if(level != 0 && winned[level-1] == 0){
+                return;
+            } 
+            buttonclickk.currentTime = 0.25;
+            buttonclickk.play();
+            wins.pause();
+            bigexplode.pause();
+            missilelaunch.pause();
+            shootsound.pause();
+            teleport.pause();
+            frozen.pause();
+            exploding.pause();
+            levelup = false;
+            level7 = 0;
+            
             hideMenu();
             levelScreen.style.display = 'none';
-            if(lvl != 0 && winned[lvl-1] == 0){
-                return;
-            }
+            
             timePassed = 0;
             if(win == 1 && level != 7){
                 win = 0;
@@ -1514,7 +2438,7 @@ asteroids.forEach(asteroidd =>{
                 return;
             }
             win = 0; 
-            level = lvl;
+            wins.pause();
             towardsmars.pause();
             towardsmars.currentTime = 0;
             towardsjupiter.pause();
@@ -1531,6 +2455,7 @@ asteroids.forEach(asteroidd =>{
             towardsalpha.currentTime = 0;
             nearalpha.pause();            
             nearalpha.currentTime = 0;
+            laser.pause();
             bgmusic.pause();
             bgmusic.currentTime = 0;
 
@@ -1560,32 +2485,45 @@ asteroids.forEach(asteroidd =>{
                 planetImage.src = "haumea.png";
             }
             missileTime = 0;
+            shooterTime = 0;
             if(equippedPlane != 'zxiFighter'){
                 missileButton.style.display = 'none';
             } else{
                 missileButton.style.display = 'flex';
-            }
+            } if(equippedPlane != 'heavyDuty'){
+                shooterButton.style.display = 'none';
+            } else{
+                shooterButton.style.display = 'flex';
+            } 
             missiles = [];
+            shooters = [];
             currenthealth = equippedhealth;
             planeImage.src = equippedImage;
             fireButtonPressed = false;
+            
+            finalboss = [];
 
             plane.moveLeft = false;
             plane.moveRight = false;
             plane.x = canvas.width / 2;
             plane.y = canvas.height - 100;
             plane.bullets = [];
+            shooters = [];
             stones = [];
             nebulas = [];
             rotators = [];
             asteroids = [];
+            boss = [];
+            massexplosions = [];
             planets = [];
             alienPlanes = [];
             blueArcs = [];
             advancedAliens = [];
+            defenders = [];
             explosions = [];
 	        coins = [];
             immunityPill = null;
+            bubbleImage.src = '';
             score = 0;
             gameRunning = true;
             gameOverScreen.style.display = 'none';            
@@ -1593,8 +2531,25 @@ asteroids.forEach(asteroidd =>{
             lastTime = Date.now();
         }
         function returnToMenu() {
+            
+            finalboss = [];
+            bossfinalImage.src = 'bossdownwards.png';
+            initialbossremoved = 0;
+            buttonclickk.currentTime = 0.25;
+            buttonclickk.play();
+            wins.pause();
+            bigexplode.pause();
+            bubbleImage.src = '';
+            missilelaunch.pause();
+            shootsound.pause();
+            teleport.pause();
+            frozen.pause();
+            laser.pause();
+            exploding.pause();
+            level7 = 0;
             levelup = false;
             timePassed = 0;
+            boss = [];
             bgmusic.play();
             win = 0;
             if(level == 0){   
@@ -1625,17 +2580,21 @@ asteroids.forEach(asteroidd =>{
                 nearalpha.currentTime = 0;
             }
             missiles = [];
+            shooters = [];
             plane.x = canvas.width / 2;
             plane.y = canvas.height - 100;
             plane.bullets = [];
             rotators = [];
             asteroids = [];
+            massexplosions = [];
             planets = [];
+            shooters = [];
             stones = [];
             nebulas = [];
             alienPlanes = [];
             blueArcs = [];
             advancedAliens = [];
+            defenders = [];
             explosions = [];
 	        coins = [];
             immunityPill = null;
@@ -1648,6 +2607,8 @@ asteroids.forEach(asteroidd =>{
         }   
 
         function togglePause() {
+            buttonclickk.currentTime = 0.25;
+            buttonclickk.play();
             paused = !paused;
             gameRunning = false; // Stop updating the game loop
             document.getElementById('pauseScreen').style.display = 'flex';
