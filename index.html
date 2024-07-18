@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>   
+
+    <!-- Musics -->
     <audio id="bgmusic" loop> 
         <source src="main-menu-plane-defense.mp3" type="audio/mp3"> 
     </audio> 
@@ -46,6 +48,43 @@
     <audio id="nearalpha" loop> 
         <source src="near end.mp3" type="audio/mp3"> 
     </audio> 
+    
+    <!-- Sound Effects-->
+    <audio id="exploding">
+        <source src="explode.mp3" type="audio/mp3">  
+    </audio> 
+
+    <audio id="buttonclickk">
+        <source src="buttonclick.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="frozen">
+        <source src="frozen.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="wins">
+        <source src="win.mp3" type="audio/mp3">
+    </audio> 
+
+    <audio id="teleport">
+        <source src="teleport.mp3" type="audio/mp3">
+    </audio> 
+
+    <audio id="shootsound">
+        <source src="shoot.mp3" type="audio/mp3">
+    </audio> 
+
+    <audio id="missilelaunch">
+        <source src="missilelaunch.mp3" type="audio/mp3">
+    </audio> 
+
+    <audio id="bigexplode">
+        <source src="bigexplosion.mp3" type="audio/mp3">
+    </audio> 
+
+    <audio id = "laser">
+        <source src="laser bean.mp3" type="audio/mp3">
+    </audio>
 
     <div style="position: relative;">
         <canvas id="gameCanvas"></canvas>
@@ -54,6 +93,7 @@
         </button>        
     </div>
     <div id="missileButton" onclick="missile()"></div>
+    <div id = "shooterButton" onclick="createshooter()"></div>
     <div id="fireButton" onclick="shoot()"></div>
     <div id="timerDisplay" style="position: absolute; right: 20px; top: 60px; font-size: 20px;"></div>
 
@@ -68,10 +108,12 @@
             <img src="coin.png" alt="Coins" id="coinIcon">
             <span id="coinCount">0</span>
         </div>
-        <h1> Plane Defense </h1>
-        <button id="playButton" onclick="showlevelscreen()">Play</button>
-        <button id="howToPlayButton" onclick="showHowToPlay()">How to Play</button>
-        <button id="StorePlanes" onclick="toggleStoreMenu()">Store</button>
+        <div>
+            <img src="initialtext.png">
+        </div>
+        <button id="playButton" onclick="showlevelscreen()"></button>
+        <button id="howToPlayButton" onclick="showHowToPlay()"></button>
+        <button id="StorePlanes" onclick="toggleStoreMenu()"></button>
     </div>    
 
     <div id = "initialscreen">
@@ -107,7 +149,7 @@
                 <span id="costValue"></span>
                 <img id="coinIcon" src="coin.png" alt="Coin Icon" class="icon">
             </p>
-            <button id="buyButton" class="buy-button button" onclick="buyCurrentPlane()">Buy</button>
+            <button id="buyButton" class="buy-button button" onclick="buyCurrentPlane()">Buy Plane</button>
             <button id="equipButton" class="equip-button button" onclick="equipCurrentPlane()">Equip</button>
         </div>
         <button class="arrow-button" id="rightArrow" onclick="nextPlane()">&#9654;</button>
