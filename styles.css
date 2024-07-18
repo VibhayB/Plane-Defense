@@ -9,6 +9,12 @@ body {
     height: 100vh;
     color: white;
     font-family: Arial, sans-serif;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
+    user-select: none; /* Standard syntax */
+} img {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Transparent */
 }
 #gameCanvas {
     border: 2px solid white;
@@ -33,7 +39,17 @@ background-size: contain;
 background-repeat: no-repeat;
 cursor: pointer;
 background-image: url('firebutton.png');
-} 
+} #shooterButton{
+    position: absolute;
+right: 20px; /* Position towards the right end */
+bottom: 200px; /* Move up from the fire button */
+width: 80px;
+height: 80px;
+background-size: contain;
+background-repeat: no-repeat;
+cursor: pointer;
+background-image: url('turret.png');
+}
 
 #score, #highScore, #time {
 position: absolute;
@@ -72,6 +88,11 @@ background-color: transparent;
     font-size: 36px;
     color: white;
     margin-top: 20px;
+    text-shadow:
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 #playAgainButton, #returnToMenuButton {
     padding: 5px 57px;
@@ -104,15 +125,6 @@ background-color: transparent;
     color: white; /* Ensuring text is visible */
     font-size: 18px; /* Adjust font size as needed */
 }
-#playButton {
-    padding: 5px 80px;
-    font-size: 22px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-} 
 
 #levelScreen {
     justify-content: center;
@@ -139,25 +151,31 @@ background-color: transparent;
     padding: 20px;
     margin: 10px;
     width: 300px;
-} 
+} #playButton, #howToPlayButton, #StorePlanes {
+    background-color: transparent; /* Make the button backgrounds transparent */
+    border: none; /* Remove the default button border */
+    cursor: pointer; /* Change the cursor to a pointer on hover */
+    width: 187.5px; /* Increase the button width */
+    height: 50px; /* Increase the button height */
+    margin: 10px 10px; /* Add some space between the buttons, with more horizontal space */
+    background-size: contain; /* Scale the background image to fit the button size */
+    background-repeat: no-repeat; /* Don't repeat the background image */
+    display: inline-block; /* Make the buttons display inline-block to remove gaps */
+    vertical-align: middle; /* Align the buttons vertically */
+}
+
+#playButton {
+    background-image: url('playbutton.png');
+}
 
 #howToPlayButton {
-background-color: yellow;
-color: black;
-padding: 5px 42px;
-font-size: 22px;
-border: none;
-cursor: pointer;
-margin-top: 20px;
-} #StorePlanes{
-background-color: rgb(230, 0, 255);
-color: black;
-padding: 5px 74px;
-font-size: 22px;
-border: none;
-cursor: pointer;
-margin-top: 20px;
+    background-image: url('howtoplaybutton.png');
 }
+
+#StorePlanes {
+    background-image: url('storebutton.png');
+}
+
 
 #howToPlayPopup {
 display: none;
@@ -196,6 +214,11 @@ cursor: pointer;
 font-size: 18px;
 margin-top: 20px;
 } #pauseScreen{
+    text-shadow:
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 display: flex;
 justify-content: center;
 align-items: center;
@@ -280,6 +303,7 @@ width: 300px;
 .plane-item img {
 width: 200px;
 height: auto;
+-webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Transparent */
 }
 
 .button {
@@ -291,14 +315,23 @@ cursor: pointer;
 
 .buy-button {
 background-color: gold;
-}
+border: 1px solid #000000; /* Border color and thickness */
+border-radius: 18px; /* Adjust border-radius for roundness */
+transition: background-color 0.3s ease;
+} 
 
 .equip-button {
 background-color: green;
+border: 1px solid #000000; /* Border color and thickness */
+border-radius: 18px; /* Adjust border-radius for roundness */
+transition: background-color 0.3s ease;
 }
 
 .equipped-button {
 background-color: red;
+border: 1px solid #000000; /* Border color and thickness */
+border-radius: 18px; /* Adjust border-radius for roundness */
+transition: background-color 0.3s ease;
 } .icon {
 width: 20px;
 height: 20px;
