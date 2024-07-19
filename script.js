@@ -1,6 +1,60 @@
 let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
 let initialbossremoved = 0;
 
+let currentAudio = bgmusic;
+var music = true;
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggleButton');
+    const toggleIcon = document.getElementById('toggleIcon');
+
+    function toggleAudio() {
+        if (!music) {
+            currentAudio.play();
+            music = true;
+            toggleIcon.src = 'unmute.png'; // Set to mute icon when audio is playing
+        } else {
+            currentAudio.pause();
+            toggleIcon.src = 'mute.png'; // Set to unmute icon when audio is paused
+            music = false;
+        }
+    } 
+
+    toggleIcon.src = music ? 'unmute.png' : 'mute.png';
+
+    // Add event listener to the button
+    toggleButton.addEventListener('click', toggleAudio);
+});
+
+// Function to manage audio based on visibility and focus
+function manageAudio() {
+    if (document.hidden || !music) {
+        if (!currentAudio.paused) {
+            currentAudio.pause(); // Pause the audio if the tab is hidden or music is off
+        }
+    } else {
+        if (currentAudio.paused) {
+            currentAudio.play().catch(error => {
+                // Optionally, you could inform the user or prompt for interaction here
+            });
+        }
+    }
+}
+
+// Event listener for visibility changes
+document.addEventListener('visibilitychange', manageAudio);
+
+// Optional: Listen for focus/blur events to handle cases where the tab might be visible but not focused
+window.addEventListener('focus', manageAudio);
+window.addEventListener('blur', manageAudio);
+
+document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Prevents the default action (like image dragging)
+    });
+});
+
 //Update volumes: explosion, big explosion
 bigexplode.volume = 0.5;
 missilelaunch.volume = 0.25;
@@ -21,7 +75,9 @@ document.addEventListener('keydown', function(e) {
     function initialize(){
         // Hide the initial screen and show the game content
         document.getElementById('initialscreen').style.display = 'none';
-        bgmusic.play();
+        if(music){
+            bgmusic.play();
+        }
         document.removeEventListener('click',initialize);
     } document.addEventListener('click', initialize);
     
@@ -52,7 +108,9 @@ let planes = [
         health: 1,
         cost: 'Already Owned',
         imgSrc: 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05001234/plane_preview.png',
-        bought: true
+        bought: true,
+        damage: 1,
+        freezed: 'basicplanefreezed.png'
     },
     {
         id: 'miniDualShooter',
@@ -60,7 +118,9 @@ let planes = [
         health: 2,
         cost: ' 290',
         imgSrc: 'dualshooter.png',
-        bought: false
+        bought: false,
+        damage: 1.5,
+        freezed: 'dualshooterfreezed.png'
     },
     {
         id: 'heavyDuty',
@@ -68,44 +128,43 @@ let planes = [
         health: 4,
         cost: ' 710',
         imgSrc: 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05010017/plane-animated-top-down-game-art.png',
-        bought: false
+        bought: false,
+        damage: 3.5,
+        freezed: 'heavyplanefreezed.png'
     },
     {
         id: 'zxiFighter',
         name: 'Kaiser\'s Wrath (4.7x)',
         health: 6,
-        cost: ' 1400',
+        cost: ' 1200',
         imgSrc: 'zxiFighter.png',
-        bought: false
+        bought: false,
+        damage: 4.7,
+        freezed: 'zxiFighter.png'
     }
 ];
 
-let firststart = false;
 let currenthealth = 0;
-let equippeddamage = 1;
 let currentPlaneIndex = 0;
-let equippedPlane = 'monoFighter';
-let equippedImage = 'basicplane.png';
-let equippedfreeze = 'basicplanefreezed.png';
-let equippedhealth = 1; 
+let selectedPlane = 0;
 let level = 0;
 levelScreen.style.display = 'none';
 
 function saveGameState() {
     var gameState = {
-        planes,
-        equippedPlane,
-        equippedImage,
-        equippedfreeze,
-        equippedhealth,
-        equippeddamage,
+        boughtPlanes: planes.map(plane => ({ id: plane.id, bought: plane.bought })),
+        selectedPlane,
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
 }
 
 function updateStoreMenu() {
     const plane = planes[currentPlaneIndex];
-    
+
+    if (!plane) {
+        return;
+    }
+
     document.getElementById('planeImage').src = plane.imgSrc;
     document.getElementById('planeName').innerText = plane.name;
     document.getElementById('healthValue').innerText = plane.health;
@@ -123,8 +182,10 @@ function updateStoreMenu() {
     if (plane.bought) {
         buyButton.style.display = 'none';
         equipButton.style.display = 'inline-block';
-        equipButton.innerText = (equippedPlane === plane.id) ? 'Equipped' : 'Equip';
-        equipButton.className = (equippedPlane === plane.id) ? 'equipped-button button' : 'equip-button button';
+        if (planes[selectedPlane]) {
+            equipButton.innerText = (planes[selectedPlane].id === plane.id) ? 'Equipped' : 'Equip';
+            equipButton.className = (planes[selectedPlane].id === plane.id) ? 'equipped-button button' : 'equip-button button';
+        }
     } else {
         buyButton.style.display = 'inline-block';
         equipButton.style.display = 'none';
@@ -183,28 +244,7 @@ function equipCurrentPlane() {
     if (plane.bought) {
         buttonclickk.currentTime = 0.25;
         buttonclickk.play();
-        equippedPlane = plane.id;
-        if(currentPlaneIndex === 0){
-            equippedImage = 'basicplane';
-            equippedhealth = 1;
-            equippeddamage = 1;
-            equippedfreeze = 'basicplanefreezed.png';
-        } else if(currentPlaneIndex === 1){
-            equippedImage = 'dualshooter.png';
-            equippedhealth = 2;
-            equippeddamage = 1.5;
-            equippedfreeze = 'dualshooterfreezed.png';
-            
-        } else if(currentPlaneIndex === 2){
-            equippedImage = 'heavyplane.png';
-            equippedhealth = 4;
-            equippeddamage = 3.5;
-            equippedfreeze = 'heavyplanefreezed.png';
-        } else{
-            equippedImage = 'zxiFighter.png';
-            equippedhealth = 6;
-            equippeddamage = 4.7;
-        }
+        selectedPlane = currentPlaneIndex;
         updateStoreMenu();
     }
 }
@@ -223,12 +263,19 @@ function loadGameState() {
     var savedState = localStorage.getItem('gameState');
     if (savedState) {
         var gameState = JSON.parse(savedState);
-        planes = gameState.planes;
-        equippedPlane = gameState.equippedPlane;
-        equippedImage = gameState.equippedImage;
-        equippedfreeze = gameState.equippedfreeze;
-        equippedhealth = gameState.equippedhealth;
-        equippeddamage = gameState.equippeddamage;
+        planes.forEach(plane => {
+            const savedPlane = gameState.boughtPlanes.find(p => p.id === plane.id);
+            if (savedPlane) {
+                plane.bought = savedPlane.bought;
+            }
+        });
+        selectedPlane = gameState.selectedPlane;
+
+        // Ensure selectedPlane is within bounds
+        if (selectedPlane < 0 || selectedPlane >= planes.length) {
+            selectedPlane = 0; // Default to 0 if out of bounds
+        }
+        
         updateCoinDisplay();  // Make sure to update the coin display after loading the state
     }
 }
@@ -299,7 +346,7 @@ function createImmunityPill() {
     };
 }
         let planeImage = new Image();
-        planeImage.src = equippedImage;
+        planeImage.src = planes[selectedPlane].imgSrc;
         const massExplosion = new Image();
         massExplosion.src = 'massexplosion.png';
         const stoneImage = new Image();
@@ -486,7 +533,7 @@ document.addEventListener('mouseup', function(event) {
                 plane.shooting = false;
             }
         } function missile(){
-            if(missileTime === 0 && equippedPlane === 'zxiFighter' && level7 != 1  && level7 != 5 && level7 != 5.5){
+            if(missileTime === 0 && planes[selectedPlane].id === 'zxiFighter' && level7 != 1  && level7 != 5 && level7 != 5.5){
                 // Set missile reuse time
                 missileButton.style.display = 'none';
                 missileTime = timePassed + 20;
@@ -495,7 +542,7 @@ document.addEventListener('mouseup', function(event) {
                 missileButtonPressed = false;
             }
         } function createshooter(){
-            if(shooterTime === 0 && equippedPlane === 'heavyDuty' && level7 != 1  && level7 != 5 && level7 != 5.5){
+            if(shooterTime === 0 && planes[selectedPlane].id === 'heavyDuty' && level7 != 1  && level7 != 5 && level7 != 5.5){
                 // Set shooter reuse time
                 shooterButton.style.display = 'none';
                 shooterTime = timePassed + 20;
@@ -864,7 +911,7 @@ function checkBulletCollision(bullet, boss) {
 
 
         function draw() {
-            if(equippedPlane === 'zxiFighter'){
+            if(planes[selectedPlane].id === 'zxiFighter'){
                 plane.height = 117;
                 plane.width = 90;
                 plane.y = canvas.height - 120;
@@ -994,13 +1041,13 @@ function checkBulletCollision(bullet, boss) {
             
             // Draw bullets for our plane
             plane.bullets.forEach(bullet => {
-                if(equippedPlane === 'monoFighter'){
+                if(planes[selectedPlane].id === 'monoFighter'){
                     ctx.fillStyle = 'yellow';
                     ctx.fillRect(bullet.x, bullet.y, 2, 8);
-                } else if(equippedPlane === 'miniDualShooter'){
+                } else if(planes[selectedPlane].id === 'miniDualShooter'){
                     ctx.fillStyle = 'orange';
                     ctx.fillRect(bullet.x, bullet.y, 2, 8);
-                } else if(equippedPlane === 'heavyDuty'){
+                } else if(planes[selectedPlane].id === 'heavyDuty'){
                     ctx.fillStyle = 'violet';
                     ctx.fillRect(bullet.x, bullet.y, 4, 8);
                 } else{
@@ -1010,7 +1057,7 @@ function checkBulletCollision(bullet, boss) {
                 
             }); //Draw bullets for shooters
 
-            if(equippedPlane === 'heavyDuty'){
+            if(planes[selectedPlane].id === 'heavyDuty'){
                 shooters.forEach(shooter => {
                     shooter.bullets.forEach(bullet => {
                         ctx.fillStyle = 'pink';
@@ -1060,17 +1107,17 @@ function checkBulletCollision(bullet, boss) {
             lastTime = currentTime;
             timePassed += deltaTime;
             
-if(missileTime <= timePassed && equippedPlane == 'zxiFighter'){
+if(missileTime <= timePassed && planes[selectedPlane].id == 'zxiFighter'){
     missileButton.style.display = 'flex';
     missileTime = 0;
-} if(shooterTime <= timePassed && equippedPlane == 'heavyDuty'){
+} if(shooterTime <= timePassed && planes[selectedPlane].id == 'heavyDuty'){
     shooterButton.style.display = 'flex';
     shooterTime = 0;
 }
 
 if(freezetime - Date.now() <= 0 || immunityActive){
     freezetime = 0;
-    planeImage.src = equippedImage;
+    planeImage.src = planes[selectedPlane].imgSrc;
 }
 
 let immunityTimeRemaining = immunityEndTime - Date.now();
@@ -1327,11 +1374,11 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                         bullet.y > plane.y && bullet.y < plane.y + plane.height) {
                         // stalling logic
                         blueArc.bullets.splice(blueArc.bullets.indexOf(bullet), 1);
-                        if(equippedPlane != 'zxiFighter'){
+                        if(planes[selectedPlane].id != 'zxiFighter'){
                             freezetime = Date.now() + (3000);
                             frozen.currentTime = 0;
                             frozen.play();
-                            planeImage.src = equippedfreeze; // Apply a blue filter to the plane's image
+                            planeImage.src = planes[selectedPlane].freezed; // Apply a blue filter to the plane's image
                         }
                     } shooters.forEach(shooter =>{
                         if (bullet.x > shooter.x && bullet.x < shooter.x + shooter.width &&
@@ -1375,7 +1422,6 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
         }
                 if(level7 == 3 || level7 == 4){
                     // Boss plane shooting bullets
-                    console.log(bossfinal.flareInterval - timePassed);
                     if (timePassed >= bossfinal.flareInterval) {
                         bossfinal.flareInterval = timePassed + 12;
                         bossfinal.flares = [];
@@ -1385,7 +1431,6 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                         bossfinal.flares = [];                        
                         bossfinalImage.src = 'bossdownwards.png';  
                     } else if (bossfinal.flareInterval - timePassed <= 10 && bossfinal.flares.length == 0) {
-                        console.log("fired blue flare"); // make sure to splice bullets after time and create within here itself
                         bossfinal.flares.push({
                             x: bossfinal.x + bossfinal.width / 6.8,
                             y: bossfinal.y + 34, 
@@ -1404,11 +1449,9 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                             if(level7 != 5){
                                 flare.height += 8;
                             } 
-                            console.log("flare height shall increase",flare.height);
                             // Check collision with player's plane
                             if (plane.x> flare.x && plane.x < flare.x + flare.width &&
                                 plane.y> flare.y && plane.y < flare.y + flare.height) {
-                                console.log("flare contact");
                                 createExplosion(flare.x, flare.y);
                                 if(currenthealth > 1){
                                     bossfinal.flares.splice(bossfinal.flares.indexOf(flare), 1);
@@ -1606,7 +1649,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                 alienPlanes.forEach(alienPlane => {
                     if (bullet.x > alienPlane.x && bullet.x < alienPlane.x + alienPlane.width &&
                         bullet.y > alienPlane.y && bullet.y < alienPlane.y + alienPlane.height) {
-                        alienPlane.health -= equippeddamage;
+                        alienPlane.health -= planes[selectedPlane].damage;
                         plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                         if (alienPlane.health <= 0) {
                             createExplosion(alienPlane.x, alienPlane.y);
@@ -1623,7 +1666,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                 advancedAliens.forEach(alienPlane => {
                     if (bullet.x > alienPlane.x && bullet.x < alienPlane.x + alienPlane.width &&
                         bullet.y > alienPlane.y && bullet.y < alienPlane.y + alienPlane.height) {
-                        alienPlane.health -= equippeddamage;
+                        alienPlane.health -= planes[selectedPlane].damage;
                         plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                         if (alienPlane.health <= 0) {
                             createExplosion(alienPlane.x, alienPlane.y);
@@ -1640,7 +1683,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                 blueArcs.forEach(blueArc => {
                     if (bullet.x > blueArc.x && bullet.x < blueArc.x + blueArc.width &&
                     bullet.y > blueArc.y && bullet.y < blueArc.y + blueArc.height) {
-                        blueArc.health -= equippeddamage;
+                        blueArc.health -= planes[selectedPlane].damage;
                         plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                         if(blueArc.health <= 0){
                             createExplosion(blueArc.x, blueArc.y);
@@ -1657,7 +1700,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                 defenders.forEach(defender => {
                     if(bullet.x > defender.x && bullet.x < defender.x + defender.width &&
                         bullet.y > defender.y && bullet.y < defender.y + defender.height){
-                        defender.health -= equippeddamage;
+                        defender.health -= planes[selectedPlane].damage;
                         plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                         if(defender.health <= 0){
                             defender.state = true;
@@ -1665,7 +1708,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                     }
                 }); finalboss.forEach(bossfinal =>{
                     if(checkBulletCollision(bullet, bossfinal)){
-                        bossfinal.health -= equippeddamage;
+                        bossfinal.health -= planes[selectedPlane].damage;
                         plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                         createExplosion(bullet.x, bullet.y);
                         if(bossfinal.health <= 0 && level7 < 5){
@@ -1678,7 +1721,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                     } bossfinal.rockets.forEach(rocket =>{
                         if(bullet.x > rocket.x && bullet.x < rocket.x + rocket.width &&
                             bullet.y > rocket.y && bullet.y < rocket.y + rocket.height){
-                            rocket.health -= equippeddamage;
+                            rocket.health -= planes[selectedPlane].damage;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             if(rocket.health <= 0){
                                 bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
@@ -1781,7 +1824,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
 
                     finalboss.forEach(bossfinal =>{
                         if(checkBulletCollision(bullet, bossfinal)){
-                            bossfinal.health -= equippeddamage;
+                            bossfinal.health -= planes[selectedPlane].damage;
                             shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                             createExplosion(bullet.x, bullet.y);
                             if(bossfinal.health <= 0  && level7 < 5){
@@ -1794,7 +1837,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                         } bossfinal.rockets.forEach(rocket =>{
                             if(bullet.x > rocket.x && bullet.x < rocket.x + rocket.width &&
                                 bullet.y > rocket.y && bullet.y < rocket.y + rocket.height){
-                                rocket.health -= equippeddamage;
+                                rocket.health -= planes[selectedPlane].damage;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                                 if(rocket.health <= 0){
                                     bossfinal.rockets.splice(bossfinal.rockets.indexOf(rocket), 1);
@@ -1930,7 +1973,11 @@ rotators.forEach(rotator => {
 if(((timePassed > 130 && level == 1) || (timePassed > 190 && (level == 2 || level == 3)) || (timePassed > 210 && (level == 4 || level == 5))  || (timePassed > 230 && level == 6) || (level7 == 7 && level == 7))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
     win = 1;
     wins.currentTime = 0;
-    wins.play();
+    
+    if(music){
+        wins.play();
+    }
+    currentAudio = wins;    
     towardsmars.pause();
     towardsmars.currentTime = 0;
     towardsjupiter.pause();
@@ -2133,7 +2180,7 @@ asteroids.forEach(asteroidd =>{
                     timespent: timePassed + 6,
                     bullets: []
                 }); 
-            } if(equippedPlane == 'heavyDuty' && level7 != 1  && level7 != 5 && level7 != 5.5){
+            } if(planes[selectedPlane].id == 'heavyDuty' && level7 != 1  && level7 != 5 && level7 != 5.5){
                 shooters.forEach(shooter =>{
                     if (shooter.timespent <= timePassed) {
                         shooter.bullets.push({
@@ -2150,7 +2197,7 @@ asteroids.forEach(asteroidd =>{
             if (plane.shooting && level7 != 1  && level7 != 5 && level7 != 5.5) {
                 shootsound.currentTime = 0; // Reset sound effect
                 shootsound.play();
-                if(equippedPlane === 'miniDualShooter'){
+                if(planes[selectedPlane].id === 'miniDualShooter'){
                     plane.bullets.push({
                         x: plane.x + plane.width / 5,
                         y: plane.y + plane.x/20
@@ -2159,7 +2206,7 @@ asteroids.forEach(asteroidd =>{
                         x: plane.x + 3*plane.width / 4,
                         y: plane.y + plane.x/20
                     });
-                } else if(equippedPlane === 'zxiFighter'){
+                } else if(planes[selectedPlane].id === 'zxiFighter'){
                     plane.bullets.push({
                         x: plane.x + plane.width / 6,
                         y: plane.y + plane.x/16
@@ -2306,7 +2353,9 @@ asteroids.forEach(asteroidd =>{
                 
                 if(level7 == 1 && initialbossremoved <= timePassed){                    
                     nearalpha.currentTime = 0;
-                    nearalpha.play();
+                    if(music){
+                        nearalpha.play();
+                    }currentAudio = nearalpha;
                     towardsalpha.pause();
                     towardsalpha.currentTime = 0;
                     level7 = 2;
@@ -2456,45 +2505,67 @@ asteroids.forEach(asteroidd =>{
             bgmusic.currentTime = 0;
 
             if(level == 0){   
-                survivormusic.currentTime = 0;
-                survivormusic.play();
+                survivormusic.currentTime = 0;                
+                if(music){
+                    survivormusic.play();
+                }currentAudio = survivormusic;
             } else if(level == 1){
-                towardsmars.play();
-                planetImage.src = "mars.png";
+                planetImage.src = "mars.png";                
+                if(music){
+                    towardsmars.play();
+                }currentAudio = towardsmars;
             } else if(level == 2){
-                towardsjupiter.play();
                 planetImage.src = "jupiter.png";
+                if(music){
+                    towardjupiter.play();
+                }
+                currentAudio = towardjupiter;
             } else if(level == 3){
-                towardssaturn.play();
                 planetImage.src = "titan.png";
+                if(music){
+                    towardssaturn.play();
+                }
+                currentAudio = towardssaturn;
             } else if(level == 4){
-                towardsuranus.play();
                 planetImage.src = "uranus.png";
+                if(music){
+                    towardsuranus.play();
+                }
+                currentAudio = towardsuranus;
             } else if(level == 5){
-                towardsneptune.play();
                 planetImage.src = "neptune.png";
+                if(music){
+                    towardsneptune.play();
+                }
+                currentAudio = towardsneptune;
             } else if(level == 6){
-                towardspluto.play();
                 planetImage.src = "pluto.png";
+                if(music){
+                    towardspluto.play();
+                }
+                currentAudio = towardspluto;
             } else if(level == 7){
-                towardsalpha.play();
                 planetImage.src = "haumea.png";
+                if(music){
+                    towardsalpha.play();
+                }
+                currentAudio = towardsalpha;
             }
             missileTime = 0;
             shooterTime = 0;
-            if(equippedPlane != 'zxiFighter'){
+            if(planes[selectedPlane].id != 'zxiFighter'){
                 missileButton.style.display = 'none';
             } else{
                 missileButton.style.display = 'flex';
-            } if(equippedPlane != 'heavyDuty'){
+            } if(planes[selectedPlane].id != 'heavyDuty'){
                 shooterButton.style.display = 'none';
             } else{
                 shooterButton.style.display = 'flex';
             } 
             missiles = [];
             shooters = [];
-            currenthealth = equippedhealth;
-            planeImage.src = equippedImage;
+            currenthealth = planes[selectedPlane].health;
+            planeImage.src = planes[selectedPlane].imgSrc;
             fireButtonPressed = false;
             
             finalboss = [];
@@ -2525,9 +2596,11 @@ asteroids.forEach(asteroidd =>{
             gameOverScreen.style.display = 'none';            
             document.getElementById('pauseScreen').style.display = 'none';            
             lastTime = Date.now();
+            document.getElementById('muteScreen').style.display = 'none';              
         }
         function returnToMenu() {
             
+            document.getElementById('muteScreen').style.display = 'flex';              
             finalboss = [];
             bossfinalImage.src = 'bossdownwards.png';
             initialbossremoved = 0;
@@ -2545,7 +2618,11 @@ asteroids.forEach(asteroidd =>{
             level7 = 0;
             timePassed = 0;
             boss = [];
-            bgmusic.play();
+            if(music){
+                bgmusic.play();
+            }
+            currentAudio = bgmusic;
+
             win = 0;
             if(level == 0){   
                 survivormusic.pause();
@@ -2607,6 +2684,8 @@ asteroids.forEach(asteroidd =>{
             paused = !paused;
             gameRunning = false; // Stop updating the game loop
             document.getElementById('pauseScreen').style.display = 'flex';
+            
+            document.getElementById('muteScreen').style.display = 'flex';  
         }
 
         function resumeGame() {
@@ -2614,6 +2693,8 @@ asteroids.forEach(asteroidd =>{
             gameRunning = true; // Resume updating the game loop
             document.getElementById('pauseScreen').style.display = 'none';
             lastTime = Date.now(); // Reset lastTime to avoid a large delta time
+            
+            document.getElementById('muteScreen').style.display = 'none';  
             requestAnimationFrame(draw); // Restart the draw loop
         } function restarttheGame(){
             resumeGame();
