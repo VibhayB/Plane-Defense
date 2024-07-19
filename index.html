@@ -89,7 +89,7 @@
     <div style="position: relative;">
         <canvas id="gameCanvas"></canvas>
         <button id="pauseButton" onclick="togglePause()" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);">
-            <img src="pausebutton.png" alt="Pause" width="30" height="30">
+            <img src="pausebutton.png"  draggable="false"  alt="Pause" width="30" height="30">
         </button>        
     </div>
     <div id="missileButton" onclick="missile()"></div>
@@ -105,16 +105,22 @@
 
     <div id="menuScreen">
         <div id="totalCoins">
-            <img src="coin.png" alt="Coins" id="coinIcon">
+            <img src="coin.png" alt="Coins"  draggable="false"  id="coinIcon">
             <span id="coinCount">0</span>
         </div>
         <div>
-            <img src="initialtext.png">
+            <img src="initialtext.png"  draggable="false" >
         </div>
         <button id="playButton" onclick="showlevelscreen()"></button>
         <button id="howToPlayButton" onclick="showHowToPlay()"></button>
         <button id="StorePlanes" onclick="toggleStoreMenu()"></button>
     </div>    
+
+    <div id="muteScreen">
+        <button id="toggleButton" class="toggle-button">
+            <img id="toggleIcon" src="mute.png"  draggable="false" alt="Mute/Unmute">
+        </button>
+    </div>
 
     <div id = "initialscreen">
         <h1> Click anywhere on screen to continue </h1>
@@ -139,7 +145,7 @@
         <button id="closeStoreButton" onclick="toggleStoreMenu()"></button>
         <button class="arrow-button" id="leftArrow" onclick="prevPlane()">&#9664;</button>
         <div class="plane-item" id="planeDisplay">
-            <img id="planeImage" src="" alt="Plane Image">
+            <img id="planeImage" src=""  draggable="false" alt="Plane Image">
             <h3 id="planeName"></h3>
             <p id="planeHealth">
                 <span class="hearticon" style="font-size: 25px;">❤️</span>
@@ -147,7 +153,7 @@
             </p>            
             <p id="planeCost">
                 <span id="costValue"></span>
-                <img id="coinIcon" src="coin.png" alt="Coin Icon" class="icon">
+                <img id="coinIcon" src="coin.png"  draggable="false" alt="Coin Icon" class="icon">
             </p>
             <button id="buyButton" class="buy-button button" onclick="buyCurrentPlane()">Buy Plane</button>
             <button id="equipButton" class="equip-button button" onclick="equipCurrentPlane()">Equip</button>
@@ -157,8 +163,8 @@
      
     
 
-<img id="coinImage" src="coin.png" style="display: none;">
-    <img id="immunityPillImage" src="capsule.png" style="display: none;">
+<img id="coinImage" src="coin.png"  draggable="false" style="display: none;">
+    <img id="immunityPillImage" src="capsule.png"  draggable="false"  style="display: none;">
 
     <div id="levelScreen">
         <button id="closelevelButton" onclick="closelevel()"></button>
