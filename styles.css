@@ -14,6 +14,10 @@ body {
     -ms-user-select: none; /* IE/Edge */
     user-select: none; /* Standard syntax */
 } img {
+    user-select: none; /* For modern browsers */
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none; /* For Firefox */
+    -ms-user-select: none; /* For Internet Explorer/Edge */
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Transparent */
 }
 #gameCanvas {
@@ -301,6 +305,10 @@ width: 300px;
 }
 
 .plane-item img {
+    user-select: none; /* For modern browsers */
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none; /* For Firefox */
+    -ms-user-select: none; /* For Internet Explorer/Edge */
 width: 200px;
 height: auto;
 -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Transparent */
@@ -406,4 +414,23 @@ z-index: 1005;
 flex-direction: column;
 color: white; /* Ensuring text is visible */
 font-size: 18px; /* Adjust font size as needed */
+} .toggle-button {
+    position: fixed;
+    z-index: 1002;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0; /* Remove default padding */
+}
+
+.toggle-button img {
+    user-select: none; /* For modern browsers */
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none; /* For Firefox */
+    -ms-user-select: none; /* For Internet Explorer/Edge */
+    width: 30px; /* Adjust size as needed */
+    height: 30px; /* Adjust size as needed */
+    display: block;
 }
