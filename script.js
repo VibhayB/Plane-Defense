@@ -44,7 +44,7 @@ document.addEventListener('keydown', function(e) {
     const missileImage = new Image();
     missileImage.src = 'missile.png';
 
-// Function to resize and replace the image
+// Function to resize and replace the image 
 let planes = [
     {
         id: 'monoFighter',
@@ -72,7 +72,7 @@ let planes = [
     },
     {
         id: 'zxiFighter',
-        name: 'Kaiser\'s Wrath (6x)',
+        name: 'Kaiser\'s Wrath (4.7x)',
         health: 6,
         cost: ' 1400',
         imgSrc: 'zxiFighter.png',
@@ -81,15 +81,14 @@ let planes = [
 ];
 
 let firststart = false;
-let currenthealth = 0;/* */
+let currenthealth = 0;
 let equippeddamage = 1;
 let currentPlaneIndex = 0;
 let equippedPlane = 'monoFighter';
 let equippedImage = 'basicplane.png';
 let equippedfreeze = 'basicplanefreezed.png';
 let equippedhealth = 1; 
-let level = 0; /* */
-let levelup = false;
+let level = 0;
 levelScreen.style.display = 'none';
 
 function saveGameState() {
@@ -204,7 +203,7 @@ function equipCurrentPlane() {
         } else{
             equippedImage = 'zxiFighter.png';
             equippedhealth = 6;
-            equippeddamage = 6;
+            equippeddamage = 4.7;
         }
         updateStoreMenu();
     }
@@ -509,14 +508,15 @@ document.addEventListener('mouseup', function(event) {
 // Add event listeners for keyboard controls
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
-
+let spacebarPressed = false;
 function handleKeyDown(event) {
     if (event.key === 'ArrowLeft') {
         startMoveLeft();
     } else if (event.key === 'ArrowRight') {
         startMoveRight();
-    } else if (event.key === ' ') { // Spacebar for firing
+    } else if (event.key === ' ' && !spacebarPressed) { // Spacebar for firing
         shoot();
+        spacebarPressed = true;
     } else if (event.key === 'ArrowUp'){
         missile();
         createshooter();
@@ -528,6 +528,8 @@ function handleKeyUp(event) {
         endMoveLeft();
     } else if (event.key === 'ArrowRight') {
         endMoveRight();
+    } else if (event.key === ' ') {
+        spacebarPressed = false;
     }
 }
         // Add touch event listeners for left and right sides of the screen
@@ -1041,11 +1043,6 @@ function checkBulletCollision(bullet, boss) {
                     playAgainButton.textContent = 'Play Again';
                 } else{
                     gameOverText.textContent = 'You Won!';
-                    if(levelup){
-                        totalCoins += 70;
-                        localStorage.setItem('totalCoins', totalCoins);
-                        levelup = false;
-                    }
                     if(level != 7){
                         playAgainButton.textContent = 'Next Level';
                     } 
@@ -1930,8 +1927,7 @@ rotators.forEach(rotator => {
     }); 
 });
 
-if(((timePassed > 130 && level == 1) || (timePassed > 190 && (level == 2 || level == 3)) || (timePassed > 250 && (level == 4 || level == 5))  || (timePassed > 270 && level == 6) || (level7 == 7 && level == 7))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
-    levelup = true;
+if(((timePassed > 130 && level == 1) || (timePassed > 190 && (level == 2 || level == 3)) || (timePassed > 210 && (level == 4 || level == 5))  || (timePassed > 230 && level == 6) || (level7 == 7 && level == 7))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
     win = 1;
     wins.currentTime = 0;
     wins.play();
@@ -2183,6 +2179,7 @@ asteroids.forEach(asteroidd =>{
 
             // Create new stones and alien planes
             let diffindex;
+            let difactor = (canvas.width>canvas.height)?2:1;
             if(level == 0){ //endless
                 diffindex = timePassed/300000;
                 if ((Math.random() < 0.03 && timePassed <= 20) || (Math.random() < 0.01 && timePassed > 20)) {
@@ -2203,11 +2200,11 @@ asteroids.forEach(asteroidd =>{
                     createDefenders();
                 }
             } else if(level == 1){ //towards mars 120
-                if (Math.random() < 0.02) {
+                if (Math.random() < 0.02*difactor) {
                     createStone();
                 } if (Math.random() < 0.008 && rotators.length < 2 && timePassed >= 50){
                     createRotator();
-                } if (Math.random() < 0.0008 && timePassed >= 90 && alienPlanes.length < 6) {
+                } if (Math.random() < 0.0008*difactor && timePassed >= 90 && alienPlanes.length < 6*difactor) {
                     createAlienPlane();
                 }
             } else if(level == 2){ //towards jupiter 180
@@ -2215,9 +2212,9 @@ asteroids.forEach(asteroidd =>{
                     createStone();
                 } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 60){
                     createRotator();
-                } if(Math.random() < 0.007 && timePassed >= 110 && asteroids.length < 3){
+                } if(Math.random() < 0.007*difactor && timePassed >= 110 && asteroids.length < 3){
                     createAsteroid();
-                } if (Math.random() < 0.004 && timePassed >= 20 && alienPlanes.length < 12) {
+                } if (Math.random() < 0.004*difactor && timePassed >= 20 && alienPlanes.length < 12*difactor) {
                     createAlienPlane();
                 } if(Math.random() < 0.007 && timePassed >= 150 && nebulas.length < 2){
                     createNebulas();
@@ -2234,48 +2231,48 @@ asteroids.forEach(asteroidd =>{
                 } if(Math.random() < 0.005 && timePassed >= 125 && advancedAliens.length < 8){
                     createAdvancedAliens();
                 }
-            } else if(level == 4){ //towards uranus 240
+            } else if(level == 4){ //towards uranus 200
                 if (Math.random() < 0.01) {
                     createStone();
-                } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 90){
+                } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 85){
                     createRotator();
-                } if (Math.random() < 0.006 && timePassed >= 15 && alienPlanes.length < 12) {
+                } if (Math.random() < 0.006 && timePassed >= 15 && alienPlanes.length < 15) {
                     createAlienPlane();
-                } if(Math.random() < 0.002 && timePassed >= 50){
+                } if(Math.random() < 0.002 && timePassed >= 40){
                     createAsteroid();
                 } if(Math.random() < 0.007 && timePassed >= 120 && advancedAliens.length < 10){
                     createAdvancedAliens();
                 } if(Math.random() < 0.004 && timePassed >= 160 && nebulas.length < 2){
                     createNebulas();
                 } 
-            } else if(level == 5){ //towards neptune 240
+            } else if(level == 5){ //towards neptune 200
                 if (Math.random() < 0.01) {
                     createStone();
                 } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 40){
                     createRotator();
-                } if (Math.random() < 0.005 && timePassed >= 10 && alienPlanes.length < 15) {
+                } if (Math.random() < 0.005 && timePassed >= 10 && alienPlanes.length < 12) {
                     createAlienPlane();
-                } if(Math.random() < 0.002 && timePassed >= 70){
+                } if(Math.random() < 0.002 && timePassed >= 125){
                     createAsteroid();
-                } if(Math.random() < 0.008 && timePassed >= 110 && advancedAliens.length < 12){
+                } if(Math.random() < 0.008 && timePassed >= 85 && advancedAliens.length < 12){
                     createAdvancedAliens();
                 } if(Math.random() < 0.003 && timePassed >= 160 && blueArcs.length < 6){
                     createBlueArcs();
                 }
-            } else if(level == 6){ //towards pluto 260
+            } else if(level == 6){ //towards pluto 220
                 if (Math.random() < 0.01) {
                     createStone();
                 } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 230){
                     createRotator();
                 } if (Math.random() < 0.006 && timePassed >= 15) {
                     createAlienPlane();
-                } if(Math.random() < 0.004 && timePassed >= 100){
+                } if(Math.random() < 0.004 && timePassed >= 85){
                     createAsteroid();
-                } if(Math.random() < 0.007 && timePassed >= 55){
+                } if(Math.random() < 0.007 && timePassed >= 45){
                     createAdvancedAliens();
-                }  if(Math.random() < 0.0045 && timePassed >= 160 && blueArcs.length < 12){
+                }  if(Math.random() < 0.0045 && timePassed >= 138 && blueArcs.length < 12){
                     createBlueArcs();
-                } if(Math.random() < 0.007 && timePassed >= 200 && nebulas.length < 2){
+                } if(Math.random() < 0.007 && timePassed >= 165 && nebulas.length < 2){
                     createNebulas();
                 } 
             } else if(level == 7){ // boss fight and alpha centauri
@@ -2393,7 +2390,7 @@ asteroids.forEach(asteroidd =>{
                     }
                 }); 
 
-            } if(((timePassed > 120 && level == 1) || (timePassed > 180 && (level == 2 || level == 3)) || (timePassed > 240 && (level == 4 || level == 5))  || (timePassed > 260 && level == 6))&&win == 0){  //timerwin 120 180 180 240 240 260 100+boss spaces
+            } if(((timePassed > 120 && level == 1) || (timePassed > 180 && (level == 2 || level == 3)) || (timePassed > 200 && (level == 4 || level == 5))  || (timePassed > 220 && level == 6))&&win == 0){  //timerwin 120 180 180 240 240 260 100+boss spaces
                 if(planets.length < 1){
                     createPlanet();
                 }
@@ -2425,7 +2422,6 @@ asteroids.forEach(asteroidd =>{
             teleport.pause();
             frozen.pause();
             exploding.pause();
-            levelup = false;
             level7 = 0;
             
             hideMenu();
@@ -2547,7 +2543,6 @@ asteroids.forEach(asteroidd =>{
             laser.pause();
             exploding.pause();
             level7 = 0;
-            levelup = false;
             timePassed = 0;
             boss = [];
             bgmusic.play();
