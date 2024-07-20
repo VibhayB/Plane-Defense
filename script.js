@@ -135,12 +135,12 @@ let planes = [
     },
     {
         id: 'zxiFighter',
-        name: 'Kaiser\'s Wrath (4.7x)',
+        name: 'Kaiser\'s Wrath (5x)',
         health: 6,
         cost: ' 1200',
         imgSrc: 'zxiFighter.png',
         bought: false,
-        damage: 4.7,
+        damage: 5,
         freezed: 'zxiFighter.png'
     }
 ];
