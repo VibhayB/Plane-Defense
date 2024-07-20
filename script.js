@@ -4,6 +4,7 @@ let initialbossremoved = 0;
 let currentAudio = bgmusic;
 var music = true;
 
+updateCoinDisplay();
 
 document.addEventListener('DOMContentLoaded', function() {
     const toggleButton = document.getElementById('toggleButton');
