@@ -2617,9 +2617,9 @@ asteroids.forEach(asteroidd =>{
             } else if(level == 2){
                 planetImage.src = "jupiter.png";
                 if(music){
-                    towardjupiter.play();
+                    towardsjupiter.play();
                 }
-                currentAudio = towardjupiter;
+                currentAudio = towardsjupiter;
             } else if(level == 3){
                 planetImage.src = "titan.png";
                 if(music){
