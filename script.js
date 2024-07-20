@@ -2662,6 +2662,10 @@ asteroids.forEach(asteroidd =>{
                 shooterButton.style.display = 'none';
             } else{
                 shooterButton.style.display = 'flex';
+            } if(planes[selectedPlane].id != 'fairyplane'){
+                stunButton.style.display = 'none';
+            } else{
+                stunButton.style.display = 'flex';
             } 
             missiles = [];
             shooters = [];
