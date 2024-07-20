@@ -101,7 +101,6 @@ document.addEventListener('keydown', function(e) {
     const missileImage = new Image();
     missileImage.src = 'missile.png';
 
-// Function to resize and replace the image 
 let planes = [
     {
         id: 'monoFighter',
@@ -111,7 +110,8 @@ let planes = [
         imgSrc: 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05001234/plane_preview.png',
         bought: true,
         damage: 1,
-        freezed: 'basicplanefreezed.png'
+        freezed: 'basicplanefreezed.png',
+        desc: 'Special: none'
     },
     {
         id: 'miniDualShooter',
@@ -121,7 +121,8 @@ let planes = [
         imgSrc: 'dualshooter.png',
         bought: false,
         damage: 1.5,
-        freezed: 'dualshooterfreezed.png'
+        freezed: 'dualshooterfreezed.png',
+        desc: 'Special: shoots 2 bullets at a time'
     },
     {
         id: 'fairyplane',
@@ -131,7 +132,8 @@ let planes = [
         imgSrc: 'fairy.png',
         bought: false,
         damage: 2.25,
-        freezed: 'fairyfreezed.png'
+        freezed: 'fairyfreezed.png',
+        desc: 'Special: shoots stalling mist'
     },
     {
         id: 'heavyDuty',
@@ -141,7 +143,8 @@ let planes = [
         imgSrc: 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05010017/plane-animated-top-down-game-art.png',
         bought: false,
         damage: 3.5,
-        freezed: 'heavyplanefreezed.png'
+        freezed: 'heavyplanefreezed.png',
+        desc: 'Special: spawns shooter minions'
     },
     {
         id: 'zxiFighter',
@@ -151,7 +154,8 @@ let planes = [
         imgSrc: 'zxiFighter.png',
         bought: false,
         damage: 5,
-        freezed: 'zxiFighter.png'
+        freezed: 'zxiFighter.png',
+        desc: 'Special: shoots missiles, can\'t be frozen'
     }
 ];
 
@@ -178,7 +182,8 @@ function updateStoreMenu() {
 
     document.getElementById('planeImage').src = plane.imgSrc;
     document.getElementById('planeName').innerText = plane.name;
-    document.getElementById('healthValue').innerText = plane.health;
+    document.getElementById('healthValue').innerText = plane.health;	
+    document.getElementById('planedesc').innerText = plane.desc;
 
     if (plane.bought) {
         document.getElementById('planeCost').style.display = 'none';
