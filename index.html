@@ -86,6 +86,14 @@
         <source src="laser bean.mp3" type="audio/mp3">
     </audio>
 
+    <audio id = "mistray">
+        <source src="mistray.mp3" type="audio/mp3">
+    </audio>
+
+    <audio id = "flash">
+        <source src="flash.mp3" type="audio/mp3">
+    </audio>
+
     <div style="position: relative;">
         <canvas id="gameCanvas"></canvas>
         <button id="pauseButton" onclick="togglePause()" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);">
@@ -93,7 +101,8 @@
         </button>        
     </div>
     <div id="missileButton" onclick="missile()"></div>
-    <div id = "shooterButton" onclick="createshooter()"></div>
+    <div id="stunButton" onclick="stun()"></div>
+    <div id ="shooterButton" onclick="createshooter()"></div>
     <div id="fireButton" onclick="shoot()"></div>
     <div id="timerDisplay" style="position: absolute; right: 20px; top: 60px; font-size: 20px;"></div>
 
