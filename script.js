@@ -117,17 +117,27 @@ let planes = [
         id: 'miniDualShooter',
         name: 'Phantom Raider (1.5x)',
         health: 2,
-        cost: ' 290',
+        cost: ' 240',
         imgSrc: 'dualshooter.png',
         bought: false,
         damage: 1.5,
         freezed: 'dualshooterfreezed.png'
     },
     {
+        id: 'fairyplane',
+        name: 'Stallion (2.25x)',
+        health: 3,
+        cost: ' 510',
+        imgSrc: 'fairy.png',
+        bought: false,
+        damage: 2.25,
+        freezed: 'fairyfreezed.png'
+    },
+    {
         id: 'heavyDuty',
         name: 'SkyBlazer (3.5x)',
         health: 4,
-        cost: ' 710',
+        cost: ' 730',
         imgSrc: 'https://cartoonsmartstreaming.s3.amazonaws.com/wp-content/uploads/2014/12/05010017/plane-animated-top-down-game-art.png',
         bought: false,
         damage: 3.5,
@@ -137,7 +147,7 @@ let planes = [
         id: 'zxiFighter',
         name: 'Kaiser\'s Wrath (5x)',
         health: 6,
-        cost: ' 1200',
+        cost: ' 1250',
         imgSrc: 'zxiFighter.png',
         bought: false,
         damage: 5,
@@ -324,6 +334,7 @@ let freezetime = 0;
 let immunityDuration = 10; // in seconds
 let immunityEndTime = 0;
 let missileTime = 0;
+let stunTime = 0;
 let shooterTime = 0;
 
 function createCoin() {
@@ -387,6 +398,8 @@ function createImmunityPill() {
         bossfinalImage.src = 'bossdownwards.png';
         let rocketImage = new Image();
         rocketImage.src = 'missiledown.png';
+        const mistImage = new Image();
+        mistImage.src ='mist.png';
         
 
         let plane = {
@@ -419,6 +432,7 @@ function createImmunityPill() {
         let blueArcs = [];
         let missiles = [];
         let shooters = [];
+        let mists = [];
         let score = 0;
         let highScore = parseInt(localStorage.getItem('highScore')) || 0;
         let timePassed = 0;
@@ -434,6 +448,7 @@ function createImmunityPill() {
         let fireButtonPressed = false;
         let missileButtonPressed = false;
         let shooterButtonPressed = false;
+        let stunButtonPressed = false;
 
 document.getElementById('fireButton').addEventListener('touchstart', function(event) {
     event.stopPropagation();
@@ -469,6 +484,18 @@ document.getElementById('shooterButton').addEventListener('mousedown', function(
     event.stopPropagation();
     shooterButtonPressed = true;
     createshooter();
+}, false);
+
+document.getElementById('stunButton').addEventListener('touchstart', function(event) {
+    event.stopPropagation();
+    stunButtonPressed = true;
+    stun();
+}, false);
+
+document.getElementById('stunButton').addEventListener('mousedown', function(event) {
+    event.stopPropagation();
+    stunButtonPressed = true;
+    stun();
 }, false);
 
 document.addEventListener('touchstart', function(event) {
@@ -551,6 +578,15 @@ document.addEventListener('mouseup', function(event) {
             } else{
                 shooterButtonPressed = false;
             }
+        } function stun(){
+            if(stunTime === 0 && planes[selectedPlane].id === 'fairyplane' && level7!= 1  && level7 != 5 && level7 != 5.5){
+                // Set stun reuse time
+                stunButton.style.display = 'none';
+                stunTime = timePassed + 20;
+                stunButtonPressed = true;
+            } else{
+                stunButtonPressed = false;
+            }
         }
         
 // Add event listeners for keyboard controls
@@ -568,6 +604,7 @@ function handleKeyDown(event) {
     } else if (event.key === 'ArrowUp'){
         missile();
         createshooter();
+        stun();
     }
 }
 
@@ -678,7 +715,7 @@ function isWithinPauseButton(x, y) {
                 type: 'bosss'
             };
             boss.push(bossinitial);
-        }
+        } 
 
         function createAlienPlane() {
             let alienPlane = {
@@ -688,7 +725,8 @@ function isWithinPauseButton(x, y) {
                 height: 60,
                 bullets: [],
                 health: 5, // takes 5 bullets to destroy
-                type: 'alien'
+                type: 'alien',
+                state: 0
             };
             alienPlanes.push(alienPlane);
         } function createAdvancedAliens(){
@@ -699,7 +737,8 @@ function isWithinPauseButton(x, y) {
                 height: 60,
                 bullets: [],
                 health: 10, // takes 10 bullets to destroy
-                type: 'advancedAlien'
+                type: 'advancedAlien',
+                state: 0
             };
             advancedAliens.push(advancedAlien);
         } function createBlueArcs(){
@@ -710,7 +749,8 @@ function isWithinPauseButton(x, y) {
                 height: 60,
                 bullets: [],
                 health: 20, // takes 20 bullets to destroy
-                type: 'blueArc'
+                type: 'blueArc',
+                state: 0
             };
             blueArcs.push(blueArc);
         } function createDefenders(){
@@ -761,12 +801,42 @@ function isWithinPauseButton(x, y) {
     explosions.push({ x: x, y: y, frame: 0});
 } 
 
+function Mistcheck(x,y){
+    const explosionRadius = 85;
+    let f = false;
+
+    // Check collision with alien planes
+    alienPlanes.forEach(alienPlane => {
+        if (x + explosionRadius > alienPlane.x && x - explosionRadius < alienPlane.x + alienPlane.width &&
+            y + explosionRadius > alienPlane.y && y - explosionRadius < alienPlane.y + alienPlane.height) {
+            alienPlane.state = timePassed + 7;
+            f = true;            
+        }
+    }); advancedAliens.forEach(advancedAlienplane => {
+        if (x + explosionRadius > advancedAlienplane.x && x - explosionRadius < advancedAlienplane.x + advancedAlienplane.width &&
+            y + explosionRadius > advancedAlienplane.y && y - explosionRadius < advancedAlienplane.y + advancedAlienplane.height) {
+            advancedAlienplane.state = timePassed + 7;      
+            f = true;      
+        }
+    }); blueArcs.forEach(blueArc => {
+        if (x + explosionRadius > blueArc.x && x - explosionRadius < blueArc.x + blueArc.width &&
+        y + explosionRadius > blueArc.y && y - explosionRadius < blueArc.y + blueArc.height){
+            blueArc.state = timePassed + 7;
+            f = true;
+        }
+    });
+    if(f){
+        flash.currentTime = 0;
+        flash.play();    
+    }
+}
+
 function MissileExplosion(x,y){
     createMassExplode(x,y);
     bigexplode.currentTime = 1;
     bigexplode.play();    
     missilelaunch.pause();
-    const explosionRadius = 50;
+    const explosionRadius = 65;
 
     // Check collision with stones
     stones.forEach(stone => {
@@ -1037,6 +1107,8 @@ function checkBulletCollision(bullet, boss) {
             // Inside your drawing function (e.g., drawMissiles()), replace the ctx.fillRect() calls with:
             missiles.forEach(missile => {
                 ctx.drawImage(missileImage, missile.x, missile.y, missile.width, missile.height);
+            }); mists.forEach(mist => {
+                ctx.drawImage(mistImage, mist.x, mist.y, mist.width, mist.height);
             });
             
             
@@ -1051,9 +1123,12 @@ function checkBulletCollision(bullet, boss) {
                 } else if(planes[selectedPlane].id === 'heavyDuty'){
                     ctx.fillStyle = 'violet';
                     ctx.fillRect(bullet.x, bullet.y, 4, 8);
-                } else{
+                } else if(planes[selectedPlane].id === 'zxiFighter'){
                     ctx.fillStyle = 'purple';
                     ctx.fillRect(bullet.x, bullet.y, 2, 18);
+                } else if(planes[selectedPlane].id === 'fairyplane'){
+                    ctx.fillStyle = 'pink';
+                    ctx.fillRect(bullet.x, bullet.y, 2, 8);
                 }
                 
             }); //Draw bullets for shooters
@@ -1114,6 +1189,9 @@ if(missileTime <= timePassed && planes[selectedPlane].id == 'zxiFighter'){
 } if(shooterTime <= timePassed && planes[selectedPlane].id == 'heavyDuty'){
     shooterButton.style.display = 'flex';
     shooterTime = 0;
+} if(stunTime <= timePassed && planes[selectedPlane].id == 'fairyplane'){
+    stunButton.style.display = 'flex';
+    stunTime = 0;
 }
 
 if(freezetime - Date.now() <= 0 || immunityActive){
@@ -1260,7 +1338,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                     createExplosion(alienPlane.x, alienPlane.y);
                 }
                 // Alien plane shooting bullets
-                if (Math.random() < 0.005) {
+                if (Math.random() < 0.005 && alienPlane.state <= timePassed) {
                     alienPlane.bullets.push({
                         x: alienPlane.x + alienPlane.width / 2,
                         y: alienPlane.y + alienPlane.height
@@ -1307,7 +1385,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                     createExplosion(alienPlane.x, alienPlane.y);
                 }
                 // Alien plane shooting bullets
-                if (Math.random() < 0.005) {
+                if (Math.random() < 0.005 && alienPlane.state <= timePassed) {
                     alienPlane.bullets.push({
                         x: alienPlane.x + alienPlane.width / 2,
                         y: alienPlane.y + alienPlane.height
@@ -1356,7 +1434,7 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                     createExplosion(blueArc.x, blueArc.y);
                 }
                 // Alien plane shooting bullets
-                if (Math.random() < 0.004) {
+                if (Math.random() < 0.004 && blueArc.state <= timePassed) {
                     blueArc.bullets.push({
                         x: blueArc.x + blueArc.width / 2,
                         y: blueArc.y + blueArc.height
@@ -1614,11 +1692,20 @@ let immunityTimeRemaining = immunityEndTime - Date.now();
                 });
             });
                 
+            
             if(k === 1){
                 MissileExplosion(mx,my);                
                 missiles.splice(missiles.indexOf(missile), 1);                 
                 k = 0;
             }
+            
+            mists.forEach(mist => {
+                mist.y -= 5;
+                if (mist.y < 0) {
+                    mists.splice(mists.indexOf(mist), 1);
+                } Mistcheck(mist.x,mist.y);             
+            });
+
             // Move player's bullets
             plane.bullets.forEach(bullet => {
                 bullet.y -= 5;
@@ -2160,7 +2247,17 @@ asteroids.forEach(asteroidd =>{
                         }
                 }
             });
-
+            if(stunButtonPressed && level7 != 1  && level7 != 5 && level7 != 5.5){
+                stunButtonPressed = false;
+                mistray.currentTime = 1;
+                mistray.play();
+                mists.push({
+                    x: plane.x + plane.x/200,
+                    y: plane.y + plane.x/16,
+                    width:80, // Width of the mist
+                    height: 60 // Height of the mist
+                });
+            }
             if(missileButtonPressed && level7 != 1  && level7 != 5 && level7 != 5.5){
                 missileButtonPressed = false;
                 missilelaunch.currentTime = 0;
@@ -2451,7 +2548,9 @@ asteroids.forEach(asteroidd =>{
             draw();
             requestAnimationFrame(gameLoop);
         }
-        function restartGame(lvl) {
+        function restartGame(lvl) {      
+            mistray.pause();
+            flash.pause();
             initialbossremoved = 0;
             bossfinalImage.src = 'bossdownwards.png';
             if(lvl < 0){
@@ -2554,6 +2653,7 @@ asteroids.forEach(asteroidd =>{
             }
             missileTime = 0;
             shooterTime = 0;
+            stunTime = 0;
             if(planes[selectedPlane].id != 'zxiFighter'){
                 missileButton.style.display = 'none';
             } else{
@@ -2582,6 +2682,7 @@ asteroids.forEach(asteroidd =>{
             rotators = [];
             asteroids = [];
             boss = [];
+            mists = [];
             massexplosions = [];
             planets = [];
             alienPlanes = [];
@@ -2600,7 +2701,8 @@ asteroids.forEach(asteroidd =>{
             document.getElementById('muteScreen').style.display = 'none';              
         }
         function returnToMenu() {
-            
+            flash.pause();
+            mistray.pause();
             document.getElementById('muteScreen').style.display = 'flex';              
             finalboss = [];
             bossfinalImage.src = 'bossdownwards.png';
@@ -2660,6 +2762,7 @@ asteroids.forEach(asteroidd =>{
             rotators = [];
             asteroids = [];
             massexplosions = [];
+            mists = [];
             planets = [];
             shooters = [];
             stones = [];
