@@ -53,6 +53,16 @@ background-size: contain;
 background-repeat: no-repeat;
 cursor: pointer;
 background-image: url('turret.png');
+} #stunButton{
+    position: absolute;
+right: 20px; /* Position towards the right end */
+bottom: 200px; /* Move up from the fire button */
+width: 80px;
+height: 80px;
+background-size: contain;
+background-repeat: no-repeat;
+cursor: pointer;
+background-image: url('stun.png');
 }
 
 #score, #highScore, #time {
