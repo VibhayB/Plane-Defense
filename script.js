@@ -1,4 +1,9 @@
-let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+let totalCoins;
+try{
+    totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+} catch(e){
+    totalCoins = 0;
+}
 let initialbossremoved = 0;
 
 let currentAudio = bgmusic;
@@ -82,12 +87,20 @@ document.addEventListener('keydown', function(e) {
         document.removeEventListener('click',initialize);
     } document.addEventListener('click', initialize);
     
-
-    var storedwinned = localStorage.getItem('winned');
-    var winned = storedwinned ? JSON.parse(storedwinned) : [1, 0, 0, 0, 0, 0, 0];
-
-    var storedScheme = localStorage.getItem('coloring');
-    var coloring = storedScheme ? JSON.parse(storedScheme) : [2, 1, 0, 0, 0, 0, 0, 0];
+    try{
+        var storedwinned = localStorage.getItem('winned');
+        var winned = storedwinned ? JSON.parse(storedwinned) : [1, 0, 0, 0, 0, 0, 0];
+    } catch(e){
+        winned = [1, 0, 0, 0, 0, 0, 0];
+    }
+    
+    try{
+        var storedScheme = localStorage.getItem('coloring');
+        var coloring = storedScheme ? JSON.parse(storedScheme) : [2, 1, 0, 0, 0, 0, 0, 0];
+    } catch(e){
+        coloring = [2, 1, 0, 0, 0, 0, 0, 0];
+    }
+    
 
     function closelevel(){
         document.getElementById('levelScreen').style.display = 'none';
@@ -101,6 +114,7 @@ document.addEventListener('keydown', function(e) {
     const missileImage = new Image();
     missileImage.src = 'missile.png';
 
+// Function to resize and replace the image 
 let planes = [
     {
         id: 'monoFighter',
@@ -182,7 +196,7 @@ function updateStoreMenu() {
 
     document.getElementById('planeImage').src = plane.imgSrc;
     document.getElementById('planeName').innerText = plane.name;
-    document.getElementById('healthValue').innerText = plane.health;	
+    document.getElementById('healthValue').innerText = plane.health;    
     document.getElementById('planedesc').innerText = plane.desc;
 
     if (plane.bought) {
@@ -275,26 +289,55 @@ function toggleStoreMenu() {
         storeMenu.style.display = 'none';
     }
 }
-function loadGameState() {
-    var savedState = localStorage.getItem('gameState');
-    if (savedState) {
-        var gameState = JSON.parse(savedState);
-        planes.forEach(plane => {
-            const savedPlane = gameState.boughtPlanes.find(p => p.id === plane.id);
-            if (savedPlane) {
-                plane.bought = savedPlane.bought;
-            }
-        });
-        selectedPlane = gameState.selectedPlane;
 
-        // Ensure selectedPlane is within bounds
-        if (selectedPlane < 0 || selectedPlane >= planes.length) {
-            selectedPlane = 0; // Default to 0 if out of bounds
+const defaultGameState = {
+    boughtPlanes: planes.map(plane => ({ id: plane.id, bought: false })),
+    selectedPlane: 0,
+    // Add other default values if needed
+};
+
+function loadGameState() {
+    let gameState = defaultGameState;
+
+    try {
+        const savedState = localStorage.getItem('gameState');
+        if (savedState) {
+            const parsedState = JSON.parse(savedState);
+
+            // Validate boughtPlanes
+            if (Array.isArray(parsedState.boughtPlanes)) {
+                gameState.boughtPlanes = parsedState.boughtPlanes.map(savedPlane => {
+                    const plane = planes.find(p => p.id === savedPlane.id);
+                    return plane ? { id: plane.id, bought: !!savedPlane.bought } : null;
+                }).filter(Boolean);
+            }
+
+            // Validate selectedPlane
+            if (typeof parsedState.selectedPlane === 'number' ||
+                (typeof parsedState.selectedPlane === 'string' && !isNaN(parsedState.selectedPlane))) {
+                gameState.selectedPlane = parseInt(parsedState.selectedPlane, 10);
+                if (gameState.selectedPlane < 0 || gameState.selectedPlane >= planes.length) {
+                    gameState.selectedPlane = defaultGameState.selectedPlane;
+                }
+            }
+
+            // Validate additional game state properties as needed
         }
-        
-        updateCoinDisplay();  // Make sure to update the coin display after loading the state
+    } catch (e) {
+        // If parsing fails or any other error occurs, fall back to defaultGameState
+        console.warn('Failed to load game state, using defaults:', e);
     }
+
+    // Update planes and selected plane based on loaded state
+    planes.forEach(plane => {
+        const savedPlane = gameState.boughtPlanes.find(p => p.id === plane.id);
+        plane.bought = savedPlane ? savedPlane.bought : false;
+    });
+
+    selectedPlane = gameState.selectedPlane;
+    updateCoinDisplay(); // Ensure coin display is updated after loading the state
 }
+
 
 loadGameState();
 // Initialize the display
