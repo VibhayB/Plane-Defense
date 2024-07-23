@@ -2144,9 +2144,9 @@ if(((timePassed > 130 && level == 1) || (timePassed > 190 && (level == 2 || leve
     // Update button colors based on the level variable
     levelButtons.forEach((button, index) => {
         if (index < level + 1) {
-            button.style.backgroundColor = 'green'; // give to blue
-        } if(index == level + 1){
-            button.style.backgroundColor = 'blue'; // give to green
+            button.style.backgroundColor = 'green'; // give to green
+        } else if(index == level + 1 && coloring[index] < 2){
+            button.style.backgroundColor = 'blue'; // give to blue
         }
     }); 
 
