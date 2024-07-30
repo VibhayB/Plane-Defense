@@ -514,27 +514,6 @@
         shoot();
     }, false);
 
-    document.getElementById('leftButton').addEventListener('touchstart', function(event) {
-        event.stopPropagation();
-        startMoveLeft();
-    }, false);
-
-
-    document.getElementById('rightButton').addEventListener('touchstart', function(event) {
-        event.stopPropagation();
-        startMoveRight();
-    }, false);
-
-    document.getElementById('leftButton').addEventListener('touchend', function(event) {
-        event.stopPropagation();
-        endMoveLeft();
-    }, false);
-
-    document.getElementById('rightButton').addEventListener('touchend', function(event) {
-        event.stopPropagation();
-        endMoveRight();
-    }, false);
-
     document.getElementById('missileButton').addEventListener('touchstart', function(event) {
         event.stopPropagation();
         missileButtonPressed = true;
@@ -606,6 +585,24 @@
         endMoveLeft();
         endMoveRight();
     }, false);
+
+    document.getElementById('leftButton').addEventListener('touchstart', (event) => {
+        event.preventDefault();
+        isLeftButtonPressed = true;
+    });
+    document.getElementById('leftButton').addEventListener('touchend', (event) => {
+        event.preventDefault();
+        isLeftButtonPressed = false;
+    });
+    document.getElementById('rightButton').addEventListener('touchstart', (event) => {
+        event.preventDefault();
+        isRightButtonPressed = true;
+    });
+    document.getElementById('rightButton').addEventListener('touchend', (event) => {
+        event.preventDefault();
+        isRightButtonPressed = false;
+    });
+    
 
     function startMoveLeft() {
         endMoveRight();
