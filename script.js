@@ -1588,7 +1588,7 @@
                             highScore = score; // Update high score
                             localStorage.setItem('highScore', highScore); // Store high score in local storage
                         }
-                    } else if(defender.state){
+                    } else if(defender.state && level7 != 5){
                         defender.y += 3;
                     } if (defender.y > canvas.height) {
                         defenders.splice(defenders.indexOf(defender), 1); // Remove alien planes that are out of canvas
@@ -2677,7 +2677,7 @@
                 hideMenu();
                 levelScreen.style.display = 'none';
                 
-                timePassed = 0;
+                timePassed = 119;
                 if(win == 1 && level != 7){
                     win = 0;
                     restartGame(level+1);
