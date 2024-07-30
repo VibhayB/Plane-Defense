@@ -46,24 +46,32 @@ background-image: url('firebutton.png');
 } #leftButton {
     position: absolute;
     left: 10px; /* Position towards the right end */
-    bottom: 100px; /* Move up from the bottom */
+    bottom: 50px; /* Move up from the bottom */
     width: 100px;
     height: 100px;
     background-size: contain;
     background-repeat: no-repeat;
     cursor: pointer;
     background-image: url('leftslide.png');
+    user-select: none; /* For modern browsers */
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none; /* For Firefox */
+    -ms-user-select: none; /* For Internet Explorer/Edge */
     }
     #rightButton {
         position: absolute;
         left: 80px; /* Position towards the right end */
-        bottom: 100px; /* Move up from the bottom */
+        bottom: 50px; /* Move up from the bottom */
         width: 100px;
         height: 100px;
         background-size: contain;
         background-repeat: no-repeat;
         cursor: pointer;
         background-image: url('rightslide.png');
+        user-select: none; /* For modern browsers */
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none; /* For Firefox */
+    -ms-user-select: none; /* For Internet Explorer/Edge */
         } #shooterButton{
     position: absolute;
 right: 20px; /* Position towards the right end */
