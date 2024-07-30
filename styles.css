@@ -43,7 +43,28 @@ background-size: contain;
 background-repeat: no-repeat;
 cursor: pointer;
 background-image: url('firebutton.png');
-} #shooterButton{
+} #leftButton {
+    position: absolute;
+    left: 10px; /* Position towards the right end */
+    bottom: 100px; /* Move up from the bottom */
+    width: 100px;
+    height: 100px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    background-image: url('leftslide.png');
+    }
+    #rightButton {
+        position: absolute;
+        left: 80px; /* Position towards the right end */
+        bottom: 100px; /* Move up from the bottom */
+        width: 100px;
+        height: 100px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        background-image: url('rightslide.png');
+        } #shooterButton{
     position: absolute;
 right: 20px; /* Position towards the right end */
 bottom: 200px; /* Move up from the fire button */
@@ -443,4 +464,9 @@ font-size: 18px; /* Adjust font size as needed */
     width: 30px; /* Adjust size as needed */
     height: 30px; /* Adjust size as needed */
     display: block;
+} #planedesc {
+    font-size: 12px;
+    justify-content: center;
+    align-items: center;
+    font-weight: 300; /* Thin text */
 }
