@@ -103,6 +103,8 @@
     <div id="missileButton" onclick="missile()"></div>
     <div id="stunButton" onclick="stun()"></div>
     <div id ="shooterButton" onclick="createshooter()"></div>
+    <div id="leftButton" onclick="startMoveLeft()"></div>
+    <div id="rightButton" onclick="startMoveRight()"></div>
     <div id="fireButton" onclick="shoot()"></div>
     <div id="timerDisplay" style="position: absolute; right: 20px; top: 60px; font-size: 20px;"></div>
 
@@ -164,7 +166,7 @@
                 <span id="costValue"></span>
                 <img id="coinIcon" src="coin.png"  draggable="false" alt="Coin Icon" class="icon">
             </p>
-            <p id="planedesc"></p>  
+            <p id="planedesc"></p>   
             <button id="buyButton" class="buy-button button" onclick="buyCurrentPlane()">Buy Plane</button>
             <button id="equipButton" class="equip-button button" onclick="equipCurrentPlane()">Equip</button>
         </div>
