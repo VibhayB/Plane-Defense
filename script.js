@@ -2677,7 +2677,7 @@
                 hideMenu();
                 levelScreen.style.display = 'none';
                 
-                timePassed = 119;
+                timePassed = 0;
                 if(win == 1 && level != 7){
                     win = 0;
                     restartGame(level+1);
