@@ -38,7 +38,7 @@
     // Function to manage audio based on visibility and focus
     function manageAudio() {
         if(document.hidden){
-            paused = !paused;
+            paused = true;
             gameRunning = false; // Stop updating the game loop
             document.getElementById('pauseScreen').style.display = 'flex';            
             document.getElementById('muteScreen').style.display = 'flex';  
@@ -1284,7 +1284,7 @@
         stunTime = 0;
     }
 
-    if(freezetime - Date.now() <= 0 || immunityActive){
+    if(freezetime <= timePassed || immunityActive){
         freezetime = 0;
         planeImage.src = planes[selectedPlane].imgSrc;
     }
@@ -1305,7 +1305,10 @@
         } else {
             timerDisplay.textContent = ''; // Hide timer if immunity is not active
         }
-        function updatePlaneMovement() {
+        
+        
+        if(statex){
+            function updatePlaneMovement() {
             if (isLeftButtonPressed) {
                 plane.moveLeft = true;
                 plane.moveRight = false;
@@ -1326,8 +1329,6 @@
                 plane.moveRight = false;
             }
         } updatePlaneMovement();
-        
-        if(statex){
             // Call the updatePlaneMovement function repeatedly to update the plane movement
             setInterval(updatePlaneMovement, 16); // 16ms = 60fps
 
@@ -1569,7 +1570,7 @@
                             // stalling logic
                             blueArc.bullets.splice(blueArc.bullets.indexOf(bullet), 1);
                             if(planes[selectedPlane].id != 'zxiFighter'){
-                                freezetime = Date.now() + (3000);
+                                freezetime = timePassed + 3;
                                 frozen.currentTime = 0;
                                 frozen.play();
                                 planeImage.src = planes[selectedPlane].freezed; // Apply a blue filter to the plane's image
