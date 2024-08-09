@@ -35,6 +35,7 @@
 
     // Function to manage audio based on visibility and focus
     function manageAudio() {
+        togglePause();
         if (document.hidden || !music) {
             if (!currentAudio.paused) {
                 currentAudio.pause(); // Pause the audio if the tab is hidden or music is off
@@ -43,6 +44,7 @@
             if (currentAudio.paused) {
                 currentAudio.play().catch(error => {
                     // Optionally, you could inform the user or prompt for interaction here
+                    
                 });
             }
         }
