@@ -10,6 +10,8 @@
     var music = true;
 
     updateCoinDisplay();
+    let gamestarted = true;
+    let gameTime = -1;
 
     document.addEventListener('DOMContentLoaded', function() {
         const toggleButton = document.getElementById('toggleButton');
@@ -35,16 +37,21 @@
 
     // Function to manage audio based on visibility and focus
     function manageAudio() {
-        togglePause();
+        if(document.hidden){
+            paused = !paused;
+            gameRunning = false; // Stop updating the game loop
+            document.getElementById('pauseScreen').style.display = 'flex';            
+            document.getElementById('muteScreen').style.display = 'flex';  
+        }
         if (document.hidden || !music) {
             if (!currentAudio.paused) {
                 currentAudio.pause(); // Pause the audio if the tab is hidden or music is off
-            }
+            } 
+            
         } else {
             if (currentAudio.paused) {
                 currentAudio.play().catch(error => {
                     // Optionally, you could inform the user or prompt for interaction here
-                    
                 });
             }
         }
@@ -1251,12 +1258,16 @@
                     }
                     return;
                 } 
-
                 update();
             }
             let immunityTimerElement = document.getElementById('timerDisplay');
 
             function update() {
+                let statex = false;
+                if(gameTime < timePassed){
+                    gameTime = timePassed + 0.01;
+                    statex = true;
+                }
                 let currentTime = Date.now();
                 let deltaTime = (currentTime - lastTime) / 1000; // deltaTime in seconds
                 lastTime = currentTime;
@@ -1316,8 +1327,9 @@
             }
         } updatePlaneMovement();
         
-        // Call the updatePlaneMovement function repeatedly to update the plane movement
-        setInterval(updatePlaneMovement, 16); // 16ms = 60fps
+        if(statex){
+            // Call the updatePlaneMovement function repeatedly to update the plane movement
+            setInterval(updatePlaneMovement, 16); // 16ms = 60fps
 
                 if (plane.moveLeft && plane.x > 0  && level7 != 1 && level7 != 5 && level7 != 5.5) {
                     plane.x -= plane.speed;
@@ -2159,7 +2171,7 @@
                 }
             });
         }); 
-    });
+    }); }
 
     if(((timePassed > 130 && level == 1) || (timePassed > 190 && (level == 2 || level == 3)) || (timePassed > 210 && (level == 4 || level == 5))  || (timePassed > 230 && level == 6) || (level7 == 7 && level == 7))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
         win = 1;
@@ -2652,6 +2664,8 @@
                 requestAnimationFrame(gameLoop);
             }
             function restartGame(lvl) {      
+                gameTime = -1;
+                gamestarted = true;
                 mistray.pause();
                 flash.pause();
                 initialbossremoved = 0;
@@ -2808,6 +2822,8 @@
                 document.getElementById('muteScreen').style.display = 'none';              
             }
             function returnToMenu() {
+                gameTime = -1;
+                gamestarted = false;
                 flash.pause();
                 mistray.pause();
                 document.getElementById('muteScreen').style.display = 'flex';              
