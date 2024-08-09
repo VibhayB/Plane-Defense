@@ -615,7 +615,7 @@
 
     function startMoveLeft() {
         endMoveRight();
-        if (freezetime <= 0 && level7 != 1 && level7 != 5 && level7 != 5.5) {
+        if (freezetime == 0 && level7 != 1 && level7 != 5 && level7 != 5.5) {
             plane.moveLeft = true;
         } else {
             plane.moveLeft = false;
@@ -628,7 +628,7 @@
 
     function startMoveRight() {
         endMoveLeft();
-        if (freezetime <= 0 && level7 != 1 && level7 != 5 && level7 != 5.5) {
+        if (freezetime = 0 && level7 != 1 && level7 != 5 && level7 != 5.5) {
             plane.moveRight = true;
         } else {
             plane.moveRight = false;
@@ -640,7 +640,7 @@
     }
 
     function shoot() {
-        if (freezetime <= 0 && level7 != 1 && level7 != 5 && level7 != 5.5) {
+        if (freezetime == 0 && level7 != 1 && level7 != 5 && level7 != 5.5) {
             plane.shooting = true;
         } else {
             plane.shooting = false;
@@ -2665,6 +2665,7 @@
                 requestAnimationFrame(gameLoop);
             }
             function restartGame(lvl) {      
+                freezetime = 0;
                 gameTime = -1;
                 gamestarted = true;
                 mistray.pause();
@@ -2823,6 +2824,7 @@
                 document.getElementById('muteScreen').style.display = 'none';              
             }
             function returnToMenu() {
+                freezetime = 0;
                 gameTime = -1;
                 gamestarted = false;
                 flash.pause();
