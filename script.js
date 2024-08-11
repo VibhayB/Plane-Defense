@@ -628,7 +628,7 @@
 
     function startMoveRight() {
         endMoveLeft();
-        if (freezetime = 0 && level7 != 1 && level7 != 5 && level7 != 5.5) {
+        if (freezetime == 0 && level7 != 1 && level7 != 5 && level7 != 5.5) {
             plane.moveRight = true;
         } else {
             plane.moveRight = false;
@@ -1309,20 +1309,20 @@
         
         if(statex){
             function updatePlaneMovement() {
-            if (isLeftButtonPressed) {
+            if (isLeftButtonPressed && freezetime == 0) {
                 plane.moveLeft = true;
                 plane.moveRight = false;
-            } else if (keyboard.left) {
+            } else if (keyboard.left && freezetime == 0) {
                 plane.moveLeft = true;
                 plane.moveRight = false;
             } else {
                 plane.moveLeft = false;
             }
             
-            if (isRightButtonPressed) {
+            if (isRightButtonPressed && freezetime == 0) {
                 plane.moveRight = true;
                 plane.moveLeft = false;
-            } else if (keyboard.right) {
+            } else if (keyboard.right && freezetime == 0) {
                 plane.moveRight = true;
                 plane.moveLeft = false;
             } else {
