@@ -42,6 +42,7 @@
             gameRunning = false; // Stop updating the game loop
             document.getElementById('pauseScreen').style.display = 'flex';            
             document.getElementById('muteScreen').style.display = 'flex';  
+            document.getElementById('feedbackScreen').style.display = 'flex'; 
         }
         if (document.hidden || !music) {
             if (!currentAudio.paused) {
@@ -56,6 +57,20 @@
             }
         }
     }
+    // script.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the button element by its ID
+    const button = document.getElementById('feedbackButton');
+
+    // Define the URL you want to open
+    const url = 'https://docs.google.com/forms/d/e/1FAIpQLSeMLgOVgZ-XSWj4L2odemacaHuY4tAIXpHfymN0S0IhmLnSdw/viewform?usp=sf_link';
+
+    // Attach a click event listener to the button
+    button.addEventListener('click', function() {
+        // Open the URL in a new tab or window
+        window.open(url, '_blank');
+    });
+});
 
     // Event listener for visibility changes
     document.addEventListener('visibilitychange', manageAudio);
@@ -112,7 +127,9 @@
         
 
         function closelevel(){
-            document.getElementById('levelScreen').style.display = 'none';
+            document.getElementById('levelScreen').style.display = 'none';   
+            document.getElementById('muteScreen').style.display = 'flex';  
+            document.getElementById('feedbackScreen').style.display = 'flex'; 
         }
 
         const initiallevelcolors = document.querySelectorAll('.levelbutton');
@@ -242,7 +259,9 @@
         }); 
         buttonclickk.currentTime = 0.25;
         buttonclickk.play();
-        levelScreen.style.display = 'flex';
+        levelScreen.style.display = 'flex';   
+        document.getElementById('muteScreen').style.display = 'none';  
+        document.getElementById('feedbackScreen').style.display = 'none'; 
     }
 
     function prevPlane() {
@@ -291,11 +310,15 @@
     function toggleStoreMenu() {
         const storeMenu = document.getElementById('storeMenu');
         if(storeMenu.style.display === 'none'){
-            storeMenu.style.display = 'flex';
+            storeMenu.style.display = 'flex';   
+            document.getElementById('muteScreen').style.display = 'none';  
+            document.getElementById('feedbackScreen').style.display = 'none'; 
             buttonclickk.currentTime = 0.25;
             buttonclickk.play();
         } else{
-            storeMenu.style.display = 'none';
+            storeMenu.style.display = 'none';   
+            document.getElementById('muteScreen').style.display = 'flex';  
+            document.getElementById('feedbackScreen').style.display = 'flex'; 
         }
     }
 
@@ -367,11 +390,15 @@
     function showHowToPlay() {
         buttonclickk.currentTime = 0.25;
         buttonclickk.play();
-        document.getElementById('howToPlayPopup').style.display = 'block';
+        document.getElementById('howToPlayPopup').style.display = 'block';   
+        document.getElementById('muteScreen').style.display = 'none';  
+        document.getElementById('feedbackScreen').style.display = 'none'; 
     }
 
     function closeHowToPlay() {
-        document.getElementById('howToPlayPopup').style.display = 'none';
+        document.getElementById('howToPlayPopup').style.display = 'none';   
+        document.getElementById('muteScreen').style.display = 'flex';  
+        document.getElementById('feedbackScreen').style.display = 'flex'; 
     }
 
             const canvas = document.getElementById('gameCanvas');
@@ -1317,7 +1344,7 @@
                 plane.moveRight = false;
             } else {
                 plane.moveLeft = false;
-            }
+            } 
             
             if (isRightButtonPressed && freezetime == 0) {
                 plane.moveRight = true;
@@ -2822,6 +2849,7 @@
                 document.getElementById('pauseScreen').style.display = 'none';            
                 lastTime = Date.now();
                 document.getElementById('muteScreen').style.display = 'none';              
+                document.getElementById('feedbackScreen').style.display = 'none'; 
             }
             function returnToMenu() {
                 freezetime = 0;
@@ -2829,7 +2857,8 @@
                 gamestarted = false;
                 flash.pause();
                 mistray.pause();
-                document.getElementById('muteScreen').style.display = 'flex';              
+                document.getElementById('muteScreen').style.display = 'flex';      
+                document.getElementById('feedbackScreen').style.display = 'flex';            
                 finalboss = [];
                 bossfinalImage.src = 'bossdownwards.png';
                 initialbossremoved = 0;
@@ -2914,8 +2943,8 @@
                 paused = !paused;
                 gameRunning = false; // Stop updating the game loop
                 document.getElementById('pauseScreen').style.display = 'flex';
-                
-                document.getElementById('muteScreen').style.display = 'flex';  
+                document.getElementById('muteScreen').style.display = 'flex';         
+                document.getElementById('feedbackScreen').style.display = 'flex'; 
             }
 
             function resumeGame() {
@@ -2923,8 +2952,8 @@
                 gameRunning = true; // Resume updating the game loop
                 document.getElementById('pauseScreen').style.display = 'none';
                 lastTime = Date.now(); // Reset lastTime to avoid a large delta time
-                
-                document.getElementById('muteScreen').style.display = 'none';  
+                document.getElementById('muteScreen').style.display = 'none';                         
+                document.getElementById('feedbackScreen').style.display = 'none'; 
                 requestAnimationFrame(draw); // Restart the draw loop
             } function restarttheGame(){
                 resumeGame();
