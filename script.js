@@ -10,7 +10,7 @@
     var music = true;
 
     updateCoinDisplay();
-    let gamestarted = true;
+    let gamestarted = false;
     let gameTime = -1;
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -209,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
     levelScreen.style.display = 'none';
 
     function saveGameState() {
+        planes[0].bought = true;
         var gameState = {
             boughtPlanes: planes.map(plane => ({ id: plane.id, bought: plane.bought })),
             selectedPlane,
@@ -418,7 +419,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let immunityPill = null;
     let immunityActive = false;
     let freezetime = 0;
-    let immunityDuration = 10; // in seconds
     let immunityEndTime = 0;
     let missileTime = 0;
     let stunTime = 0;
@@ -476,8 +476,8 @@ document.addEventListener('DOMContentLoaded', function() {
             bossinitialImage.src = 'bossupwards.png';
             const bluebulettImage = new Image();
             bluebulettImage.src = 'bluebullet.png';
-            let bubbleImage = new Image();
-            bubbleImage.src = '';
+            const bubbleImage = new Image();
+            bubbleImage.src = 'bubble.png';
             const shooterImage = new Image();
             shooterImage.src ='missilethrower.png';
             let planetImage = new Image();        
@@ -487,7 +487,18 @@ document.addEventListener('DOMContentLoaded', function() {
             rocketImage.src = 'missiledown.png';
             const mistImage = new Image();
             mistImage.src ='mist.png';
+            let img1 = new Image();
+            let img2 = new Image();
+            img1.src = "lvl1theme.png";
+            img2.src = "lvl1theme.png";
+            const prop1 = new Image();
+            prop1.src = "planetprop1.png";
+            const prop2 = new Image();
+            prop2.src = "planetprop2.png";
+            const prop3 = new Image();
+            prop3.src = "planetprop3.png";
             
+            const propimages = [prop1,prop2,prop3];
 
             let plane = {
                 x: canvas.width / 2,
@@ -499,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 bullets: []
             }; let bubble = {
                 x: canvas.width / 2,
-                y: canvas.height - 100,
+                y: canvas.height + 100,
                 width: 100,
                 height: 100,
             }; 
@@ -912,8 +923,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function createExplosion(x, y) {
-                exploding.currentTime = 0.5;
-                exploding.play();
+                if(win == 0){
+                    exploding.currentTime = 0.5;
+                    exploding.play();
+                }
         explosions.push({ x: x, y: y, frame: 0});
     } 
 
@@ -1053,7 +1066,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
             let stars = [];
-
+            let props = [];
+            
     function createStars() {
         for (let i = 0; i < 50; i++) { // Adjust the number of stars as needed
             let star = {
@@ -1064,7 +1078,18 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             stars.push(star);
         }
-    } 
+    } function createProp(propnum){
+        let prop = {
+            x: Math.random() < 0.5
+                    ? (Math.random() * (canvas.width / 2) - ((propnum%3)+4)*40)
+                    : canvas.width - Math.random() * (canvas.width / 2 - 60),
+                    y: -400,
+            image: propimages[propnum%3],
+            width: ((propnum%3)+4)*80,
+            height: ((propnum%3)+4)*80
+        };
+        props.push(prop);
+    }
 
     createStars(); // Call this function to initialize stars
 
@@ -1095,8 +1120,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return false;
     }
-
-
+    let y1 = 0;
+    let y2 = -canvas.height;
+    let speed = 2; // Speed of the scrolling
+    let durations = [0,130,190,190,210,210,230,120];
+    
+            let timedisplay = durations[level];
             function draw() {
                 if(planes[selectedPlane].id === 'zxiFighter'){
                     plane.height = 117;
@@ -1111,6 +1140,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             ctx.fillStyle = 'white';
+            // Move the images
+
+
+            ctx.drawImage(img1, 0, y1, canvas.width, canvas.height);
+            ctx.drawImage(img2, 0, y2, canvas.width, canvas.height);
+
             stars.forEach(star => {
                 ctx.fillRect(star.x, star.y, star.size, star.size);
                 if(gameRunning && level7 != 1  && level7 != 5 && level7 != 5.5){
@@ -1120,7 +1155,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     star.y = 0; // Reset star position when it goes below canvas
                     star.x = Math.random() * canvas.width; // Randomize x position
                 }
-        }); 
+        }); props.forEach(prop=>{
+            ctx.drawImage(prop.image, prop.x, prop.y, prop.width, prop.height);
+        });
             boss.forEach(bossinitial => {
                 ctx.drawImage(bossinitialImage, bossinitial.x, bossinitial.y, bossinitial.width, bossinitial.height);
             });
@@ -1175,7 +1212,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.drawImage(planeImage, plane.x, plane.y, plane.width, plane.height);
 
                 if (immunityActive) {
-                    bubbleImage.src = 'bubble.png';
                     ctx.drawImage(bubbleImage, bubble.x, bubble.y, bubble.width, bubble.height);
                 } 
 
@@ -1195,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Draw bullets for alien plane
                     alienPlane.bullets.forEach(bullet => {
                         ctx.fillStyle = 'red';
-                        ctx.fillRect(bullet.x, bullet.y, 2, 8);
+                        ctx.fillRect(bullet.x, bullet.y, 3, 10);
                     });
                 });
 
@@ -1272,7 +1308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.fillText('❤️ ' + currenthealth, 10, 80);
 
                 // Draw time passed
-                ctx.fillText('Time: ' + timePassed.toFixed(2), canvas.width - 100, 30);
+                ctx.fillText('Time: ' + (timedisplay).toFixed(2), canvas.width - 100, 30);
 
                 // Check for game over
                 if (!gameRunning) {
@@ -1302,6 +1338,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 let deltaTime = (currentTime - lastTime) / 1000; // deltaTime in seconds
                 lastTime = currentTime;
                 timePassed += deltaTime;
+                if(level == 0 || level7 >= 2){
+                    timedisplay = timePassed;
+                }
+                else if(timePassed <= durations[level]){
+                    timedisplay = durations[level] - timePassed;
+                } else{
+                    timedisplay = 0.00;
+                }
                 
     if(missileTime <= timePassed && planes[selectedPlane].id == 'zxiFighter'){
         missileButton.style.display = 'flex';
@@ -1325,19 +1369,80 @@ document.addEventListener('DOMContentLoaded', function() {
             let secondsRemaining = Math.ceil(immunityTimeRemaining / 1000);
             let millisecondsRemaining = Math.ceil((immunityTimeRemaining % 1000) / 10);
             timerDisplay.textContent = `${secondsRemaining.toString().padStart(2, '0')}.${millisecondsRemaining.toString().padStart(2, '0')}`;
+            // Calculate color
+            let percentageLeft = 1 - (immunityTimeRemaining / (10000));
+            // Define hue range from purple to red
+        let startHue = 270; // Purple hue
+        let endHue = 0;     // Red hue
 
-            // Adjust color based on remaining time
-            let percentageLeft = immunityTimeRemaining / (immunityDuration * 1000);
-            let r = Math.floor(255 * percentageLeft); // Red component increases as time decreases
-            let g = Math.floor(128 * (1 - percentageLeft)); // Green component decreases as time decreases
-            let b = 0; // Blue component can be adjusted as needed
-            timerColor = `rgb(${r},${g},${b})`;
+        // Calculate transition hue value
+        let transitionHue = startHue + (endHue - startHue) * (percentageLeft);
+
+        // Convert hue to RGB
+        let h = transitionHue % 360; // Hue angle
+        let s = 1; // Full saturation
+        let l = 0.5; // Lightness
+
+        // HSL to RGB conversion
+        let c = (1 - Math.abs(2 * l - 1)) * s;
+        let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+        let m = l - c / 2;
+
+        let r1, g1, b1;
+        if (0 <= h && h < 60) {
+            r1 = c; g1 = x; b1 = 0;
+        } else if (60 <= h && h < 120) {
+            r1 = x; g1 = c; b1 = 0;
+        } else if (120 <= h && h < 180) {
+            r1 = 0; g1 = c; b1 = x;
+        } else if (180 <= h && h < 240) {
+            r1 = 0; g1 = x; b1 = c;
+        } else if (240 <= h && h < 300) {
+            r1 = x; g1 = 0; b1 = c;
+        } else if (300 <= h && h < 360) {
+            r1 = c; g1 = 0; b1 = x;
+        }
+
+        let r = Math.floor((r1 + m) * 255);
+        let g = Math.floor((g1 + m) * 255);
+        let b = Math.floor((b1 + m) * 255); 
+
+        let timerColor = `rgb(${r},${g},${b})`;
+        
+        // Apply the color to the timer display
+        timerDisplay.style.color = timerColor;
+
         } else {
             timerDisplay.textContent = ''; // Hide timer if immunity is not active
-        }
-        
+        }        
         
         if(statex){
+            if(level7 != 1  && level7 != 5 && level7 != 5.5){
+                y1 += speed/1.5;
+                y2 += speed/1.5;
+            
+                // Reset position if the image moves off screen
+                if (y1 >= canvas.height) {
+                    y1 = y2 - canvas.height;
+                }
+                if (y2 >= canvas.height) {
+                    y2 = y1 - canvas.height;
+                } let propfull = false;
+                props.forEach(prop => {
+                    prop.y+=speed/1.5;
+                    if(prop.y > canvas.height){
+                        props.splice(props.indexOf(prop),1);
+                    } if(prop.y < 2*canvas.height/3){
+                        propfull = true;
+                    }
+                }); 
+                if(level7 < 2 && !propfull && planets.length == 0){
+                    let propno = parseInt(Math.random()*100000);
+                    if(propno < 200){
+                        createProp(propno);
+                    }
+                }
+            } 
             function updatePlaneMovement() {
             if (isLeftButtonPressed && freezetime == 0) {
                 plane.moveLeft = true;
@@ -1400,12 +1505,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 immunityPill.y < plane.y + plane.height &&
                 immunityPill.y + immunityPill.height > plane.y) {
                 immunityActive = true;
-                bubbleImage.src = "bubble.png";
+                bubble.y = canvas.height - 100;
                 bubble.x = plane.x;
-                bubble.y = plane.y;
                 bubble.width = plane.width;
                 bubble.height = plane.height;
-                immunityEndTime = Date.now() + (immunityDuration * 1000); // Set immunity end time
+                immunityEndTime = Date.now() + (10000); // Set immunity end time
                 immunityPill = null; // Remove collected immunity pill
             }
         } else if(level7 >= 1){
@@ -1415,13 +1519,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if immunity has expired
         if ((immunityActive && Date.now() > immunityEndTime)||level7>=1) {
             immunityActive = false;
-            bubbleImage.src = "";
+            bubble.y = canvas.height + 100;
         }
 
         // Create new coins and immunity pill
         if (Math.random() < 0.002  && level7 < 5) { // Adjust spawn rates as needed
             createCoin();
-        }
+        } 
         if (Math.random() < 0.0003 && level7 < 1) { // Adjust spawn rates as needed abx
             createImmunityPill();
         }
@@ -2694,9 +2798,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 draw();
                 requestAnimationFrame(gameLoop);
             }
-            function restartGame(lvl) {      
+            function restartGame(lvl) {    
+                timedisplay = durations[level];
                 freezetime = 0;
                 gameTime = -1;
+                props = [];
                 gamestarted = true;
                 mistray.pause();
                 flash.pause();
@@ -2845,7 +2951,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 explosions = [];
                 coins = [];
                 immunityPill = null;
-                bubbleImage.src = '';
+                bubble.y = canvas.height + 100;
                 score = 0;
                 gameRunning = true;
                 gameOverScreen.style.display = 'none';            
@@ -2855,8 +2961,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('feedbackScreen').style.display = 'none'; 
             }
             function returnToMenu() {
+                timedisplay = 0;
                 freezetime = 0;
                 gameTime = -1;
+                props = [];
                 gamestarted = false;
                 flash.pause();
                 mistray.pause();
@@ -2869,7 +2977,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 buttonclickk.play();
                 wins.pause();
                 bigexplode.pause();
-                bubbleImage.src = '';
+                bubble.y = canvas.height + 100;
                 missilelaunch.pause();
                 shootsound.pause();
                 teleport.pause();
