@@ -37,10 +37,10 @@
 
     // Function to manage audio based on visibility and focus
     function manageAudio() {
-        if(document.hidden){
+        if(document.hidden && gamestarted){
             paused = true;
             gameRunning = false; // Stop updating the game loop
-            document.getElementById('pauseScreen').style.display = 'flex';            
+            document.getElementById('pauseScreen').style.display = 'flex';  
             document.getElementById('muteScreen').style.display = 'flex';  
             document.getElementById('feedbackScreen').style.display = 'flex'; 
         }
@@ -73,6 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
     // Event listener for visibility changes
+    try{
+
+    } catch{}
     document.addEventListener('visibilitychange', manageAudio);
 
     // Optional: Listen for focus/blur events to handle cases where the tab might be visible but not focused
