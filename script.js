@@ -3727,7 +3727,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideMenu();
                 levelScreen.style.display = 'none';
                 
-                timePassed = 190;
+                timePassed = 0;
                 if(win == 1 && level != 7){
                     win = 0;
                     restartGame(level+1);
