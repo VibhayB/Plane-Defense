@@ -951,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 blueArcs.push(blueArc);
             } function createsemiboss(){
                 let semiboss = {
-                    x: canvas.width*(2*semibosses.length+1)/6,
+                    x: canvas.width*(2*semibosses.length+1)/6 - 85,
                     y: -160,
                     width: 170,
                     height: 140,
@@ -964,7 +964,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 semibosses.push(semiboss);
             } function createfirstboss(){
                 let firstboss = {
-                    x: canvas.width/2,
+                    x: canvas.width/2 - 85,
                     y: -160,
                     width: 170,
                     height: 140,
@@ -980,7 +980,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 firstbosses.push(firstboss);
             } function createlastboss(){
                 let lastboss = {
-                    x: canvas.width*(2*lastbosses.length+1)/6,
+                    x: canvas.width*(2*lastbosses.length+1)/6 -100,
                     y: -160,
                     width: 200,
                     height: 155,
@@ -1035,10 +1035,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 finalboss.push(bossfinal);
             } 
             
-            function createDemoBoss(){
+            function createDemoBoss(a=(canvas.width / 2),b=-200){
                 let bossinitially = {
-                    x: canvas.width / 2 - 15,
-                    y: -200,
+                    x: a - 100,
+                    y: b,
                     width: 200,
                     height: 200,
                     type: 'bossdemo'
@@ -1981,12 +1981,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             semibosses.forEach(semiboss =>{
                 const stopY = 50; // Adjust this value to your desired threshold
-                if (semiboss.y < stopY || ((semiboss.x > canvas.width/2 -2 && semiboss.x < canvas.width/2 + 2) && semiboss.y < canvas.height/3.5)) { 
+                if (semiboss.y < stopY || ((semiboss.x + 85> canvas.width/2 -2 && semiboss.x + 85< canvas.width/2 + 2) && semiboss.y < canvas.height/3.5)) { 
                     semiboss.y += 1.5; // Adjust the speed if needed
                     
                 } else {
                     if(level4 < 0.5 && bossdemo.length < 1) createDemoBoss();
-                    if(level4 < 0.5 && (semiboss.x > canvas.width/2 -2 && semiboss.x < canvas.width/2 + 2) && bossdemo[0].y + bossdemo[0].height + 10< semiboss.y) bossdemo[0].y += 1.5;
+                    if(level4 < 0.5 && (semiboss.x + 85> canvas.width/2 -2 && semiboss.x + 85< canvas.width/2 + 2) && bossdemo[0].y + bossdemo[0].height + 10< semiboss.y) bossdemo[0].y += 1.5;
                     else{
                         semiheight++;
                         if (semiboss.special <= timePassed && Math.random() < 0.002 && semiboss.state < timePassed) {
@@ -2001,9 +2001,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 }
-                if((semiboss.x < canvas.width/2 -2 || semiboss.x > canvas.width/2 + 2) && semiboss.special < timePassed) midsemi++;
+                if((semiboss.x + 85 < canvas.width/2 -2 || semiboss.x + 85> canvas.width/2 + 2) && semiboss.special < timePassed) midsemi++;
                 if(midsemi == semibosses.length){
-                    const targetX = canvas.width / 2; // Target X is the canvas center
+                    const targetX = canvas.width / 2 - 85; // Target X is the canvas center
                     const targetY = canvas.height / 3.5; // Target Y is the threshold
 
                     const distanceX = targetX - semiboss.x; // Horizontal distance to target
@@ -2047,7 +2047,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             bullet.y += 2;
                         })
                     };
-                } else if((semiboss.y > canvas.height/3.5 || (!(semiboss.x > canvas.width/2 -2 && semiboss.x < canvas.width/2 + 2) && semiboss.y > stopY)) && semiboss.special < timePassed && semiboss.special + 10 > timePassed){
+                } else if((semiboss.y > canvas.height/3.5 || (!(semiboss.x + 85> canvas.width/2 -2 && semiboss.x + 85< canvas.width/2 + 2) && semiboss.y > stopY)) && semiboss.special < timePassed && semiboss.special + 10 > timePassed){
                     semiboss.y -= 1; // Adjust the speed if needed
                 } semiboss.bullets.forEach(bullet => {
                     if (bullet.y > canvas.height) {
@@ -2092,23 +2092,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if(lastbosses.length == 1 && lastbosses[0].health <= 0){
                 lastbosses[0].invisbility = false;
                 let enlarge = lastbosses[0].width >= 200 && lastbosses[0].height >= 200;
-                enlarge = enlarge && (Math.abs(canvas.width / 2 - 15 - lastbosses[0].x) < 2);
                 if(enlarge){ //bossdemo logic
                     if(bossdemo.length == 0){
-                        createDemoBoss();
+                        createDemoBoss(lastbosses[0].x,lastbosses[0].y);
                         bossdemo[0].y = lastbosses[0].y;
                         lastbosses.splice(0, 1);
                     }
                 } else{
-                    let interpolationSpeed = 1;
-                    if(lastbosses[0].x + 2 < canvas.width / 2 - 15)
-                    lastbosses[0].x += interpolationSpeed;
-                    else if(lastbosses[0].x - 2> canvas.width / 2 - 15)
-                    lastbosses[0].x -= interpolationSpeed;
                     // Interpolate width
-                    if(lastbosses[0].width < 200) lastbosses[0].width += interpolationSpeed/2;
+                    if(lastbosses[0].width < 200) lastbosses[0].width += 1/2;
                     // Interpolate height
-                    if(lastbosses[0].height < 200) lastbosses[0].height += interpolationSpeed/2;
+                    if(lastbosses[0].height < 200) lastbosses[0].height += 1/2;
                 }
             } if(bossdemo.length == 1 && level == 6){
                 bossdemo[0].y --;
@@ -2157,13 +2151,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(!(lastbosses.length == 1 && lastbosses[0].health <= 0) && lastbosses.length == 1 && Math.random() < 0.1 && timePassed%5 > 3 && !semiboss.invisibility){
                     semiboss.invisibility = true;
                     quartboss.src = "";
-                    let randompos = canvas.width > canvas.height? Math.random() > 0.5? 0: 1: 0;
-                    if(semiboss.x == canvas.width/6){
-                        semiboss.x = [canvas.width/2,canvas.width*(5)/6][randompos];
-                    } else if(semiboss.x == canvas.width/2){
-                        semiboss.x = [canvas.width/6,canvas.width*(5)/6][randompos];
+                    let randompos = Math.random() > 0.5? 0: 1;
+                    if(semiboss.x + 100== canvas.width/6){
+                        semiboss.x = [canvas.width/2-100,canvas.width*(5)/6-100][randompos];
+                    } else if(semiboss.x + 100== canvas.width/2){
+                        semiboss.x = [canvas.width/6-100,canvas.width*(5)/6-100][randompos];
                     } else{
-                        semiboss.x = [canvas.width/6,canvas.width/2][randompos];
+                        semiboss.x = [canvas.width/6-100,canvas.width/2-100][randompos];
                     }
                 }
                 semiboss.bullets.forEach(bullet => {
@@ -2237,13 +2231,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     semiboss.y += 1.7; // Adjust the speed if needed
                     semiboss.special = false;
 
-                } else if(semiboss.move == 'l' && semiboss.x > canvas.width/4){
+                } else if(semiboss.move == 'l' && semiboss.x + 85> canvas.width/4){
                     semiboss.x--;
-                } else if(semiboss.move == 'r' && semiboss.x < 3*canvas.width/4){
+                } else if(semiboss.move == 'r' && semiboss.x + 85< 3*canvas.width/4){
                     semiboss.x++;
-                } else if(semiboss.move == 'c' && semiboss.x > canvas.width/2 + 2){
+                } else if(semiboss.move == 'c' && semiboss.x + 85> canvas.width/2 + 2){
                     semiboss.x--;
-                } else if(semiboss.move == 'c' && semiboss.x < canvas.width/2 - 2){
+                } else if(semiboss.move == 'c' && semiboss.x + 85< canvas.width/2 - 2){
                     semiboss.x++;
                 } else{
                     if (Math.random() < 0.005 && semiboss.state < timePassed) {
@@ -2257,7 +2251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } semiboss.move = '';           
                     if(semiboss.unreg >= 35){
                         semiboss.unreg = 0;
-                        if(semiboss.x <= canvas.width/4 || semiboss.x >= 3*canvas.width/4) semiboss.move = 'c';
+                        if(semiboss.x + 85<= canvas.width/4 || semiboss.x + 85>= 3*canvas.width/4) semiboss.move = 'c';
                         else if(Math.random() < 0.5) semiboss.move = 'l';
                         else semiboss.move = 'r';                        
                     }
