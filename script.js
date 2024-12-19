@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
             width: 80,
             height: 60,
             type: 'coin',
-            value: Math.random() > 0.25? 10: 30
+            value: Math.random() > 0.12? 10: 30
         };
         coins.push(coin);
     } function createHeart() {
@@ -856,8 +856,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 asteroids.push(asteroidd);
             } function createbossAsteroid(){
                 let asteroidd = {
-                    x: Math.random() * canvas.width/2,
-                    y: -40,
+                    x: canvas.width > canvas.height? Math.random() * canvas.width/2: 0,
+                    y: canvas.width > canvas.height? -40: Math.random() * canvas.height/2.7,
                     width: 60,
                     height: 60,
                     speed: 5,
@@ -866,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 asteroids.push(asteroidd);
             }function createPlanet(){
                 let planet = {
-                    x: -190,
+                    x: -190*(canvas.width > canvas.height? 1: 2),
                     y: -40,
                     width: 2000,
                     height: 2000,
@@ -1090,6 +1090,7 @@ document.addEventListener('DOMContentLoaded', function() {
             y + explosionRadius > lastboss.y && y - explosionRadius < lastboss.y + lastboss.height){
                 lastboss.state = timePassed + 7;
                 f = true;
+                quartboss.src = "quartboss.png"
             }
         }); if (firstbosses.length != 0 &&  x + explosionRadius > firstbosses[0].x && x - explosionRadius < firstbosses[0].x + firstbosses[0].width &&
             y + explosionRadius > firstbosses[0].y && y - explosionRadius < firstbosses[0].y + firstbosses[0].height){
@@ -1785,9 +1786,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Create new coins and immunity pill
-        if (Math.random() < 0.002  && level7 < 5) { // Adjust spawn rates as needed
+        if (Math.random() < 0.001  && level7 < 5) { // Adjust spawn rates as needed
             createCoin();
-        } if (Math.random() < 0.0005*((planes[selectedPlane].health-currenthealth)/planes[selectedPlane].health)  && level7 < 5) { // Adjust spawn rates as needed
+        } if (Math.random() < 0.0002*((planes[selectedPlane].health-currenthealth)/planes[selectedPlane].health)  && level7 < 5) { // Adjust spawn rates as needed
             createHeart();
         } 
         if (Math.random() < 0.0003 && level7 < 1) { // Adjust spawn rates as needed abx
@@ -2022,7 +2023,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
                 } 
-                if(semiboss.health < 150 && !semispecial && semiboss.special + 10<= timePassed && semiboss.state < timePassed){
+                if(semiboss.health < 150 && !semispecial && semiboss.special + 10<= timePassed){
                     if(choice > 1) choice --;
                     else semiboss.special = timePassed + 10;
                 }
@@ -2153,10 +2154,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(!semiboss.invisibility && quartboss.src != "quartboss.png"){
                     quartboss.src = "quartboss.png";
                 }
-                if(!(lastbosses.length == 1 && lastbosses[0].health <= 0) && lastbosses.length == 1 && Math.random() < 0.1 && timePassed%5 > 3 && !semiboss.invisibility && semiboss.state < timePassed){
+                if(!(lastbosses.length == 1 && lastbosses[0].health <= 0) && lastbosses.length == 1 && Math.random() < 0.1 && timePassed%5 > 3 && !semiboss.invisibility){
                     semiboss.invisibility = true;
                     quartboss.src = "";
-                    let randompos = Math.random() > 0.5? 0: 1;
+                    let randompos = canvas.width > canvas.height? Math.random() > 0.5? 0: 1: 0;
                     if(semiboss.x == canvas.width/6){
                         semiboss.x = [canvas.width/2,canvas.width*(5)/6][randompos];
                     } else if(semiboss.x == canvas.width/2){
@@ -2220,7 +2221,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const stopY = 50; // Adjust this value to your desired threshold
                 if(semiboss.timeState === 0) semiboss.timeState = timePassed - 10;
                 if(semiboss.health < 150 && (timePassed-semiboss.timeState) % 30 >= 20 && semiboss.move == ''){ //half of original health
-                    if ((timePassed-semiboss.timeState) % 30 < 21 && semiboss.state < timePassed) semiboss.special = true;
+                    if ((timePassed-semiboss.timeState) % 30 < 21) semiboss.special = true;
                     else if(semiboss.special && (timePassed-semiboss.timeState) % 30 < 26) semiboss.y -= 1.7;
                     else if(Math.random() < 0.5 && semiboss.special) createbossAsteroid();
                 } else if(semiboss.health <= 0){
@@ -3726,7 +3727,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideMenu();
                 levelScreen.style.display = 'none';
                 
-                timePassed = 0;
+                timePassed = 190;
                 if(win == 1 && level != 7){
                     win = 0;
                     restartGame(level+1);
