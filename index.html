@@ -13,39 +13,51 @@
         <source src="main-menu-plane-defense.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="survivormusic" loop> 
+    <audio id="survivormusic" loop preload="none"> 
         <source src="survivor.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="towardsmars" loop> 
+    <audio id="towardsmars" loop preload="none"> 
         <source src="firstplanet.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="towardsjupiter" loop> 
+    <audio id="towardsjupiter" loop preload="none"> 
         <source src="towards jupyter.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="towardssaturn" loop> 
+    <audio id="jupiterboss" loop preload="none"> 
+        <source src="jupiterboss.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardssaturn" loop preload="none"> 
         <source src="towards saturn.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="towardsuranus" loop> 
+    <audio id="towardsuranus" loop preload="none"> 
         <source src="towards uranus.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="towardsneptune" loop> 
+    <audio id="semibossmusic" loop preload="none"> 
+        <source src="semi-boss music.mp3" type="audio/mp3"> 
+    </audio> 
+
+    <audio id="towardsneptune" loop preload="none"> 
         <source src="towards neptune.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="towardspluto" loop> 
+    <audio id="towardspluto" loop preload="none"> 
         <source src="towards pluto.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="towardsalpha" loop> 
+    <audio id = "plutoboss" preload="none">
+        <source src="plutoboss.mp3" type="audio/mp3">
+    </audio>
+
+    <audio id="towardsalpha" loop preload="none"> 
         <source src="towards alpha centauri.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="nearalpha" loop> 
+    <audio id="nearalpha" loop preload="none"> 
         <source src="near end.mp3" type="audio/mp3"> 
     </audio> 
     
@@ -62,7 +74,7 @@
         <source src="frozen.mp3" type="audio/mp3"> 
     </audio> 
 
-    <audio id="wins" loop>
+    <audio id="wins" loop preload="none">
         <source src="win.mp3" type="audio/mp3">
     </audio> 
 
@@ -94,6 +106,10 @@
         <source src="flash.mp3" type="audio/mp3">
     </audio>
 
+    <audio id = "endgame" preload="none">
+        <source src="finalwin.mp3" type="audio/mp3">
+    </audio>
+
     <div style="position: relative;">
         <canvas id="gameCanvas"></canvas>
         <button id="pauseButton" onclick="togglePause()" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);">
@@ -116,7 +132,7 @@
 
     <div id="menuScreen">
         <div id="totalCoins">
-            <img src="coin.png" alt="Coins"  draggable="false"  id="coinIcon">
+            <img src="scoin.png" alt="Coins"  draggable="false"  id="coinIcon">
             <span id="coinCount">0</span>
         </div>
         <div>
@@ -170,7 +186,7 @@
             </p>            
             <p id="planeCost">
                 <span id="costValue"></span>
-                <img id="coinIcon" src="coin.png"  draggable="false" alt="Coin Icon" class="icon">
+                <img id="coinIcon" src="scoin.png"  draggable="false" alt="Coin Icon" class="icon">
             </p>
             <p id="planedesc"></p>   
             <button id="buyButton" class="buy-button button" onclick="buyCurrentPlane()">Buy Plane</button>
@@ -181,7 +197,7 @@
      
     
 
-<img id="coinImage" src="coin.png"  draggable="false" style="display: none;">
+<img id="coinImage" src="scoin.png"  draggable="false" style="display: none;">
     <img id="immunityPillImage" src="capsule.png"  draggable="false"  style="display: none;">
 
     <div id="levelScreen">
