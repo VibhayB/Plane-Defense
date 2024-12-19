@@ -1990,14 +1990,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     else{
                         semiheight++;
                         if (semiboss.special <= timePassed && Math.random() < 0.002 && semiboss.state < timePassed) {
-                            semiboss.bullets.push({
-                                x: semiboss.x + semiboss.width / 3,
-                                y: semiboss.y + semiboss.height
-                            });
-                            semiboss.bullets.push({
-                                x: semiboss.x + 2*semiboss.width / 3,
-                                y: semiboss.y + semiboss.height
-                            });
+                            if(canvas.width>canvas.height){
+                                semiboss.bullets.push({
+                                    x: semiboss.x + semiboss.width / 3,
+                                    y: semiboss.y + semiboss.height
+                                });
+                                semiboss.bullets.push({
+                                    x: semiboss.x + 2*semiboss.width / 3,
+                                    y: semiboss.y + semiboss.height
+                                });
+                            } else{
+                                if(Math.random()>0.5) semiboss.bullets.push({
+                                    x: semiboss.x + semiboss.width / 2,
+                                    y: semiboss.y + semiboss.height
+                                });
+                            }
+                            
                         }
                     }
                 }
@@ -2041,7 +2049,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 });
                             } 
                         } 
-                        let h = canvas.width > canvas.height ? 1 : 0.5;
+                        let h = canvas.width > canvas.height ? 1 : 0.4;
                         semiboss.bullets.forEach(bullet=>{
                             bullet.x += 0.66*h*2*bullet.move/4;
                             bullet.y += 2;
@@ -2131,7 +2139,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         let randomColor = generateRandomColor();
                         
-                        semiboss.bullets.push({
+                        if(canvas.width < canvas.height && Math.random() > 0.5) {
+                            semiboss.bullets.push({
+                                x: semiboss.x + semiboss.width / 2,
+                                y: semiboss.y + semiboss.height,
+                                color: randomColor, // Dynamic color for the bullet
+                            });
+                        } else{
+                            semiboss.bullets.push({
                                 x: semiboss.x + semiboss.width / 3,
                                 y: semiboss.y + semiboss.height,
                                 color: randomColor, // Dynamic color for the bullet
@@ -2142,7 +2157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 y: semiboss.y + semiboss.height,
                                 color: randomColor, // Dynamic color for the bullet
                             });
-                        
+                        }
                     }
                 } //have an if condition to check if invisbility is false but src is different from the actual source
                 if(!semiboss.invisibility && quartboss.src != "quartboss.png"){
