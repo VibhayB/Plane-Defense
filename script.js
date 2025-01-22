@@ -922,7 +922,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     bullets: [],
                     health: 5, // takes 5 bullets to destroy
                     type: 'alien',
-                    state: 0
+                    state: 0,
+                    damagetime: 0
                 };
                 alienPlanes.push(alienPlane);
             } function createAdvancedAliens(){
@@ -934,7 +935,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     bullets: [],
                     health: 10, // takes 10 bullets to destroy
                     type: 'advancedAlien',
-                    state: 0
+                    state: 0,
+                    damagetime: 0
                 };
                 advancedAliens.push(advancedAlien);
             } function createBlueArcs(){
@@ -946,7 +948,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     bullets: [],
                     health: 20, // takes 20 bullets to destroy
                     type: 'blueArc',
-                    state: 0
+                    state: 0,
+                    damagetime: 0
                 };
                 blueArcs.push(blueArc);
             } function createsemiboss(){
@@ -959,7 +962,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     health: 300, // takes 300 bullets to destroy
                     type: 'semiBoss',
                     state: 0,
-                    special: 0
+                    special: 0,
+                    damagetime: 0
                 };
                 semibosses.push(semiboss);
             } function createfirstboss(){
@@ -975,7 +979,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     state: 0,
                     unreg: 0,
                     timeState: 0,
-                    move: '' //'' means not moving, l means left, r means right, c means center
+                    move: '', //'' means not moving, l means left, r means right, c means center
+                    damagetime: 0
                 };
                 firstbosses.push(firstboss);
             } function createlastboss(){
@@ -988,7 +993,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     health: 300, // takes 300 bullets to destroy
                     type: 'lastBoss',
                     state: 0,
-                    invisibility: false
+                    invisibility: false,
+                    damagetime: 0
                 };
                 lastbosses.push(lastboss);
             } function createDefenders(){
@@ -1003,7 +1009,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     health: 35, // takes 35 bullets to destroy
                     state: false,
                     misteffect: 0,
-                    type: 'defender'
+                    type: 'defender',
+                    damagetime: 0
                 };
 
                 for (let existingDefender of defenders) {
@@ -1030,7 +1037,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     flareInterval: 0,
                     flares: [],
                     type: 'bossFinal',
-                    state: 0
+                    state: 0,
+                    damagetime: 0
                 };
                 finalboss.push(bossfinal);
             } 
@@ -1180,6 +1188,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (x + explosionRadius > blueArc.x && x - explosionRadius < blueArc.x + blueArc.width &&
             y + explosionRadius > blueArc.y && y - explosionRadius < blueArc.y + blueArc.height){
                 blueArc.health -= 20;
+                blueArc.damagetime = timePassed + 5;
                 if(blueArc.health <= 0){
                     createExplosion(blueArc.x, blueArc.y);
                     blueArcs.splice(blueArcs.indexOf(blueArc), 1);
@@ -1194,6 +1203,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (x + explosionRadius > bossfinal.x && x - explosionRadius < bossfinal.x + bossfinal.width &&
                 y + explosionRadius > bossfinal.y && y - explosionRadius < bossfinal.y + bossfinal.height){
                     bossfinal.health -= 20;
+                    bossfinal.damagetime = timePassed + 5;
                     createExplosion(x, y);
                     if(bossfinal.health <= 0){
                         level7 = 5;
@@ -1212,6 +1222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }); semibosses.forEach(semiboss => {
             if (level4 == 0.5 && x + explosionRadius > semiboss.x && x - explosionRadius < semiboss.x + semiboss.width &&
                 y + explosionRadius > semiboss.y && y - explosionRadius < semiboss.y + semiboss.height){
+                    semiboss.damagetime = timePassed + 5;                    
                     semiboss.health -= 20;
                     createExplosion(x, y);
                     if(semiboss.health <= 0){
@@ -1233,6 +1244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (level2 == 0.5 && x + explosionRadius > firstboss.x && x - explosionRadius < firstboss.x + firstboss.width &&
                 y + explosionRadius > firstboss.y && y - explosionRadius < firstboss.y + firstboss.height){
                     if(firstboss.move == '') firstboss.unreg += 20;
+                    firstboss.damagetime = timePassed + 5;
                     firstboss.health -= 20;
                     createExplosion(x, y);
             } firstboss.bullets.forEach(bullet => {
@@ -1249,6 +1261,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }); lastbosses.forEach(lastboss=>{
             if (level6 == 0.5 && x + explosionRadius> lastboss.x && x - explosionRadius < lastboss.x + lastboss.width &&
                 y + explosionRadius > lastboss.y && y - explosionRadius < lastboss.y + lastboss.height){
+                    lastboss.damagetime = timePassed + 5;
                     lastboss.health -= 20;
                     createExplosion(x, y);
                     lastboss.invisibility = false;
@@ -1268,6 +1281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (x + explosionRadius > defender.x && x - explosionRadius < defender.x + defender.width &&
             y + explosionRadius > defender.y && y - explosionRadius < defender.y + defender.height){
                 defender.health -= 20;
+                defender.damagetime = timePassed + 5;
                 if(defender.health <= 0){
                     defender.state = true;
                 }
@@ -1333,7 +1347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let y1 = 0;
     let y2 = -canvas.height;
     let speed = 2; // Speed of the scrolling
-    let durations = [0,130,170,190,165,210,180,120];
+    let durations = [0,80,110,130,145,160,150,120];
     
             let timedisplay = durations[level];
             function draw() {
@@ -1411,20 +1425,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 rotators.forEach(rotator => {
                     ctx.drawImage(rotatorImage, rotator.x, rotator.y, rotator.width, rotator.height);
                 });
-
+                
+                ctx.fillStyle = 'red';
                 finalboss.forEach(bossfinal => {
                     bossfinal.rockets.forEach(rocket => {
                         ctx.drawImage(rocketImage, rocket.x, rocket.y, rocket.width, rocket.height);
                     }); bossfinal.flares.forEach(flare => {
                         ctx.drawImage(bluebulettImage, flare.x, flare.y, flare.width, flare.height);
                     }); ctx.drawImage(bossfinalImage, bossfinal.x, bossfinal.y, bossfinal.width, bossfinal.height);
+                    
+                    if(bossfinal.damagetime > timePassed) ctx.fillRect(bossfinal.x+bossfinal.width/3, bossfinal.y+bossfinal.height/3, bossfinal.width*bossfinal.health/1000, bossfinal.height/32);
                 });
 
                 semibosses.forEach(semiboss => {
                     ctx.drawImage(semibossImage, semiboss.x, semiboss.y, semiboss.width, semiboss.height);
                     semiboss.bullets.forEach(bullet => {
                         ctx.drawImage(semibullet, bullet.x, bullet.y - 10, 30, 30);
-                    });
+                    }); if(semiboss.damagetime > timePassed) ctx.fillRect(semiboss.x+semiboss.width/3, semiboss.y+semiboss.height/3, semiboss.width*semiboss.health/600, semiboss.height/32);
                 }); 
                 bossdemo.forEach(boss=>{
                     ctx.drawImage(bossfinalImage,boss.x,boss.y,boss.width,boss.height);
@@ -1437,12 +1454,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         ctx.beginPath();  // Begin a new path for the circle
                         ctx.arc(bullet.x, bullet.y, 4, 0, Math.PI * 2);  // Draw a circle (x, y, radius, start angle, end angle)
                         ctx.fill();  // Fill the circle with the chosen color
-                    });
-                }); if(firstbosses.length > 0){
+                    }); 
+                    ctx.fillStyle = 'red'; if(lastboss.damagetime > timePassed) ctx.fillRect(lastboss.x+lastboss.width/3, lastboss.y+lastboss.height/3, lastboss.width*lastboss.health/600, lastboss.height/32);
+                }); 
+                ctx.fillStyle = 'red';
+                if(firstbosses.length > 0){
                     ctx.drawImage(initialboss, firstbosses[0].x, firstbosses[0].y, firstbosses[0].width, firstbosses[0].height);
                     firstbosses[0].bullets.forEach(bullet => {
                         ctx.drawImage(firstbullet, bullet.x - 20, bullet.y - 20, bullet.height, bullet.width);
-                    });
+                    }); if(firstbosses[0].damagetime > timePassed) ctx.fillRect(firstbosses[0].x+firstbosses[0].width/3, firstbosses[0].y+firstbosses[0].height/3, firstbosses[0].width*firstbosses[0].health/600, firstbosses[0].height/32);
                 }
 
                 asteroids.forEach(asteroidd => {
@@ -1478,7 +1498,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     alienPlane.bullets.forEach(bullet => {
                         ctx.fillStyle = 'red';
                         ctx.fillRect(bullet.x, bullet.y, 3, 10);
-                    });
+                    }); if(alienPlane.damagetime > timePassed) ctx.fillRect(alienPlane.x+alienPlane.width/3, alienPlane.y+alienPlane.height/3, alienPlane.width*alienPlane.health/10, alienPlane.height/16);
                 });
 
                 // Draw alien advanced planes
@@ -1487,7 +1507,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Draw bullets for alien plane
                     advancedallie.bullets.forEach(bullet => {
                         ctx.drawImage(bulletImage, bullet.x - 10, bullet.y - 20, 17, 95);
-                    });
+                    }); if(advancedallie.damagetime > timePassed) ctx.fillRect(advancedallie.x+advancedallie.width/3, advancedallie.y+advancedallie.height/3, advancedallie.width*advancedallie.health/20, advancedallie.height/16);
                 }); 
 
                 blueArcs.forEach(blueArc => {
@@ -1495,11 +1515,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Draw bullets for alien plane
                     blueArc.bullets.forEach(bullet => {
                         ctx.drawImage(blueflare, bullet.x - 20, bullet.y - 20, 30, 30);
-                    });
+                    }); if(blueArc.damagetime > timePassed) ctx.fillRect(blueArc.x+blueArc.width/3, blueArc.y+blueArc.height/3, blueArc.width*blueArc.health/40, blueArc.height/16);
                 }); 
 
                 defenders.forEach(defender => {
                     ctx.drawImage(defenderImage, defender.x, defender.y, defender.width, defender.height);
+                    if(defender.damagetime > timePassed) ctx.fillRect(defender.x+defender.width/3, defender.y+defender.height/3, defender.width*defender.health/70, defender.height/16);
                 });
 
                 // Inside your drawing function (e.g., drawMissiles()), replace the ctx.fillRect() calls with:
@@ -1843,7 +1864,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
                 alienPlanes.forEach(alienPlane => {
                     const stopY = 50; // Adjust this value to your desired threshold
-            if(timePassed > 165 && level == 4 && advancedAliens.length <= 0){
+            if(timePassed > 145 && level == 4 && advancedAliens.length <= 0){
                 alienPlane.y -= 1.2; 
                 if(music && level4 < 0.25){
                     towardsuranus.pause();
@@ -1852,7 +1873,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     level4 = 0.25;
                     currentAudio = semibossmusic;
                 }
-            } else if(timePassed > 170 && level == 2){
+            } else if(timePassed > 110 && level == 2){
                 alienPlane.y -= 1.2; 
                 if(music && level2 < 0.25){
                     towardsjupiter.pause();
@@ -1861,7 +1882,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     level2 = 0.25;
                     currentAudio = jupiterboss;
                 }
-            } else if(timePassed > 180 && level == 6 && advancedAliens.length <= 0){
+            } else if(timePassed > 150 && level == 6 && advancedAliens.length <= 0){
                 alienPlane.y -= 1.2; 
                 if(music && level6 < 0.25){
                     towardspluto.pause();
@@ -1874,8 +1895,8 @@ document.addEventListener('DOMContentLoaded', function() {
             else if (alienPlane.y < stopY && level7 != 5 && level7 != 5.5) {
                 alienPlane.y += 0.7; // Adjust the speed if needed
             }
-                    if (alienPlane.y > canvas.height || (timePassed > 165 && level == 4 && (alienPlane.y <= -alienPlane.height))
-                        || (timePassed > 170 && level == 2 && (alienPlane.y <= -alienPlane.height)) || (timePassed > 180 && level == 6 && (alienPlane.y <= -alienPlane.height))) {
+                    if (alienPlane.y > canvas.height || (timePassed > 145 && level == 4 && (alienPlane.y <= -alienPlane.height))
+                        || (timePassed > 110 && level == 2 && (alienPlane.y <= -alienPlane.height)) || (timePassed > 150 && level == 6 && (alienPlane.y <= -alienPlane.height))) {
                         alienPlanes.splice(alienPlanes.indexOf(alienPlane), 1); // Remove alien planes that are out of canvas
                     } if(level7 == 5.5){   
                         alienPlanes.splice(alienPlanes.indexOf(alienPlane), 1);
@@ -2311,7 +2332,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             blueArcs.forEach(blueArc => {
                     const stopY = 50; // Adjust this value to your desired threshold
-                    if(timePassed > 180 && level == 6 && advancedAliens.length <= 0){
+                    if(timePassed > 150 && level == 6 && advancedAliens.length <= 0){
                         blueArc.y -= 1.2; 
                         if(music && level6 < 0.25){
                             towardspluto.pause();
@@ -2324,7 +2345,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     else if (blueArc.y < stopY && level7 != 5 && level7 != 5.5) {
                         blueArc.y += 0.4; // Adjust the speed if needed
                     }
-                    if (blueArc.y > canvas.height|| (timePassed > 180 && level == 6 && (blueArc.y <= -blueArc.height))) {
+                    if (blueArc.y > canvas.height|| (timePassed > 150 && level == 6 && (blueArc.y <= -blueArc.height))) {
                         blueArcs.splice(blueArcs.indexOf(blueArc), 1); // Remove alien planes that are out of canvas
                     }
                     if(level7 == 5.5){   
@@ -2669,6 +2690,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (bullet.x > alienPlane.x && bullet.x < alienPlane.x + alienPlane.width &&
                             bullet.y > alienPlane.y && bullet.y < alienPlane.y + alienPlane.height) {
                             alienPlane.health -= planes[selectedPlane].damage;
+                            alienPlane.damagetime = timePassed + 5;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             if (alienPlane.health <= 0) {
                                 createExplosion(alienPlane.x, alienPlane.y);
@@ -2686,6 +2708,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (bullet.x > alienPlane.x && bullet.x < alienPlane.x + alienPlane.width &&
                             bullet.y > alienPlane.y && bullet.y < alienPlane.y + alienPlane.height) {
                             alienPlane.health -= planes[selectedPlane].damage;
+                            alienPlane.damagetime = timePassed + 5;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             if (alienPlane.health <= 0) {
                                 createExplosion(alienPlane.x, alienPlane.y);
@@ -2703,6 +2726,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (bullet.x > blueArc.x && bullet.x < blueArc.x + blueArc.width &&
                         bullet.y > blueArc.y && bullet.y < blueArc.y + blueArc.height) {
                             blueArc.health -= planes[selectedPlane].damage;
+                            blueArc.damagetime = timePassed + 5;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             if(blueArc.health <= 0){
                                 createExplosion(blueArc.x, blueArc.y);
@@ -2719,6 +2743,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     semibosses.forEach(semiboss => {
                         if(level4 == 0.5 && bullet.x> semiboss.x && bullet.x < semiboss.x + semiboss.width &&
                             bullet.y > semiboss.y && bullet.y < semiboss.y + semiboss.height){
+                            semiboss.damagetime = timePassed + 5;
                             semiboss.health -= planes[selectedPlane].damage;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             if(semiboss.health <= 0){
@@ -2737,6 +2762,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if(level6 == 0.5 && bullet.x> semiboss.x && bullet.x < semiboss.x + semiboss.width &&
                             bullet.y > semiboss.y && bullet.y < semiboss.y + semiboss.height){
                             semiboss.health -= planes[selectedPlane].damage;
+                            semiboss.damagetime = timePassed + 5;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             semiboss.invisibility = false;
                             if(semiboss.health <= 0 && lastbosses.length > 1){
@@ -2755,6 +2781,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if(level2 == 0.5 && bullet.x> semiboss.x && bullet.x < semiboss.x + semiboss.width &&
                             bullet.y > semiboss.y && bullet.y < semiboss.y + semiboss.height){
                             if(semiboss.move == '') semiboss.unreg += planes[selectedPlane].damage;
+                            semiboss.damagetime = timePassed + 5;
                             semiboss.health -= planes[selectedPlane].damage;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                         } if(firstbosses.length > 0) firstbosses[0].bullets.forEach(bulletx => {
@@ -2791,6 +2818,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if(bullet.x > defender.x && bullet.x < defender.x + defender.width &&
                             bullet.y > defender.y && bullet.y < defender.y + defender.height){
                             defender.health -= planes[selectedPlane].damage;
+                            defender.damagetime = timePassed + 5;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             if(defender.health <= 0){
                                 defender.state = true;
@@ -2799,6 +2827,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }); finalboss.forEach(bossfinal =>{
                         if(checkBulletCollision(bullet, bossfinal)){
                             bossfinal.health -= planes[selectedPlane].damage;
+                            bossfinal.damagetime = timePassed + 5;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             createExplosion(bullet.x, bullet.y);
                             if(bossfinal.health <= 0 && level7 < 5){
@@ -2857,6 +2886,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         alienPlanes.forEach(alienPlane => {
                             if (bullet.x > alienPlane.x && bullet.x < alienPlane.x + alienPlane.width &&
                                 bullet.y > alienPlane.y && bullet.y < alienPlane.y + alienPlane.height) {
+                                alienPlane.damagetime = timePassed + 5;
                                 alienPlane.health -= bullet.hit;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                                 if (alienPlane.health <= 0) {
@@ -2875,6 +2905,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (bullet.x > alienPlane.x && bullet.x < alienPlane.x + alienPlane.width &&
                                 bullet.y > alienPlane.y && bullet.y < alienPlane.y + alienPlane.height) {
                                 alienPlane.health -= bullet.hit;
+                                advancedAliens.damagetime = timePassed + 5;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                                 if (alienPlane.health <= 0) {
                                     createExplosion(alienPlane.x, alienPlane.y);
@@ -2892,6 +2923,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (bullet.x > blueArc.x && bullet.x < blueArc.x + blueArc.width &&
                             bullet.y > blueArc.y && bullet.y < blueArc.y + blueArc.height) {
                                 blueArc.health -= bullet.hit;
+                                blueArc.damagetime = timePassed + 5;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                                 if(blueArc.health <= 0){
                                     createExplosion(blueArc.x, blueArc.y);
@@ -2908,6 +2940,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             if(level4 == 0.5 && bullet.x> semiboss.x && bullet.x < semiboss.x + semiboss.width &&
                                 bullet.y> semiboss.y && bullet.y < semiboss.y + semiboss.height){
                                 semiboss.health -= bullet.hit;
+                                semiboss.damagetime = timePassed + 5;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                                 if(semiboss.health <= 0){
                                     createExplosion(bullet.x, bullet.y);
@@ -2923,6 +2956,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             if(level4 == 0.5 && bullet.x> semiboss.x && bullet.x < semiboss.x + semiboss.width &&
                                 bullet.y> semiboss.y && bullet.y < semiboss.y + semiboss.height){
                                 semiboss.health -= bullet.hit;
+                                semiboss.damagetime = timePassed + 5;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                                 semiboss.invisibility = false;
                                 if(semiboss.health <= 0 && lastbosses.length > 1){
@@ -2939,6 +2973,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             if(level4 == 0.5 && bullet.x> semiboss.x && bullet.x < semiboss.x + semiboss.width &&
                                 bullet.y> semiboss.y && bullet.y < semiboss.y + semiboss.height){
                                 if(semiboss.move == '') semiboss.unreg += bullet.hit;
+                                semiboss.damagetime = timePassed + 5;
                                 semiboss.health -= bullet.hit;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                             } semiboss.bullets.forEach(bulletx =>{
@@ -2954,6 +2989,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             if(bullet.x > defender.x && bullet.x < defender.x + defender.width &&
                                 bullet.y > defender.y && bullet.y < defender.y + defender.height){
                                 defender.health -= bullet.hit;
+                                defender.damagetime = timePassed + 5;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                                 if(defender.health <= 0){
                                     defender.state = true;
@@ -2964,6 +3000,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         finalboss.forEach(bossfinal =>{
                             if(checkBulletCollision(bullet, bossfinal)){
                                 bossfinal.health -= bullet.hit;
+                                bossfinal.damagetime = timePassed + 5;
                                 shooter.bullets.splice(shooter.bullets.indexOf(bullet), 1);
                                 createExplosion(bullet.x, bullet.y);
                                 if(bossfinal.health <= 0  && level7 < 5){
@@ -3114,7 +3151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }); 
     }); }
 
-    if(((timePassed > 130 && level == 1) || (timePassed > 190 && level == 3) || (level2 > 1 && timePassed > level2) || (level4 > 1 && timePassed > level4) || (timePassed > 210 && level == 5)  || (level6 > 1 && timePassed > level6) || (level7 == 7 && level == 7))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
+    if(((timePassed > 80 && level == 1) || (timePassed > 130 && level == 3) || (level2 > 1 && timePassed > level2) || (level4 > 1 && timePassed > level4) || (timePassed > 160 && level == 5)  || (level6 > 1 && timePassed > level6) || (level7 == 7 && level == 7))&&win == 0){ //timerwin 120 180 180 240 240 260 100+boss spaces
         win = 1;
         wins.currentTime = 0;
         endgame.currentTime = 0;
@@ -3236,12 +3273,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         plane.height + plane.y > alienPlane.y) {
                         createExplosion(plane.x, plane.y);
                         if(currenthealth > 1){
-                                currenthealth--;
-                                advancedAliens.splice(advancedAliens.indexOf(alienPlane), 1);
-                            } else{
-                                currenthealth = 0;
-                                gameRunning = false;
-                            }
+                            currenthealth--;
+                            advancedAliens.splice(advancedAliens.indexOf(alienPlane), 1);
+                        } else{
+                            currenthealth = 0;
+                            gameRunning = false;
+                        }
                     } shooters.forEach(shooter =>{
                         if (shooter.x < alienPlane.x + alienPlane.width &&
                             shooter.x + shooter.width > alienPlane.x &&
@@ -3421,39 +3458,39 @@ document.addEventListener('DOMContentLoaded', function() {
                     diffindex = timePassed/300000;
                     if ((Math.random() < 0.03 && timePassed <= 20) || (Math.random() < 0.01 && timePassed > 20)) {
                         createStone();
-                    } if (Math.random() < 0.0007 && (rotators.length < 1 || (rotators.length < 2 && rotators[0].y > 0.75*canvas.height)) && timePassed >= 170){
+                    } if (Math.random() < 0.0007 && (rotators.length < 1 || (rotators.length < 2 && rotators[0].y > 0.75*canvas.height)) && timePassed >= 127.5){
                         createRotator();
                     } if(Math.random() < 0.001 && timePassed >= 140){
                         createAsteroid();
-                    } if (Math.random() < 0.004 && timePassed >= 40 && alienPlanes.length < 12 || (Math.random() < 0.004 + diffindex && timePassed >= 300)) {
+                    } if (Math.random() < 0.004 && timePassed >= 30 && alienPlanes.length < 12 || (Math.random() < 0.004 + diffindex && timePassed >= 225)) {
                         createAlienPlane();
-                    } if(Math.random() < 0.003 && timePassed >= 90 && advancedAliens.length < 8 || (Math.random() < 0.003 + diffindex && timePassed >= 500)){
+                    } if(Math.random() < 0.003 && timePassed >= 67.5 && advancedAliens.length < 8 || (Math.random() < 0.003 + diffindex && timePassed >= 375)){ 
                         createAdvancedAliens();
-                    } if((Math.random() < 0.001 && timePassed >= 120 && blueArcs.length < 4) || (Math.random() < 0.001 + diffindex && timePassed >= 700)){
+                    } if((Math.random() < 0.001 && timePassed >= 90 && blueArcs.length < 4) || (Math.random() < 0.001 + diffindex && timePassed >= 525)){
                         createBlueArcs(); 
-                    } if((Math.random() < 0.007 && timePassed >= 150 && nebulas.length < 2) || (Math.random() < 0.001 + diffindex && timePassed >= 700 && nebulas.length < 2)){
+                    } if((Math.random() < 0.007 && timePassed >= 112.5 && nebulas.length < 2) || (Math.random() < 0.001 + diffindex && timePassed >= 525 && nebulas.length < 2)){
                         createNebulas(); 
-                    } if(Math.random() < 0.001 && timePassed >= 200){
+                    } if(Math.random() < 0.001 && timePassed >= 150){
                         createDefenders();
                     }
-                } else if(level == 1){ //towards mars 120
+                } else if(level == 1){ //towards mars 80
                     if (Math.random() < 0.02*difactor) {
                         createStone();
-                    } if (Math.random() < 0.008 && rotators.length < 2 && timePassed >= 50){
+                    } if (Math.random() < 0.008 && rotators.length < 2 && timePassed >= 30){
                         createRotator();
-                    } if (Math.random() < 0.0008*difactor && timePassed >= 90 && alienPlanes.length < 6*difactor) {
+                    } if (Math.random() < 0.0008*difactor && timePassed >= 60 && alienPlanes.length < 6*difactor) {
                         createAlienPlane();
                     }
-                } else if(level == 2){ //towards jupiter 180
+                } else if(level == 2){ //towards jupiter 110
                     if (Math.random() < 0.015) {
                         createStone();
-                    } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 55){
+                    } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 50){
                         createRotator();
-                    } if(Math.random() < 0.007*difactor && timePassed >= 100 && asteroids.length < 3){
+                    } if(Math.random() < 0.007*difactor && timePassed >= 80 && asteroids.length < 3){
                         createAsteroid();
-                    } if (Math.random() < 0.004*difactor && timePassed >= 25 && alienPlanes.length < 12*difactor && timePassed < 170) {
+                    } if (Math.random() < 0.004*difactor && timePassed >= 25 && alienPlanes.length < 12*difactor && timePassed < 110) {
                         createAlienPlane();
-                    } if(level2 < 0.5 && alienPlanes.length == 0 && timePassed > 170){ 
+                    } if(level2 < 0.5 && alienPlanes.length == 0 && timePassed > 110){ 
                         if(firstbosses.length < 1){
                             createfirstboss();
                         } if(music && currentAudio != jupiterboss){
@@ -3466,34 +3503,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     } if(level2 == 0.5 && firstbosses.length == 0){
                         level2 = timePassed + 10;
                     }
-                } else if(level == 3){ //towards saturn 180
+                } else if(level == 3){ //towards saturn 130
                     if (Math.random() < 0.01) {
                         createStone();
-                    } if (Math.random() < 0.0006 && rotators.length < 2 && timePassed >= 45){
+                    } if (Math.random() < 0.0006 && rotators.length < 2 && timePassed >= 40){
                         createRotator();
                     } if (Math.random() < 0.004 && timePassed >= 20 && alienPlanes.length < 12) {
                         createAlienPlane();
-                    } if(Math.random() < 0.003 && timePassed >= 70){
+                    } if(Math.random() < 0.003 && timePassed >= 63){
                         createAsteroid();
-                    } if(Math.random() < 0.005 && timePassed >= 105 && advancedAliens.length < 8){
+                    } if(Math.random() < 0.005 && timePassed >= 88 && advancedAliens.length < 8){
                         createAdvancedAliens();
-                    } if(Math.random() < 0.007 && timePassed >= 135 && nebulas.length < 2){
+                    } if(Math.random() < 0.007 && timePassed >= 109 && nebulas.length < 2){
                         createNebulas();
                     } 
-                } else if(level == 4){ //towards uranus 200
+                } else if(level == 4){ //towards uranus 145
                     if (Math.random() < 0.01) {
                         createStone();
-                    } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 40){
+                    } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 37){
                         createRotator();
-                    } if (Math.random() < 0.006 && timePassed >= 15 && alienPlanes.length < 15 && timePassed <= 165) {
+                    } if (Math.random() < 0.006 && timePassed >= 15 && alienPlanes.length < 15 && timePassed <= 145) {
                         createAlienPlane();
-                    } if(Math.random() < 0.002 && timePassed >= 70){
+                    } if(Math.random() < 0.002 && timePassed >= 64){
                         createAsteroid();
-                    } if(Math.random() < 0.007 && timePassed >= 100 && advancedAliens.length < 10 && timePassed <= 165){
+                    } if(Math.random() < 0.007 && timePassed >= 95 && advancedAliens.length < 10 && timePassed <= 145){
                         createAdvancedAliens();
-                    } if(Math.random() < 0.004 && timePassed >= 130 && nebulas.length < 2){
+                    } if(Math.random() < 0.004 && timePassed >= 121 && nebulas.length < 2){
                         createNebulas();
-                    } if(level4 < 0.5 && advancedAliens.length == 0 && alienPlanes.length == 0 && timePassed > 165){ 
+                    } if(level4 < 0.5 && advancedAliens.length == 0 && alienPlanes.length == 0 && timePassed > 145){ 
                         if(semibosses.length < 3){
                             createsemiboss();
                         } if(music && currentAudio != semibossmusic){
@@ -3508,36 +3545,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     
-                } else if(level == 5){ //towards neptune 200
+                } else if(level == 5){ //towards neptune 160
                     if (Math.random() < 0.01) {
                         createStone();
-                    } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 50){
+                    } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 41){
                         createRotator();
                     } if (Math.random() < 0.005 && timePassed >= 15 && alienPlanes.length < 12) {
                         createAlienPlane();
-                    } if(Math.random() < 0.002 && timePassed >= 80){
+                    } if(Math.random() < 0.002 && timePassed >= 71){
                         createAsteroid();
-                    } if(Math.random() < 0.008 && timePassed >= 105 && advancedAliens.length < 12){
+                    } if(Math.random() < 0.008 && timePassed >= 98 && advancedAliens.length < 12){
                         createAdvancedAliens();
-                    } if(Math.random() < 0.003 && timePassed >= 140 && blueArcs.length < 6){
+                    } if(Math.random() < 0.003 && timePassed >= 122 && blueArcs.length < 6){
                         createBlueArcs();
                     }
-                } else if(level == 6){ //towards pluto 220
+                } else if(level == 6){ //towards pluto 150
                     if (Math.random() < 0.01) {
                         createStone();
-                    } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 40){
+                    } if (Math.random() < 0.0007 && rotators.length < 2 && timePassed >= 31){
                         createRotator();
-                    } if (Math.random() < 0.006 && timePassed >= 15 && timePassed < 180) {
+                    } if (Math.random() < 0.006 && timePassed >= 10 && timePassed < 150) {
                         createAlienPlane();
-                    } if(Math.random() < 0.004 && timePassed >= 75){
+                    } if(Math.random() < 0.004 && timePassed >= 52){
                         createAsteroid();
-                    } if(Math.random() < 0.007 && timePassed >= 105 && timePassed < 180){
+                    } if(Math.random() < 0.007 && timePassed >= 78 && timePassed < 150){
                         createAdvancedAliens();
-                    }  if(Math.random() < 0.0045 && timePassed >= 165 && blueArcs.length < 12 && timePassed < 180){
+                    }  if(Math.random() < 0.0045 && timePassed >= 127 && blueArcs.length < 12 && timePassed < 150){
                         createBlueArcs();
-                    } if(Math.random() < 0.007 && timePassed >= 135 && nebulas.length < 2){
+                    } if(Math.random() < 0.007 && timePassed >= 105 && nebulas.length < 2){
                         createNebulas();
-                    } if(level2 < 0.5 && alienPlanes.length == 0 && advancedAliens.length == 0&& blueArcs.length == 0&& timePassed > 180){ 
+                    } if(level2 < 0.5 && alienPlanes.length == 0 && advancedAliens.length == 0&& blueArcs.length == 0&& timePassed > 150){ 
                         if(lastbosses.length < 3){
                             createlastboss();
                             createlastboss();
@@ -3682,7 +3719,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }); 
 
-                } if(((timePassed > 120 && level == 1) || (timePassed > 180 && level == 3) || (level2 > 1) || (level6 > 1) || (level4 > 1) || (timePassed > 200 && level == 5))&&win == 0){  //timerwin 120 180 180 240 240 260 100+boss spaces
+                } if(((timePassed > 70 && level == 1) || (timePassed > 120 && level == 3) || (level2 > 1) || (level6 > 1) || (level4 > 1) || (timePassed > 150 && level == 5))&&win == 0){  //timerwin 120 180 180 240 240 260 100+boss spaces
                     if(planets.length < 1){
                         createPlanet();
                     }
