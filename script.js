@@ -5,7 +5,7 @@
         totalCoins = 0;
     }
     let initialbossremoved = 0;
-
+    let defendertimer = 0;
     let currentAudio = bgmusic;
     var music = true;
 
@@ -819,8 +819,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     x: Math.random() * (canvas.width - 40),
                     y: -40,
                     width: 40,
-                    height: 40,
-                    type: 'stone'
+                    height: 40
                 };
                 stones.push(stone);
             } function createNebulas(){
@@ -828,8 +827,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     x: Math.random() * (canvas.width - 40),
                     y: -40,
                     width: 50,
-                    height: 50,
-                    type: 'nebula'
+                    height: 50
                 }; 
                 nebulas.push(nebula);
             }        
@@ -840,8 +838,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     : canvas.width - Math.random() * (canvas.width / 2 - 40),
                     y: -40,
                     width: 100,
-                    height: 100,
-                    tyPe: 'rotator'
+                    height: 100
                 };
                 rotators.push(rotator);
             } function createAsteroid(){
@@ -850,8 +847,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     y: -40,
                     width: 60,
                     height: 60,
-                    speed: 1,
-                    type: 'asteroidd'
+                    speed: 1
                 };
                 asteroids.push(asteroidd);
             } function createbossAsteroid(){
@@ -860,8 +856,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     y: canvas.width > canvas.height? -40: Math.random() * canvas.height/2.7,
                     width: 60,
                     height: 60,
-                    speed: 5,
-                    type: 'asteroidd'
+                    speed: 5
                 };
                 asteroids.push(asteroidd);
             }function createPlanet(){
@@ -869,8 +864,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     x: -190*(canvas.width > canvas.height? 1: 2),
                     y: -40,
                     width: 2000,
-                    height: 2000,
-                    type: 'planet'
+                    height: 2000
                 }; planets.push(planet);
             } function createplanes(k){
                 if(k == 1){
@@ -898,8 +892,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     y: ay-100,
                     time: timePassed,
                     width: 120,
-                    height: 120,
-                    type:'massExplode'
+                    height: 120
                 };
                 massexplosions.push(massExplode);
             } function createBoss(){
@@ -907,8 +900,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     x: canvas.width / 2 - 140,
                     y: canvas.height - 10,
                     width: 280,
-                    height: 280,
-                    type: 'bosss'
+                    height: 280
                 };
                 boss.push(bossinitial);
             } 
@@ -921,7 +913,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: 60,
                     bullets: [],
                     health: 5, // takes 5 bullets to destroy
-                    type: 'alien',
                     state: 0,
                     damagetime: 0
                 };
@@ -934,7 +925,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: 60,
                     bullets: [],
                     health: 10, // takes 10 bullets to destroy
-                    type: 'advancedAlien',
                     state: 0,
                     damagetime: 0
                 };
@@ -947,7 +937,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: 60,
                     bullets: [],
                     health: 20, // takes 20 bullets to destroy
-                    type: 'blueArc',
                     state: 0,
                     damagetime: 0
                 };
@@ -960,7 +949,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: 140,
                     bullets: [],
                     health: 300, // takes 300 bullets to destroy
-                    type: 'semiBoss',
                     state: 0,
                     special: 0,
                     damagetime: 0
@@ -974,7 +962,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: 140,
                     bullets: [],
                     health: 300, // takes 300 bullets to destroy
-                    type: 'firstBoss',
                     special: false,
                     state: 0,
                     unreg: 0,
@@ -991,13 +978,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: 155,
                     bullets: [],
                     health: 300, // takes 300 bullets to destroy
-                    type: 'lastBoss',
                     state: 0,
                     invisibility: false,
                     damagetime: 0
                 };
                 lastbosses.push(lastboss);
             } function createDefenders(){
+                if(defendertimer > timePassed) return;
+                defendertimer = timePassed + 4; // 4 seconds between defenders
+
                 let intersects = false;
 
                 let defender = {
@@ -1006,10 +995,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     width: 60,
                     height: 60,
                     bullets: [],
-                    health: 35, // takes 35 bullets to destroy
+                    health: 35,
                     state: false,
                     misteffect: 0,
-                    type: 'defender',
                     damagetime: 0
                 };
 
@@ -1036,7 +1024,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     rockets: [],
                     flareInterval: 0,
                     flares: [],
-                    type: 'bossFinal',
                     state: 0,
                     damagetime: 0
                 };
@@ -1048,8 +1035,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     x: a - 100,
                     y: b,
                     width: 200,
-                    height: 200,
-                    type: 'bossdemo'
+                    height: 200
                 }; bossdemo.push(bossinitially);
             }
 
@@ -2070,7 +2056,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 });
                             } 
                         } 
-                        let h = canvas.width > canvas.height ? 1 : 0.4;
+                        let h = canvas.width > canvas.height ? 1 : 0;
                         semiboss.bullets.forEach(bullet=>{
                             bullet.x += 0.66*h*2*bullet.move/4;
                             bullet.y += 2;
@@ -3602,7 +3588,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             createAdvancedAliens();
                         } if(Math.random() < 0.0045 && timePassed >= 70 && timePassed <120){
                             createBlueArcs();
-                        } if(Math.random() < 0.007 && timePassed >= 90 && nebulas.length < 2 && timePassed <120){
+                        } if(Math.random() < 0.007 && timePassed >= 90 && nebulas.length < 2 && timePassed <120){ 
                             createNebulas();
                         } 
                         if(stones.length == 0 && alienPlanes.length == 0 && advancedAliens.length == 0 && asteroids.length == 0 && blueArcs.length == 0 && nebulas.length == 0 && planets.length == 0 && timePassed >= 120 && initialbossremoved == 0){
@@ -3629,7 +3615,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         initialbossremoved = timePassed + 4;
                         boss.splice(0,1);
                     } else if(level7 == 2){
-                        if((Math.random() < 0.1 && finalboss.length == 0) || Math.random() < 0.05){
+                        if((Math.random() < 0.1 && finalboss.length == 0) || Math.random() < 0.05){ 
                             let k = 200;
                             while(!createDefenders()&&k-->0);
                         } //also add logic for boss spawning 
@@ -3731,6 +3717,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 requestAnimationFrame(gameLoop);
             }
             function restartGame(lvl) { 
+                defendertimer = 0;
                 quartboss.src = "quartboss.png";   
                 timedisplay = durations[level];
                 freezetime = 0;
