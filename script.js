@@ -984,8 +984,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 lastbosses.push(lastboss);
             } function createDefenders(){
-                if(defendertimer > timePassed) return;
-                defendertimer = timePassed + 4; // 4 seconds between defenders
+                if(finalboss.length > 0 && defendertimer > timePassed) return;
+                defendertimer = timePassed + 2; // 4 seconds between defenders
 
                 let intersects = false;
 
