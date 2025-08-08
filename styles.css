@@ -9,112 +9,112 @@ body {
     height: 100vh;
     color: white;
     font-family: Arial, sans-serif;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE/Edge */
-    user-select: none; /* Standard syntax */
+    -webkit-user-select: none;
+    -moz-user-select: none; 
+    -ms-user-select: none;
+    user-select: none;
 } img {
-    user-select: none; /* For modern browsers */
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none; /* For Firefox */
-    -ms-user-select: none; /* For Internet Explorer/Edge */
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Transparent */
+    user-select: none; 
+    -webkit-user-select: none; 
+    -moz-user-select: none;
+    -ms-user-select: none; 
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
 }
 #gameCanvas {
     border: 2px solid white;
 } #missileButton {
 position: absolute;
-right: 20px; /* Position towards the right end */
-bottom: 200px; /* Move up from the fire button */
+right: 20px; 
+bottom: 200px; 
 width: 80px;
 height: 80px;
 background-size: contain;
 background-repeat: no-repeat;
 cursor: pointer;
 background-image: url('missilebutton.png');
-user-select: none; /* For modern browsers */
--webkit-user-select: none; /* For Safari */
--moz-user-select: none; /* For Firefox */
--ms-user-select: none; /* For Internet Explorer/Edge */
+user-select: none;
+-webkit-user-select: none; 
+-moz-user-select: none; 
+-ms-user-select: none; 
 }
 #fireButton {
 position: absolute;
-right: 20px; /* Position towards the right end */
-bottom: 100px; /* Move up from the bottom */
+right: 20px; 
+bottom: 100px; 
 width: 80px;
 height: 80px;
 background-size: contain;
 background-repeat: no-repeat;
 cursor: pointer;
 background-image: url('firebutton.png');
-user-select: none; /* For modern browsers */
--webkit-user-select: none; /* For Safari */
--moz-user-select: none; /* For Firefox */
--ms-user-select: none; /* For Internet Explorer/Edge */
+user-select: none; 
+-webkit-user-select: none; 
+-moz-user-select: none; 
+-ms-user-select: none; 
 } #leftButton {
     position: absolute;
-    left: 10px; /* Position towards the right end */
-    bottom: 50px; /* Move up from the bottom */
+    left: 10px; 
+    bottom: 50px;
     width: 100px;
     height: 100px;
     background-size: contain;
     background-repeat: no-repeat;
     cursor: pointer;
     background-image: url('leftslide.png');
-    user-select: none; /* For modern browsers */
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none; /* For Firefox */
-    -ms-user-select: none; /* For Internet Explorer/Edge */
+    user-select: none; 
+    -webkit-user-select: none;
+    -moz-user-select: none; 
+    -ms-user-select: none; 
     }
     #rightButton {
         position: absolute;
-        left: 80px; /* Position towards the right end */
-        bottom: 50px; /* Move up from the bottom */
+        left: 80px; 
+        bottom: 50px; 
         width: 100px;
         height: 100px;
         background-size: contain;
         background-repeat: no-repeat;
         cursor: pointer;
         background-image: url('rightslide.png');
-        user-select: none; /* For modern browsers */
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none; /* For Firefox */
-    -ms-user-select: none; /* For Internet Explorer/Edge */
+        user-select: none; 
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
         } #shooterButton{
     position: absolute;
-right: 20px; /* Position towards the right end */
-bottom: 200px; /* Move up from the fire button */
+right: 20px; 
+bottom: 200px; 
 width: 80px;
 height: 80px;
 background-size: contain;
 background-repeat: no-repeat;
 cursor: pointer;
 background-image: url('turret.png');
-user-select: none; /* For modern browsers */
--webkit-user-select: none; /* For Safari */
--moz-user-select: none; /* For Firefox */
--ms-user-select: none; /* For Internet Explorer/Edge */
+user-select: none; 
+-webkit-user-select: none; 
+-moz-user-select: none; 
+-ms-user-select: none;
 } #stunButton{
     position: absolute;
-right: 20px; /* Position towards the right end */
-bottom: 200px; /* Move up from the fire button */
+right: 20px; 
+bottom: 200px; 
 width: 80px;
 height: 80px;
 background-size: contain;
 background-repeat: no-repeat;
 cursor: pointer;
 background-image: url('stun.png');
-user-select: none; /* For modern browsers */
--webkit-user-select: none; /* For Safari */
--moz-user-select: none; /* For Firefox */
--ms-user-select: none; /* For Internet Explorer/Edge */
+user-select: none;
+-webkit-user-select: none; 
+-moz-user-select: none;
+-ms-user-select: none;
 }
 
 #score, #highScore, #time {
 position: absolute;
 color: white;
 font-size: 20px;
-background-color: transparent; /* Adjust transparency here */
+background-color: transparent; 
 padding: 5px 10px;
 border-radius: 5px;
 }
@@ -181,8 +181,8 @@ background-color: transparent;
     background-position: center;
     z-index: 999;
     flex-direction: column;
-    color: white; /* Ensuring text is visible */
-    font-size: 18px; /* Adjust font size as needed */
+    color: white; 
+    font-size: 18px; 
 }
 
 #levelScreen {
@@ -211,16 +211,16 @@ background-color: transparent;
     margin: 10px;
     width: 300px;
 } #playButton, #howToPlayButton, #StorePlanes {
-    background-color: transparent; /* Make the button backgrounds transparent */
-    border: none; /* Remove the default button border */
-    cursor: pointer; /* Change the cursor to a pointer on hover */
-    width: 187.5px; /* Increase the button width */
-    height: 50px; /* Increase the button height */
-    margin: 10px 10px; /* Add some space between the buttons, with more horizontal space */
-    background-size: contain; /* Scale the background image to fit the button size */
-    background-repeat: no-repeat; /* Don't repeat the background image */
-    display: inline-block; /* Make the buttons display inline-block to remove gaps */
-    vertical-align: middle; /* Align the buttons vertically */
+    background-color: transparent; 
+    border: none; 
+    cursor: pointer; 
+    width: 187.5px;
+    height: 50px;
+    margin: 10px 10px; 
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    display: inline-block; 
+    vertical-align: middle; 
 }
 
 #playButton {
@@ -262,8 +262,8 @@ cursor: pointer;
 margin-top: 20px;
 }  #pauseButton {
 position: absolute;
-top: 10px; /* Adjust as needed */
-left: 50%; /* Center horizontally */
+top: 10px;
+left: 50%; 
 transform: translateX(-50%);
 padding: 10px 20px;
 background-color: transparent;
@@ -272,10 +272,10 @@ border: none;
 cursor: pointer;
 font-size: 18px;
 margin-top: 20px;
-user-select: none; /* For modern browsers */
--webkit-user-select: none; /* For Safari */
--moz-user-select: none; /* For Firefox */
--ms-user-select: none; /* For Internet Explorer/Edge */
+user-select: none; 
+-webkit-user-select: none;
+-moz-user-select: none; 
+-ms-user-select: none; 
 } #pauseScreen{
     text-shadow:
     -1px -1px 0 #000,  
@@ -296,8 +296,8 @@ background-repeat: no-repeat;
 background-position: center;
 z-index: 998;
 flex-direction: column;
-color: white; /* Ensuring text is visible */
-font-size: 18px; /* Adjust font size as needed */
+color: white; 
+font-size: 18px; 
 } #resumepause {
 padding: 5px 80px;
 font-size: 22px;
@@ -364,13 +364,13 @@ width: 300px;
 }
 
 .plane-item img {
-    user-select: none; /* For modern browsers */
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none; /* For Firefox */
-    -ms-user-select: none; /* For Internet Explorer/Edge */
+    user-select: none; 
+    -webkit-user-select: none; 
+    -moz-user-select: none;
+    -ms-user-select: none; 
 width: 200px;
 height: auto;
--webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Transparent */
+-webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
 }
 
 .button {
@@ -382,22 +382,22 @@ cursor: pointer;
 
 .buy-button {
 background-color: gold;
-border: 1px solid #000000; /* Border color and thickness */
-border-radius: 18px; /* Adjust border-radius for roundness */
+border: 1px solid #000000;
+border-radius: 18px;
 transition: background-color 0.3s ease;
 } 
 
 .equip-button {
 background-color: green;
-border: 1px solid #000000; /* Border color and thickness */
-border-radius: 18px; /* Adjust border-radius for roundness */
+border: 1px solid #000000; 
+border-radius: 18px; 
 transition: background-color 0.3s ease;
 }
 
 .equipped-button {
 background-color: red;
-border: 1px solid #000000; /* Border color and thickness */
-border-radius: 18px; /* Adjust border-radius for roundness */
+border: 1px solid #000000; 
+border-radius: 18px; 
 transition: background-color 0.3s ease;
 } .icon {
 width: 20px;
@@ -411,20 +411,20 @@ color: white;
 cursor: pointer;
 } #planeHealth {
 display: flex;
-align-items: center; /* Align items vertically */
-margin-top: 10px; /* Adjust top margin as needed */
+align-items: center; 
+margin-top: 10px; 
 }
 
 #planeHealth .hearticon {
-margin-right: 5px; /* Adjust margin as needed */    
-font-size: 20px; /* Adjust font size as needed */
-line-height: 1; /* Ensure the line height is normal to avoid extra spacing */
+margin-right: 5px;   
+font-size: 20px; 
+line-height: 1; 
 }
 
 #healthValue {
-font-size: 16px; /* Adjust font size as needed */
-line-height: 1; /* Ensure the line height is normal to avoid extra spacing */
-vertical-align: middle; /* Align vertically with the heart icon */
+font-size: 16px; 
+line-height: 1; 
+vertical-align: middle;
 }
 
 
@@ -438,9 +438,9 @@ height: 30px;
 background-size: contain;
 background-repeat: no-repeat;
 background-color: transparent;
-border: none; /* Remove border */
-box-shadow: none; /* Remove any box shadow */
-outline: none; /* Remove the outline on focus */
+border: none; 
+box-shadow: none; 
+outline: none; 
 background-image: url('closeicon.png');
 } #closelevelButton {
 position: absolute;
@@ -452,9 +452,9 @@ height: 30px;
 background-size: contain;
 background-repeat: no-repeat;
 background-color: transparent;
-border: none; /* Remove border */
-box-shadow: none; /* Remove any box shadow */
-outline: none; /* Remove the outline on focus */
+border: none; 
+box-shadow: none; 
+outline: none; 
 background-image: url('closeicon.png');
 } #initialscreen {
 display: flex;
@@ -471,8 +471,8 @@ background-color: black;
 background-position: center;
 z-index: 1005;
 flex-direction: column;
-color: white; /* Ensuring text is visible */
-font-size: 18px; /* Adjust font size as needed */
+color: white; 
+font-size: 18px; 
 } .toggle-button {
     position: fixed;
     z-index: 1002;
@@ -481,16 +481,16 @@ font-size: 18px; /* Adjust font size as needed */
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0; /* Remove default padding */
+    padding: 0; 
 }
 
 .toggle-button img {
-    user-select: none; /* For modern browsers */
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none; /* For Firefox */
-    -ms-user-select: none; /* For Internet Explorer/Edge */
-    width: 30px; /* Adjust size as needed */
-    height: 30px; /* Adjust size as needed */
+    user-select: none; 
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none; 
+    width: 30px; 
+    height: 30px;
     display: block;
 } .feedback-button {
     position: fixed;
@@ -500,16 +500,16 @@ font-size: 18px; /* Adjust font size as needed */
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0; /* Remove default padding */
+    padding: 0; 
 }
 
 .feedback-button img {
-    user-select: none; /* For modern browsers */
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none; /* For Firefox */
-    -ms-user-select: none; /* For Internet Explorer/Edge */
-    width: 30px; /* Adjust size as needed */
-    height: 30px; /* Adjust size as needed */
+    user-select: none; 
+    -webkit-user-select: none;
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    width: 30px; 
+    height: 30px; 
     display: block;
 } 
 
@@ -517,5 +517,5 @@ font-size: 18px; /* Adjust font size as needed */
     font-size: 12px;
     justify-content: center;
     align-items: center;
-    font-weight: 300; /* Thin text */
+    font-weight: 300; 
 }
