@@ -9,7 +9,7 @@
     let currentAudio = bgmusic;
     var music = true;
 
-    var kaiserCooldown = 0;
+    var bulletCooldown = 0;
 
     updateCoinDisplay();
     let gamestarted = false;
@@ -3422,8 +3422,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             y: plane.y + plane.x/20
                         });
                     } else if(planes[selectedPlane].id === 'zxiFighter'){
-                        if (!kaiserCooldown || timePassed > kaiserCooldown) {
-                            kaiserCooldown = timePassed + 0.12;  // Slight delay between bursts
+                        if (!bulletCooldown || timePassed > bulletCooldown) {
+                            bulletCooldown = timePassed + 0.2;  // Slight delay between bursts
                             plane.bullets.push({
                                 x: plane.x + plane.width / 6,
                                 y: plane.y + plane.x/16
@@ -3723,7 +3723,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             function restartGame(lvl) { 
                 defendertimer = 0;
-                kaiserCooldown = 0;
+                bulletCooldown = 0;
                 quartboss.src = "quartboss.png";   
                 timedisplay = durations[level];
                 freezetime = 0;
@@ -3909,7 +3909,7 @@ document.addEventListener('DOMContentLoaded', function() {
             function returnToMenu() {
                 quartboss.src = "quartboss.png";
                 
-                kaiserCooldown = 0;
+                bulletCooldown = 0;
                 timedisplay = 0;
                 freezetime = 0;
                 slowtime = 0;
