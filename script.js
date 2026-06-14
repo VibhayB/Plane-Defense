@@ -9,6 +9,8 @@
     let currentAudio = bgmusic;
     var music = true;
 
+    var kaizercooldown = 0;
+
     updateCoinDisplay();
     let gamestarted = false;
     let gameTime = -1;
@@ -3420,14 +3422,17 @@ document.addEventListener('DOMContentLoaded', function() {
                             y: plane.y + plane.x/20
                         });
                     } else if(planes[selectedPlane].id === 'zxiFighter'){
-                        plane.bullets.push({
-                            x: plane.x + plane.width / 6,
-                            y: plane.y + plane.x/16
-                        });
-                        plane.bullets.push({
-                            x: plane.x + 4*plane.width / 5,
-                            y: plane.y + plane.x/16
-                        });
+                        if (!kaiserCooldown || timePassed > kaiserCooldown) {
+                            kaiserCooldown = timePassed + 0.12;  // Slight delay between bursts
+                            plane.bullets.push({
+                                x: plane.x + plane.width / 6,
+                                y: plane.y + plane.x/16
+                            });
+                            plane.bullets.push({
+                                x: plane.x + 4*plane.width / 5,
+                                y: plane.y + plane.x/16
+                            });
+                        }
                     } else{
                         plane.bullets.push({
                             x: plane.x + plane.width / 2,
@@ -3718,6 +3723,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             function restartGame(lvl) { 
                 defendertimer = 0;
+                kaizercooldown = 0;
                 quartboss.src = "quartboss.png";   
                 timedisplay = durations[level];
                 freezetime = 0;
@@ -3902,6 +3908,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             function returnToMenu() {
                 quartboss.src = "quartboss.png";
+                
+                kaizercooldown = 0;
                 timedisplay = 0;
                 freezetime = 0;
                 slowtime = 0;
