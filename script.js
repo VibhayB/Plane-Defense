@@ -9,7 +9,7 @@
     let currentAudio = bgmusic;
     var music = true;
 
-    var kaizercooldown = 0;
+    var kaiserCooldown = 0;
 
     updateCoinDisplay();
     let gamestarted = false;
@@ -3723,7 +3723,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             function restartGame(lvl) { 
                 defendertimer = 0;
-                kaizercooldown = 0;
+                kaiserCooldown = 0;
                 quartboss.src = "quartboss.png";   
                 timedisplay = durations[level];
                 freezetime = 0;
@@ -3909,7 +3909,7 @@ document.addEventListener('DOMContentLoaded', function() {
             function returnToMenu() {
                 quartboss.src = "quartboss.png";
                 
-                kaizercooldown = 0;
+                kaiserCooldown = 0;
                 timedisplay = 0;
                 freezetime = 0;
                 slowtime = 0;
