@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cost: ' 1000',
             imgSrc: 'zxiFighter.png',
             bought: false,
-            damage: 5,
+            damage: 4.7,
             freezed: 'zxiFighter.png',
             desc: 'Special: shoots missiles, can\'t be frozen'
         }
@@ -2814,7 +2814,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }); finalboss.forEach(bossfinal =>{
                         if(checkBulletCollision(bullet, bossfinal)){
-                            bossfinal.health -= planes[selectedPlane].damage;
+                            bossfinal.health -= Math.floor(planes[selectedPlane].damage);
                             bossfinal.damagetime = timePassed + 5;
                             plane.bullets.splice(plane.bullets.indexOf(bullet), 1);
                             createExplosion(bullet.x, bullet.y);
